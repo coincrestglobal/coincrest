@@ -7,11 +7,33 @@ const managementController = require("../controllers/managementController");
 const router = express.Router();
 
 router.get(
-  "/withdrawals",
+  "/getUsers",
+  authMiddleware.protect,
+  queryParamsValidator,
+  paginationValidator,
+  managementController.getUsers
+);
+
+router.get(
+  "/getUser/:userId",
+  authMiddleware.protect,
+  managementController.getUserById
+);
+
+router.get(
+  "/getWithdrawals",
   authMiddleware.protect,
   queryParamsValidator,
   paginationValidator,
   managementController.getWithdrawals
+);
+
+router.get(
+  "/getDeposits",
+  authMiddleware.protect,
+  queryParamsValidator,
+  paginationValidator,
+  managementController.getDeposits
 );
 
 module.exports = router;

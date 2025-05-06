@@ -14,7 +14,9 @@ const {
 exports.getBalance = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
 
-  const user = await User.findById(userId).select("balance");
+  const user = await User.findById(userId).select(
+    "investableBalance withdrawableBalance"
+  );
 
   if (!user) {
     return next(new AppError("User not found.", 404));
@@ -133,12 +135,13 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
   const skip = (page - 1) * limit;
 
   const [deposits, total] = await Promise.all([
-    Deposit.find({ verifiedBy: userId })
+    Deposit.find({ depositedBy: userId })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select("amount createdAt -_id"),
-    Deposit.countDocuments({ verifiedBy: userId }),
+      .select("amount fromAddress createdAt tokenType -_id")
+      .populate("depositedBy", "name email -_id"),
+    Deposit.countDocuments({ depositedBy: userId }),
   ]);
 
   if (page > 1 && deposits.length === 0) {

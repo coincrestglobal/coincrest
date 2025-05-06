@@ -8,6 +8,11 @@ const validateQueryParams = validate([
     .isLength({ min: 2 })
     .withMessage("Please enter at least 2 characters to search."),
 
+  query("role")
+    .optional()
+    .isIn(["user", "admin"])
+    .withMessage('Invalid role. Allowed roles are "user" and "admin".'),
+
   query("status")
     .optional()
     .isIn(["pending", "processing", "completed", "failed"])

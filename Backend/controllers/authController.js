@@ -13,14 +13,14 @@ const generateToken = (expiresInMinutes = 15) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return next(new AppError("User already exists with this email.", 400));
   }
 
-  const user = await User.create({ email, password });
+  const user = await User.create({ name, email, password });
 
   // Generate email verification token
   const { token, tokenExpiresIn } = generateToken(30);

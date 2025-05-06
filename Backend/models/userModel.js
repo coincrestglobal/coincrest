@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide an email address"],
       unique: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -39,6 +41,8 @@ const userSchema = new mongoose.Schema(
       },
     ],
     lastWithdrawnAt: { type: Date },
+    deposits: [{ type: mongoose.Schema.Types.ObjectId, ref: "Deposit" }],
+    withdrawals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Withdrawal" }],
     emailVerificationToken: String,
     emailVerificationTokenExpires: Date,
     passwordResetToken: String,
