@@ -1,0 +1,5 @@
+const MIN_WITHDRAWAL_INTERVAL = 7;
+
+module.exports = {
+  MIN_WITHDRAWAL_INTERVAL,
+};

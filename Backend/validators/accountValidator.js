@@ -1,0 +1,77 @@
+const { body } = require("express-validator");
+const validate = require("../middlewares/handleValidation");
+const { check } = require("express-validator");
+
+exports.validateVerifyDeposit = validate([
+  body("tokenType")
+    .notEmpty()
+    .withMessage("Token type is required")
+    .isIn(["TRC-20", "BEP-20"])
+    .withMessage("Token type must be either TRC20 or BEP20"),
+
+  body("txId").notEmpty().withMessage("Transaction ID is required"),
+
+  body("trxDateTime")
+    .exists()
+    .withMessage("Date and time is required")
+    .bail()
+    .isInt({ min: 0 })
+    .withMessage("Date and time must be valid")
+    .custom((value) => {
+      const timestamp = Number(value);
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) {
+        throw new Error("Date and time must be valid");
+      }
+
+      return true;
+    }),
+
+  body("password").notEmpty().withMessage("Password is required"),
+]);
+
+exports.validateAddWithdrawalAddress = validate([
+  body("tokenType")
+    .notEmpty()
+    .withMessage("Token type is required")
+    .isIn(["TRC-20", "BEP-20"])
+    .withMessage("Token type must be either TRC20 or BEP20"),
+
+  body("address")
+    .notEmpty()
+    .withMessage("Address is required")
+    .isString()
+    .withMessage("Address must be a string")
+    .custom((value, { req }) => {
+      const tokenType = req.body.tokenType;
+      if (tokenType === "TRC-20" && !/^T[a-zA-Z0-9]{33}$/.test(value)) {
+        throw new Error(
+          "Invalid TRC-20 address. It should start with 'T' and be 34 characters long."
+        );
+      }
+
+      if (tokenType === "BEP-20" && !/^0x[a-fA-F0-9]{40}$/.test(value)) {
+        throw new Error(
+          "Invalid BEP-20 address. It should start with '0x' and be 42 characters long."
+        );
+      }
+
+      return true;
+    }),
+]);
+
+exports.withdrawalValidator = validate([
+  check("amount")
+    .isNumeric()
+    .withMessage("Amount must be a number")
+    .custom((value) => value > 0)
+    .withMessage("Amount must be greater than zero"),
+
+  check("tokenType")
+    .isIn(["TRC-20", "BEP-20"])
+    .withMessage("Address type must be either TRC-20 or BEP-20"),
+
+  check("address").notEmpty().withMessage("Address is required"),
+
+  body("password").notEmpty().withMessage("Password is required"),
+]);
