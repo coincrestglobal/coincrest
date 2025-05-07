@@ -46,4 +46,17 @@ router.get(
   accountController.getWithdrawalHistory
 );
 
+router.post(
+  "/invest",
+  authMiddleware.protect,
+  accountValidator.validateInvestment,
+  accountController.investInPlan
+);
+
+router.get(
+  "/getInvestments",
+  authMiddleware.protect,
+  accountController.getInvestmentHistory
+);
+
 module.exports = router;

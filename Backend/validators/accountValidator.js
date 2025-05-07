@@ -75,3 +75,19 @@ exports.withdrawalValidator = validate([
 
   body("password").notEmpty().withMessage("Password is required"),
 ]);
+
+exports.validateInvestment = validate([
+  body("planId")
+    .notEmpty()
+    .withMessage("Plan ID is required")
+    .isMongoId()
+    .withMessage("Invalid plan ID"),
+
+  body("investedAmount")
+    .notEmpty()
+    .withMessage("Invested amount is required")
+    .isNumeric()
+    .withMessage("Invested amount must be a number")
+    .custom((value) => value > 0)
+    .withMessage("Amount must be greater than 0"),
+]);

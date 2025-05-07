@@ -66,7 +66,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId)
     .select("name email updatedAt role")
     .populate("deposits", "amount tokenType verifiedAt -_id")
-    .populate("withdrawals", "amount tokenType status -_id");
+    .populate("withdrawals", "amount tokenType status createdAt -_id");
 
   if (!user) {
     return next(new AppError("User not found", 404));

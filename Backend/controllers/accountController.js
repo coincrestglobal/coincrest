@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
+const InvestmentPlan = require("../models/investmentPlanmodel");
 const { MIN_WITHDRAWAL_INTERVAL } = require("../config/constants");
 const config = require("../config/config");
 const {
@@ -120,6 +121,7 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   await deposit.save();
 
   user.investableBalance += deposit.amount;
+  user.deposits.push(deposit._id);
   await user.save();
 
   // Step 9: Respond
@@ -139,8 +141,7 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select("amount fromAddress createdAt tokenType -_id")
-      .populate("depositedBy", "name email -_id"),
+      .select("amount createdAt tokenType -_id"),
     Deposit.countDocuments({ depositedBy: userId }),
   ]);
 
@@ -341,5 +342,93 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
       limit,
       totalPages: Math.ceil(total / limit),
     },
+  });
+});
+
+exports.investInPlan = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+  const { planId, investedAmount } = req.body;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const plan = await InvestmentPlan.findById(planId);
+  if (!plan) {
+    return next(new AppError("Investment plan not found", 404));
+  }
+
+  if (investedAmount < plan.minAmount) {
+    return next(
+      new AppError(
+        `Amount to invest must be greater than or equal to the minimum amount (${plan.minAmount})`,
+        400
+      )
+    );
+  }
+
+  // if (amountToInvest < plan.minAmount || amountToInvest > plan.maxAmount) {
+  //   return next(
+  //     new AppError(
+  //       `Invested amount must be between ${plan.minAmount} and ${plan.maxAmount}`,
+  //       400
+  //     )
+  //   );
+  // }
+
+  const investableBalance = Number(user.investableBalance || 0);
+  const withdrawableBalance = Number(user.withdrawableBalance || 0);
+  const investAmount = Number(investedAmount);
+
+  if (investableBalance >= investAmount) {
+    user.investableBalance -= investAmount;
+  } else if (withdrawableBalance >= investAmount) {
+    user.withdrawableBalance -= investAmount;
+  } else {
+    return next(
+      new AppError(
+        `Insufficient balance. You need at least $${investAmount} in your deposit or withdrawal balance.`,
+        400
+      )
+    );
+  }
+
+  user.investments.push({
+    name: plan.name,
+    investedAmount,
+    interestRate: plan.interestRate,
+  });
+
+  const a = await user.save();
+  console.log(a);
+
+  return res.status(201).json({
+    status: "success",
+    message: "Investment successful",
+  });
+});
+
+exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+  const { status } = req.query;
+
+  const user = await User.findById(userId).select("investments").lean();
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  let investments = user.investments;
+  if (status) {
+    investments = investments.filter(
+      (investment) => investment.status === status
+    );
+  }
+
+  res.status(200).json({
+    success: true,
+    total: investments.length,
+    data: investments,
   });
 });

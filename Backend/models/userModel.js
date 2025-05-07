@@ -40,9 +40,43 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    lastWithdrawnAt: { type: Date },
     deposits: [{ type: mongoose.Schema.Types.ObjectId, ref: "Deposit" }],
     withdrawals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Withdrawal" }],
+    lastWithdrawnAt: { type: Date },
+    investments: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        investedAmount: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+        interestRate: {
+          type: Number,
+          required: true,
+        },
+        investDate: {
+          type: Date,
+          default: Date.now,
+        },
+        redeemDate: {
+          type: Date,
+          default: null,
+        },
+        profit: {
+          type: Number,
+          default: 0,
+        },
+        status: {
+          type: String,
+          enum: ["active", "redeemed"],
+          default: "active",
+        },
+      },
+    ],
     emailVerificationToken: String,
     emailVerificationTokenExpires: Date,
     passwordResetToken: String,
