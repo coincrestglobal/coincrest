@@ -59,4 +59,10 @@ router.get(
   accountController.getInvestmentHistory
 );
 
+router.patch(
+  "/redeem/:investmentId",
+  authMiddleware.protect,
+  accountController.redeemInvestment
+);
+
 module.exports = router;

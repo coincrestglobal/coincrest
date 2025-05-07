@@ -1,10 +1,15 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const { hasDaysPassed } = require("../utils/dateUtils");
 const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
 const InvestmentPlan = require("../models/investmentPlanmodel");
-const { MIN_WITHDRAWAL_INTERVAL } = require("../config/constants");
+const Decimal = require("decimal.js");
+const {
+  MIN_WITHDRAWAL_INTERVAL_DAYS,
+  MIN_REDEMPTION_INTERVAL_DAYS,
+} = require("../config/constants");
 const config = require("../config/config");
 const {
   buildTrc20Url,
@@ -271,14 +276,14 @@ exports.withdraw = catchAsync(async (req, res, next) => {
     const timeDifference = new Date() - new Date(lastWithdrawalTime);
     const daysDifference = timeDifference / (1000 * 3600 * 24);
 
-    if (daysDifference < MIN_WITHDRAWAL_INTERVAL) {
+    if (daysDifference < MIN_WITHDRAWAL_INTERVAL_DAYS) {
       const daysLeftToWithdraw = Math.ceil(
-        MIN_WITHDRAWAL_INTERVAL - daysDifference
+        MIN_WITHDRAWAL_INTERVAL_DAYS - daysDifference
       );
 
       return next(
         new AppError(
-          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL} days. Please try again after ${daysLeftToWithdraw} day(s).`,
+          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL_DAYS} days. Please try again after ${daysLeftToWithdraw} day(s).`,
           400
         )
       );
@@ -368,40 +373,38 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
     );
   }
 
-  // if (amountToInvest < plan.minAmount || amountToInvest > plan.maxAmount) {
-  //   return next(
-  //     new AppError(
-  //       `Invested amount must be between ${plan.minAmount} and ${plan.maxAmount}`,
-  //       400
-  //     )
-  //   );
-  // }
+  const investAmount = new Decimal(investedAmount);
+  const investableBalance = new Decimal(user.investableBalance || 0);
+  const withdrawableBalance = new Decimal(user.withdrawableBalance || 0);
 
-  const investableBalance = Number(user.investableBalance || 0);
-  const withdrawableBalance = Number(user.withdrawableBalance || 0);
-  const investAmount = Number(investedAmount);
-
-  if (investableBalance >= investAmount) {
-    user.investableBalance -= investAmount;
-  } else if (withdrawableBalance >= investAmount) {
-    user.withdrawableBalance -= investAmount;
-  } else {
+  if (investableBalance.plus(withdrawableBalance).lt(investAmount)) {
     return next(
       new AppError(
-        `Insufficient balance. You need at least $${investAmount} in your deposit or withdrawal balance.`,
+        `Insufficient balance. You need at least $${investAmount.toFixed(
+          2
+        )} in your deposit or withdrawal balance.`,
         400
       )
     );
   }
 
+  if (investableBalance.gte(investAmount)) {
+    user.investableBalance = investableBalance.minus(investAmount).toNumber();
+  } else {
+    const remainingAmount = investAmount.minus(investableBalance);
+    user.investableBalance = 0;
+    user.withdrawableBalance = withdrawableBalance
+      .minus(remainingAmount)
+      .toNumber();
+  }
+
   user.investments.push({
     name: plan.name,
-    investedAmount,
+    investedAmount: investAmount.toNumber(),
     interestRate: plan.interestRate,
   });
 
-  const a = await user.save();
-  console.log(a);
+  await user.save();
 
   return res.status(201).json({
     status: "success",
@@ -419,16 +422,65 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 404));
   }
 
-  let investments = user.investments;
+  let investments = user.investments || [];
+
   if (status) {
     investments = investments.filter(
       (investment) => investment.status === status
     );
   }
 
+  investments = investments.sort((a, b) => {
+    const aDate =
+      a.status === "redeemed" ? new Date(a.redeemDate) : new Date(a.investDate);
+    const bDate =
+      b.status === "redeemed" ? new Date(b.redeemDate) : new Date(b.investDate);
+
+    return bDate - aDate;
+  });
+
   res.status(200).json({
     success: true,
     total: investments.length,
     data: investments,
+  });
+});
+
+exports.redeemInvestment = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+  const { investmentId } = req.params;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const investment = user.investments.id(investmentId);
+  if (!investment) {
+    return next(new AppError("Investment not found", 404));
+  }
+
+  if (investment.status === "redeemed") {
+    return next(new AppError("Investment is already redeemed", 400));
+  }
+
+  if (!hasDaysPassed(investment.investDate, MIN_REDEMPTION_INTERVAL_DAYS)) {
+    return next(
+      new AppError(
+        `Investment can only be redeemed after ${MIN_REDEMPTION_INTERVAL_DAYS} day(s)`,
+        400
+      )
+    );
+  }
+
+  investment.status = "redeemed";
+  investment.redeemDate = new Date();
+  user.withdrawableBalance += investment.investedAmount + investment.profit;
+
+  await user.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: "Investment redeemed successfully",
   });
 });
