@@ -9,6 +9,7 @@ module.exports = {
       backgroundImage: {
         "custom-gradient":
           "linear-gradient(130deg, rgba(9,28,31,1), rgba(2,10,21,1), rgba(2,11,45,1))",
+        // "linear-gradient(130deg, rgba(108, 11, 169, 0.5), rgba(2,10,21,1), rgba(2,11,45,1))",
       },
       colors: {
         primary: {
@@ -52,6 +53,11 @@ module.exports = {
         inter: ["Inter", "sans-serif"],
         raleway: ["Raleway", "sans-serif"],
         sora: ["Sora", "sans-serif"],
+      },
+
+      gradient: {
+        color1: "var(grad1)",
+        color2: "var(grad2)",
       },
     },
   },

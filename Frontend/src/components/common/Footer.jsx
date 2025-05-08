@@ -70,7 +70,7 @@ function Footer() {
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaEnvelope color="#12a05b" />
+              <FaEnvelope color="var(--text-highlighted)" />
             </a>
             <a
               href="https://t.me/coincrest"
@@ -78,7 +78,7 @@ function Footer() {
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaTelegramPlane color="#12a05b" />
+              <FaTelegramPlane color="var(--text-highlighted)" />
             </a>
             <a
               href="https://twitter.com/coincrest"
@@ -86,7 +86,7 @@ function Footer() {
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaTwitter color="#12a05b" />
+              <FaTwitter color="var(--text-highlighted)" />
             </a>
             <a
               href="https://linkedin.com/company/coincrest"
@@ -94,7 +94,7 @@ function Footer() {
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaLinkedin color="#12a05b" />
+              <FaLinkedin color="var(--text-highlighted)" />
             </a>
           </div>
         </div>

@@ -1,5 +1,5 @@
 export default function GradientBackground({
-  clor1 = "rgba(9, 25, 70, 255)",
+  clor1 = "var(--grad1)",
   colo2 = "rgba(18,49,54,0)",
   size = "30%",
   top = "10%",

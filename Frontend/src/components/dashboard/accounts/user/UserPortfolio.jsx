@@ -29,7 +29,7 @@ function UserPortfolio() {
   };
 
   return (
-    <div className="relative bg-primary-dark max-w-4xl mx-auto border border-[#2d2b42] rounded-md px-16 py-6 space-y-8">
+    <div className="relative bg-primary-dark max-w-4xl mx-auto rounded-md px-16 py-6 space-y-8">
       <div className="flex flex-wrap justify-between gap-4">
         <div className="flex-1 basis-[220px]">
           <StatBox heading={1880000} subHeading="Available Balance" />
@@ -105,7 +105,7 @@ function UserPortfolio() {
           <ConfirmationModal
             text={"Are you sure to want to pay"}
             onConfirm={() => navigate("investments")}
-            onClose={() => setIsModalOpen(false)}
+            onCancel={() => setIsModalOpen(false)}
           />
         )}
       </div>

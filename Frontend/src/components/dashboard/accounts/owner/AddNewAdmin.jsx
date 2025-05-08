@@ -15,12 +15,12 @@ function AddNewAdmin({ onSubmitAdmin }) {
   };
 
   return (
-    <div className="bg-primary-dark h-full flex items-center">
+    <div className="bg-primary-dark h-full flex items-center p-2">
       <div className="bg-primary shadow-lg rounded-2xl p-6 w-full max-w-md mx-auto ">
         <h2 className="text-2xl font-bold text-text-heading mb-6">
           Add New Admin
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
           <div>
             <label className="block text-text-heading mb-1">Name</label>
             <input
@@ -42,18 +42,6 @@ function AddNewAdmin({ onSubmitAdmin }) {
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-text-heading mb-1">Phone Number</label>
-            <input
-              type="password"
-              {...register("password", { required: "Password is required" })}
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-button"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password.message}</p>
             )}
           </div>
 

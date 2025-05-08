@@ -62,24 +62,14 @@ const EarningsPlansPage = () => {
   return (
     <div className="bg-primary mt-20 text-text-heading min-h-screen py-12 px-6 sm:px-16 md:px-32">
       {/* Gradients */}
+      <GradientBackground clor1="var(--grad2)" size="40%" top="9%" left="1%" />
       <GradientBackground
-        clor1="rgba(14,102,64,0.7)"
-        size="40%"
-        top="9%"
-        left="5%"
-      />
-      <GradientBackground
-        clor1="rgba(14,102,64,0.7)"
+        clor1="var(--grad2)"
         size="40%"
         top="48%"
         left="99%"
       />
-      <GradientBackground
-        clor1="rgba(14,102,64,0.7)"
-        size="40%"
-        top="75%"
-        left="2%"
-      />
+      <GradientBackground clor1="var(--grad2)" size="40%" top="75%" left="2%" />
       <GradientBackground size="40%" top="15%" left="95%" />
       <GradientBackground size="40%" top="45%" left="5%" />
       <GradientBackground size="40%" top="78%" left="100%" />

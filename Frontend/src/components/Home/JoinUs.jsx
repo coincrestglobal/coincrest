@@ -23,7 +23,7 @@ function JoinUs() {
     <div className="w-full flex flex-col md:flex-row justify-between items-center px-8 md:px-44 py-16 gap-8">
       <div className="flex flex-col gap-4 order-2 md:order-none">
         <GradientBackground
-          clor1="rgba(14,102,64,0.7)"
+          clor1="var(--grad2)"
           size="40%"
           top="56%"
           left="98%"

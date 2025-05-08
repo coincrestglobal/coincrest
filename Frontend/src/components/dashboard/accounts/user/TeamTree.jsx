@@ -86,14 +86,14 @@ const TeamTree = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={copyToClipboard}
-            className="flex items-center space-x-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition duration-200"
+            className="flex items-center space-x-1 bg-text-highlighted hover:bg-text-linkHover text-white px-3 py-1 rounded transition duration-200"
           >
             <FaCopy />
             <span>{copied ? "Copied!" : "Copy"}</span>
           </button>
           <button
             onClick={shareLink}
-            className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition duration-200"
+            className="flex items-center space-x-1 bg-button hover:bg-button-hover text-white px-3 py-1 rounded transition duration-200"
           >
             <FaShareAlt />
             <span>Invite Link</span>

@@ -58,7 +58,7 @@ const HeroSection = () => {
           {/* Typing Animated Text */}
           {renderStyledText()}
           <GradientBackground
-            clor1="rgba(14,102,64,0.7)"
+            clor1="var(--grad2)"
             size="35%"
             top="5%"
             left="3%"

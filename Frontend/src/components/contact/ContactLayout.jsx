@@ -7,7 +7,7 @@ function ContactLayout() {
       {/* <ReachoutOptions /> */}
       <div className="bg-[var(--primary)] px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-8 rounded-xl shadow-lg overflow-hidden">
         <GradientBackground
-          clor1="rgba(14,102,64,0.8)"
+          clor1="var(--grad2)"
           size="48%"
           top="15%"
           left="3%"

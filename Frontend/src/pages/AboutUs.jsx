@@ -46,19 +46,19 @@ export default function AboutUs() {
       {/* Hero Section */}
       <div className="px-4 sm:px-6 lg:px-8 text-center">
         <GradientBackground
-          clor1="rgba(14,102,64,0.7)"
+          clor1="var(--grad2)"
           size="40%"
           top="10%"
           left="5%"
         />
         <GradientBackground
-          clor1="rgba(14,102,64,0.7)"
+          clor1="var(--grad2)"
           size="40%"
           top="45%"
           left="5%"
         />
         <GradientBackground
-          clor1="rgba(14,102,64,0.7)"
+          clor1="var(--grad2)"
           size="35%"
           top="80%"
           left="5%"
