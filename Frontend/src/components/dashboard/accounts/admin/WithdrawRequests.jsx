@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import WithdrawHeader from "../../../common/DashboardHeader";
 import { FaChevronDown, FaChevronUp, FaCheck } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
+import Pagination from "../../../common/Pagination";
 
 const withdrawalList = [
   {
@@ -14,7 +15,7 @@ const withdrawalList = [
     date: new Date().toLocaleDateString(),
     status: "Pending",
     chain: "TRC20",
-    approvedBy: [], // 0 approvals
+    approvedBy: [],
   },
   {
     id: "wd002",
@@ -26,7 +27,7 @@ const withdrawalList = [
     date: new Date().toLocaleDateString(),
     status: "Pending",
     chain: "TRC20",
-    approvedBy: ["Admin A"], // 1 approval
+    approvedBy: ["Admin A"],
   },
   {
     id: "wd003",
@@ -38,8 +39,9 @@ const withdrawalList = [
     date: new Date().toLocaleDateString(),
     status: "Pending",
     chain: "BEP20",
-    approvedBy: ["Admin A", "Admin B"], // 2 approvals
+    approvedBy: ["Admin A", "Admin B"],
   },
+  // Add more dummy data if needed to test pagination
 ];
 
 function Withdrawals() {
@@ -49,30 +51,41 @@ function Withdrawals() {
     selectedFilters: [],
   });
 
+  const [withdrawals, setWithdrawals] = useState([]);
   const [expandedWithdrawal, setExpandedWithdrawal] = useState(null);
-  const [withdrawals, setWithdrawals] = useState(withdrawalList);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 1;
 
-  const currentAdmin = "Admin A"; // Replace this with real admin name from auth
+  const currentAdmin = "Admin A";
 
+  // Calculate filtered and paginated data
   useEffect(() => {
-    function fetchWithdrawals(query) {
-      return withdrawalList.filter(
-        (item) =>
-          item &&
-          item.name &&
-          item.name.toLowerCase().includes(query.toLowerCase())
+    function fetchWithdrawals(query, page) {
+      const filtered = withdrawalList.filter((item) =>
+        item.name.toLowerCase().includes(query.toLowerCase())
       );
+
+      const sorted = [...filtered].sort((a, b) =>
+        filterState.sortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      );
+
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+
+      return sorted.slice(start, end);
     }
 
-    const filtered = fetchWithdrawals(filterState.searchQuery);
-    setWithdrawals(filtered);
-  }, [filterState.searchQuery, filterState.selectedFilters]);
+    const paginated = fetchWithdrawals(filterState.searchQuery, currentPage);
+    setWithdrawals(paginated);
+  }, [filterState.searchQuery, filterState.sortOrder, currentPage]);
 
-  const sortedWithdrawals = [...withdrawals].sort((a, b) => {
-    return filterState.sortOrder === "asc"
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
-  });
+  const totalFilteredCount = withdrawalList.filter((item) =>
+    item.name.toLowerCase().includes(filterState.searchQuery.toLowerCase())
+  ).length;
+
+  const totalPages = Math.ceil(totalFilteredCount / itemsPerPage);
 
   const handleApprove = (id) => {
     setWithdrawals((prev) =>
@@ -97,7 +110,7 @@ function Withdrawals() {
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <WithdrawHeader
         title="Withdrawals"
-        totalCount={sortedWithdrawals.length}
+        totalCount={totalFilteredCount}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={[
@@ -118,8 +131,8 @@ function Withdrawals() {
         ]}
       />
 
-      {sortedWithdrawals.length > 0 ? (
-        sortedWithdrawals.map((withdrawal) => (
+      {withdrawals.length > 0 ? (
+        withdrawals.map((withdrawal) => (
           <div
             key={withdrawal.id}
             className="bg-primary-light text-text-body rounded-2xl mb-4 p-6 border-t-2 border-button"
@@ -144,7 +157,7 @@ function Withdrawals() {
               </button>
             </div>
 
-            <div className="flex justify-between text-text-body p-3 rounded-md mb-4 shadow-sm bg-primary ">
+            <div className="flex justify-between text-text-body p-3 rounded-md mb-4 shadow-sm bg-primary">
               <p>
                 <strong>Amount:</strong> {withdrawal.amount}{" "}
                 {withdrawal.currency}
@@ -192,6 +205,15 @@ function Withdrawals() {
         ))
       ) : (
         <NoResult />
+      )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import DepositHeader from "../../../common/DashboardHeader";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
-
+import Pagination from "../../../common/Pagination";
+// Sample deposit data
 const depositList = [
   {
     id: "dp001",
@@ -37,6 +38,29 @@ const depositList = [
     chain: "BEP20",
     status: "Confirmed",
   },
+  // Add more items for testing pagination
+  {
+    id: "dp004",
+    name: "David Evans",
+    email: "david.evans@example.com",
+    amount: "100",
+    currency: "USDT",
+    walletAddress: "TX2hjG6yQnDhSP1j7NnJ9kEgExXXXfC2tr",
+    date: new Date().toLocaleDateString(),
+    chain: "TRC20",
+    status: "Pending",
+  },
+  {
+    id: "dp005",
+    name: "Eve Adams",
+    email: "eve.adams@example.com",
+    amount: "250",
+    currency: "USDT",
+    walletAddress: "TX2hjG6yQnDhSP1j7NnJ9kEgExXXXfC2tr",
+    date: new Date().toLocaleDateString(),
+    chain: "BEP20",
+    status: "Confirmed",
+  },
 ];
 
 function Deposits() {
@@ -47,8 +71,12 @@ function Deposits() {
   });
 
   const [expandedDeposit, setExpandedDeposit] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [deposits, setDeposits] = useState(depositList);
 
+  const itemsPerPage = 5; // Number of items per page
+
+  // Filter logic
   useEffect(() => {
     function fetchDeposits(query) {
       return depositList.filter(
@@ -63,14 +91,23 @@ function Deposits() {
     setDeposits(filtered);
   }, [filterState.searchQuery, filterState.selectedFilters]);
 
+  // Sort logic
   const sortedDeposits = [...deposits].sort((a, b) => {
     return filterState.sortOrder === "asc"
       ? a.name.localeCompare(b.name)
       : b.name.localeCompare(a.name);
   });
 
+  // Paginate the sorted deposits
+  const paginatedDeposits = sortedDeposits.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(sortedDeposits.length / itemsPerPage);
+
   return (
-    <div className="px-4 py-2  h-full overflow-y-auto scrollbar-hide bg-primary-dark">
+    <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
       <DepositHeader
         title="Deposits"
         totalCount={sortedDeposits.length}
@@ -94,8 +131,8 @@ function Deposits() {
         ]}
       />
 
-      {sortedDeposits.length > 0 ? (
-        sortedDeposits.map((deposit) => (
+      {paginatedDeposits.length > 0 ? (
+        paginatedDeposits.map((deposit) => (
           <div
             key={deposit.id}
             className="bg-primary-light text-text-body rounded-2xl mb-4 shadow-lg p-6 border-t-2 border-button"
@@ -150,6 +187,15 @@ function Deposits() {
       ) : (
         <NoResult />
       )}
+
+      {/* Pagination Component */}
+      <div className="mt-6">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
     </div>
   );
 }

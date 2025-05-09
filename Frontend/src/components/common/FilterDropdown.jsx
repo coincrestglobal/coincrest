@@ -152,9 +152,7 @@ function FilterDropdown({
                               ? "font-bold text-[#0d3960] bg-[#104851]"
                               : ""
                           }`}
-                          onClick={() =>
-                            handleSelect(group.label, option.value)
-                          }
+                          onClick={() => handleSelect(group.id, option.value)}
                         >
                           {option.label}
                           {selectedFilters[group.label] === option.value && (

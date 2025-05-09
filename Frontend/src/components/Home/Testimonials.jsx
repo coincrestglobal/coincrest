@@ -114,7 +114,7 @@ export default function TestimonialSlider() {
           className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition"
           onClick={() => setReviewModal(true)}
         >
-          {user.review ? "Edit Review" : "Add Review"}
+          {user.review.rating > 0 ? "Edit Review" : "Add Review"}
         </button>
       </div>
 

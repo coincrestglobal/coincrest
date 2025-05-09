@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FeedbackHeader from "../../../common/DashboardHeader";
 import { FaChevronDown, FaChevronUp, FaPen, FaTimes } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
+import Pagination from "../../../common/Pagination";
 
 const feedbackList = [
   {
@@ -11,7 +12,7 @@ const feedbackList = [
     subject: "Staking Delay - Not Reflected",
     message:
       "I staked 500 USDT but it's not showing up in my dashboard. Please assist.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2024-06-12").toLocaleDateString(),
     status: "Pending",
   },
   {
@@ -21,7 +22,7 @@ const feedbackList = [
     subject: "Withdrawal Request Stuck",
     message:
       "My withdrawal request has been pending for over 24 hours. Kindly check.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2023-11-03").toLocaleDateString(),
     status: "Resolved",
   },
   {
@@ -31,7 +32,7 @@ const feedbackList = [
     subject: "Reward Calculation Incorrect",
     message:
       "My weekly rewards seem lower than expected. Can someone review this?",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2025-02-19").toLocaleDateString(),
     status: "Pending",
   },
   {
@@ -41,7 +42,7 @@ const feedbackList = [
     subject: "UI Bug - Dashboard Crashing",
     message:
       "Whenever I visit the staking section, the app crashes. Kindly fix it.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2023-08-21").toLocaleDateString(),
     status: "Pending",
   },
   {
@@ -50,7 +51,7 @@ const feedbackList = [
     email: "eva.wallet@example.com",
     subject: "Feedback - Smooth Onboarding",
     message: "The staking flow was super smooth. Kudos to the team!",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2024-01-07").toLocaleDateString(),
     status: "Resolved",
   },
   {
@@ -60,7 +61,7 @@ const feedbackList = [
     subject: "Suggestion - Add More Coins",
     message:
       "Can you support staking for ETH or BNB in future? That would be great!",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2025-03-03").toLocaleDateString(),
     status: "Pending",
   },
   {
@@ -70,7 +71,7 @@ const feedbackList = [
     subject: "Notification Bug",
     message:
       "Not getting any notifications for reward credits. Please check system logs.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2023-12-28").toLocaleDateString(),
     status: "Resolved",
   },
   {
@@ -80,7 +81,7 @@ const feedbackList = [
     subject: "UI Improvement - Better History View",
     message:
       "It would be helpful to view staking and reward history more clearly.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2024-10-14").toLocaleDateString(),
     status: "Pending",
   },
   {
@@ -90,7 +91,7 @@ const feedbackList = [
     subject: "Login Issue - OTP Delay",
     message:
       "Login OTPs are taking too long to arrive. Delays cause frustration.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2024-04-19").toLocaleDateString(),
     status: "Resolved",
   },
   {
@@ -99,10 +100,11 @@ const feedbackList = [
     email: "jake.token@example.com",
     subject: "Feature Request - Multi-Account View",
     message: "I’d love to manage multiple staking accounts under one login.",
-    date: new Date().toLocaleDateString(),
+    date: new Date("2023-09-09").toLocaleDateString(),
     status: "Pending",
   },
 ];
+
 function Feedbacks() {
   const [filterState, setFilterState] = useState({
     searchQuery: "",
@@ -113,22 +115,50 @@ function Feedbacks() {
   const [expandedFeedback, setExpandedFeedback] = useState(null);
   const [replyingFeedback, setReplyingFeedback] = useState(null);
   const [replyMessage, setReplyMessage] = useState("");
-
   const [feedbacks, setFeedbacks] = useState(feedbackList);
 
-  // const [users, setUsers] = useState(usersData);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Adjust as needed
 
   useEffect(() => {
-    function fetchFeedbacks(query) {
-      return feedbackList.filter(
-        (user) =>
-          user &&
-          user.name &&
-          user.name.toLowerCase().includes(query.toLowerCase())
-      );
+    function fetchFeedbacks(query, filters) {
+      let filtered = feedbackList;
+
+      // Search filter
+      if (query) {
+        filtered = filtered.filter(
+          !query ||
+            user.name.toLowerCase().includes(query.toLowerCase()) ||
+            user.email.toLowerCase().includes(query.toLowerCase())
+        );
+      }
+
+      if (filters.status) {
+        filtered = filtered.filter(
+          (item) =>
+            (filters.status === "pendingReview" && item.status === "Pending") ||
+            (filters.status === "resolved" && item.status === "Resolved")
+        );
+      }
+
+      // Date interval filters
+      if (filters.startDate) {
+        const start = new Date(filters.startDate);
+        filtered = filtered.filter((item) => new Date(item.date) >= start);
+      }
+
+      if (filters.endDate) {
+        const end = new Date(filters.endDate);
+        filtered = filtered.filter((item) => new Date(item.date) <= end);
+      }
+
+      return filtered;
     }
 
-    const filteredFeedbacks = fetchFeedbacks(filterState.searchQuery);
+    const filteredFeedbacks = fetchFeedbacks(
+      filterState.searchQuery,
+      filterState.selectedFilters
+    );
     setFeedbacks(filteredFeedbacks);
   }, [filterState.searchQuery, filterState.selectedFilters]);
 
@@ -138,8 +168,14 @@ function Feedbacks() {
       : b.name.localeCompare(a.name);
   });
 
+  const paginatedDeposits = sortedFeedbacks.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(sortedFeedbacks.length / itemsPerPage);
+
   const handleReply = (id) => {
-    // console.log("Reply sent:", replyMessage);
     setFeedbacks((feedbacks) =>
       feedbacks.map((feedback) =>
         feedback.id === id ? { ...feedback, status: "Resolved" } : feedback
@@ -153,23 +189,21 @@ function Feedbacks() {
     <div className=" p-2 bg-primary-light h-full overflow-y-auto scrollbar-hide">
       <FeedbackHeader
         title="Feedbacks"
-        totalCount={sortedFeedbacks.length}
+        totalCount={paginatedDeposits.length}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={[
           {
             label: "Status",
+            id: "status",
             children: [
-              {
-                label: "Pending",
-                value: "pendingReview",
-              },
+              { label: "Pending", value: "pendingReview" },
               { label: "Resolved", value: "resolved" },
             ],
           },
-
           {
             label: "Date Interval",
+            id: "date-interval",
             children: [
               { label: "Start Date", value: "startDate", type: "date" },
               { label: "End Date", value: "endDate", type: "date" },
@@ -177,9 +211,9 @@ function Feedbacks() {
           },
         ]}
       />
-      {sortedFeedbacks.length > 0 ? (
+      {paginatedDeposits.length > 0 ? (
         <>
-          {sortedFeedbacks.map((feedback) => (
+          {paginatedDeposits.map((feedback) => (
             <div
               key={feedback.id}
               className="bg-primary rounded-2xl mb-2 shadow-lg p-6 border-t-2 border-button"
@@ -214,9 +248,12 @@ function Feedbacks() {
               </div>
 
               {expandedFeedback === feedback.id && (
-                <div className="grid grid-cols-2 gap-4 p-4 rounded-md shadow-sm">
+                <div className="flex flex-col p-4 rounded-md shadow-sm">
                   <p className="font-normal text-text-heading">
-                    {feedback.message}
+                    <strong>Message:</strong> {feedback.message}
+                  </p>
+                  <p className="font-normal text-text-heading">
+                    <strong>Date:</strong> {feedback.date}
                   </p>
                 </div>
               )}
@@ -238,7 +275,7 @@ function Feedbacks() {
                       onChange={(e) => setReplyMessage(e.target.value)}
                       rows="3"
                       placeholder="Enter your reply here..."
-                      className="w-full p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-button"
+                      className="w-full bg-primary text-text-heading p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-button"
                     />
                     <button
                       onClick={() => handleReply(feedback.id)}
@@ -265,6 +302,11 @@ function Feedbacks() {
               )}
             </div>
           ))}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </>
       ) : (
         <NoResult />
