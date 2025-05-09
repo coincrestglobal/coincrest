@@ -1,5 +1,4 @@
 import useSafeNavigate from "../../utils/useSafeNavigate";
-import { useState } from "react";
 import RatingStars from "../common/RatingStars";
 import Pagination from "../common/Pagination";
 
@@ -24,16 +23,15 @@ function getStatusStyle(status) {
   }
 }
 
-export default function Table({ headers, data, itemsPerPage = 5 }) {
+export default function Table({
+  headers,
+  data,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+  itemsPerPage = 5,
+}) {
   const navigate = useSafeNavigate();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-
-  const currentRows = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
@@ -41,11 +39,13 @@ export default function Table({ headers, data, itemsPerPage = 5 }) {
     }
   };
 
+  const getKeyFromLabel = (label) =>
+    label.toLowerCase().replace(/\s+/g, "").replace(/\./g, "");
+
   return (
     <div className="w-full pb-4">
-      {/* Scrollable Table Wrapper */}
       <div className="overflow-x-auto">
-        <div className="min-w-max space-y-1 ">
+        <div className="min-w-max space-y-1">
           {/* Header */}
           <div
             className="grid bg-primary-light text-text-heading font-semibold rounded-md px-3 py-1"
@@ -64,7 +64,7 @@ export default function Table({ headers, data, itemsPerPage = 5 }) {
 
           {/* Body */}
           <div className="space-y-0.5">
-            {currentRows.map((item, idx) => (
+            {data.map((item, idx) => (
               <div
                 key={idx}
                 onClick={() => navigate(item.id)}
@@ -75,34 +75,34 @@ export default function Table({ headers, data, itemsPerPage = 5 }) {
                     .join(" "),
                 }}
               >
-                {Object.values(item).map((value, i) => (
-                  <div key={i} className="px-2 py-1.5">
-                    {i === 0 ? ( // First column -> Serial Number (S. No.)
-                      <span className="block font-semibold">
-                        {(currentPage - 1) * itemsPerPage + idx + 1}
-                      </span>
-                    ) : headers[i].label.toLowerCase() === "status" ? ( // Status column with styles
-                      <span
-                        className={`text-sm rounded-md border px-2 py-1 ${getStatusStyle(
-                          value
-                        )}`}
-                      >
-                        {value}
-                      </span>
-                    ) : headers[i].label.toLowerCase() === "rating" ? ( // Rating column
-                      <RatingStars Review_Count={value} />
-                    ) : (
-                      <span className="block">{value}</span> // Default case
-                    )}
-                  </div>
-                ))}
+                {headers.map((header, i) => {
+                  const key = getKeyFromLabel(header.label);
+                  const value = item[key];
+
+                  return (
+                    <div key={i} className="px-2 py-1.5">
+                      {key === "status" ? (
+                        <span
+                          className={`text-sm rounded-md border px-2 py-1 ${getStatusStyle(
+                            value
+                          )}`}
+                        >
+                          {value}
+                        </span>
+                      ) : key === "rating" ? (
+                        <RatingStars Review_Count={value} />
+                      ) : (
+                        <span className="block">{value}</span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Pagination (Outside Scrollable Area) */}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}

@@ -44,10 +44,6 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     User.countDocuments(filter),
   ]);
 
-  if (!users.length) {
-    return next(new AppError("No users found.", 404));
-  }
-
   res.status(200).json({
     status: "success",
     results: users.length,
