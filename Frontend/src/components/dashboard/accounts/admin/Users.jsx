@@ -34,7 +34,7 @@ function Users() {
         const { searchQuery, selectedFilters } = filterState;
 
         const params = new URLSearchParams();
-        if (searchQuery) params.append("searchQuery", searchQuery);
+        if (searchQuery) params.append("search", searchQuery);
         if (selectedFilters.length > 0)
           params.append("selectedFilters", selectedFilters.join(","));
         params.append("page", currentPage);
