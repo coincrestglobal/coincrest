@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get(
   "/getUsers",
-  authMiddleware.protect,
+  // authMiddleware.protect,
   queryParamsValidator,
   paginationValidator,
   managementController.getUsers
