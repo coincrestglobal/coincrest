@@ -3,6 +3,7 @@ import FeedbackHeader from "../../../common/DashboardHeader";
 import { FaChevronDown, FaChevronUp, FaPen, FaTimes } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
 import Pagination from "../../../common/Pagination";
+import { toast } from "react-toastify";
 
 const feedbackList = [
   {
@@ -127,7 +128,8 @@ function Feedbacks() {
       // Search filter
       if (query) {
         filtered = filtered.filter(
-          !query ||
+          (user) =>
+            !query ||
             user.name.toLowerCase().includes(query.toLowerCase()) ||
             user.email.toLowerCase().includes(query.toLowerCase())
         );
@@ -183,6 +185,11 @@ function Feedbacks() {
     );
     setReplyingFeedback(null);
     setReplyMessage("");
+
+    toast.success("Operation Successful", {
+      className: "custom-toast",
+      progressClassName: "Toastify__progress-bar",
+    });
   };
 
   return (

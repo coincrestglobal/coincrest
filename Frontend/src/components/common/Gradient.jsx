@@ -15,8 +15,8 @@ export default function GradientBackground({
         top: top,
         left: left,
         transform: "translate(-50%, -50%)",
-        opacity: 0.8,
-        filter: "blur(120px)",
+        // opacity: 0.8,
+        filter: "blur(160px)",
       }}
     ></div>
   );

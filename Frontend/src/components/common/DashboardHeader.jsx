@@ -98,7 +98,7 @@ function DashboardHeader({
             options={filterOptions}
             selectedFilters={filterState.selectedFilters}
             setSelectedFilters={setFilterState}
-            style={{ width: "w-42", maxHeight: "max-h-64" }}
+            style={{ width: "w-48", maxHeight: "max-h-64" }}
           />
         )}
       </div>
