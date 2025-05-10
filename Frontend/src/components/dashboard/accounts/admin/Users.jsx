@@ -73,11 +73,13 @@ function Users() {
       if (key === "sno") {
         row[key] = (currentPage - 1) * 9 + idx + 1;
       } else if (key === "lastvisit") {
-        row[key] = new Date(user.updatedAt).toLocaleString();
+        row[key] = new Date(user.updatedAt).toDateString();
       } else {
         row[key] = user[key] || "-";
       }
     });
+
+    row._id = user._id;
     return row;
   });
 
@@ -96,7 +98,6 @@ function Users() {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
-          itemsPerPage={9}
         />
       ) : (
         <NoResult />

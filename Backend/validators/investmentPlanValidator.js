@@ -38,27 +38,27 @@ exports.validateUpdateInvestmentPlan = validate([
     .isNumeric()
     .withMessage("Minimum amount must be a number"),
 
-  // body("maxAmount")
-  //   .optional()
-  //   .isNumeric()
-  //   .withMessage("Maximum amount must be a number"),
+  body("maxAmount")
+    .optional()
+    .isNumeric()
+    .withMessage("Maximum amount must be a number"),
 
   body("interestRate")
     .optional()
     .isFloat({ min: 0, max: 100 })
     .withMessage("Interest rate must be a number between 0 and 100"),
 
-  // body().custom((body) => {
-  //   if (body.minAmount && !body.maxAmount) {
-  //     throw new Error(
-  //       "Maximum amount is required if minimum amount is provided"
-  //     );
-  //   }
+  body().custom((body) => {
+    if (body.minAmount && !body.maxAmount) {
+      throw new Error(
+        "Maximum amount is required if minimum amount is provided"
+      );
+    }
 
-  //   if (body.minAmount && body.maxAmount && body.minAmount >= body.maxAmount) {
-  //     throw new Error("Minimum amount must be less than maximum amount");
-  //   }
+    if (body.minAmount && body.maxAmount && body.minAmount >= body.maxAmount) {
+      throw new Error("Minimum amount must be less than maximum amount");
+    }
 
-  //   return true;
-  // }),
+    return true;
+  }),
 ]);

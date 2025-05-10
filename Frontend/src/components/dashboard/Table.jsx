@@ -28,7 +28,6 @@ export default function Table({
   currentPage,
   setCurrentPage,
   totalPages,
-  itemsPerPage = 5,
 }) {
   const navigate = useSafeNavigate();
 
@@ -66,7 +65,7 @@ export default function Table({
             {data.map((item, idx) => (
               <div
                 key={idx}
-                onClick={() => navigate(item.id)}
+                onClick={() => navigate(item._id)}
                 className="grid py-1 bg-primary-light text-text-heading shadow rounded-md hover:bg-secondary-light cursor-pointer transition px-3"
                 style={{
                   gridTemplateColumns: headers

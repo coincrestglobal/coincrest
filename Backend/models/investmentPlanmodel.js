@@ -11,10 +11,10 @@ const investmentPlanSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    // maxAmount: {
-    //   type: Number,
-    //   required: true,
-    // },
+    maxAmount: {
+      type: Number,
+      required: true,
+    },
     interestRate: {
       type: Number,
       required: true,

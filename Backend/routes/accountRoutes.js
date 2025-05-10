@@ -48,7 +48,7 @@ router.get(
 
 router.post(
   "/invest",
-  authMiddleware.protect,
+  // authMiddleware.protect,
   accountValidator.validateInvestment,
   accountController.investInPlan
 );
