@@ -351,9 +351,10 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
 });
 
 exports.investInPlan = catchAsync(async (req, res, next) => {
-  const { userId } = req.user;
+  // const { userId } = req.user;
   const { planId, investedAmount } = req.body;
 
+  const userId = "681a62594f02297e3323ca25";
   const user = await User.findById(userId);
   if (!user) {
     return next(new AppError("User not found", 404));

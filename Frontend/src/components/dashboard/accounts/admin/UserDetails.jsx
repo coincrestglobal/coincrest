@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { X, Mail } from "lucide-react"; // Importing the mail icon
+import axios from "axios";
 
 const UserDetails = () => {
   const { id } = useParams();
@@ -10,6 +11,19 @@ const UserDetails = () => {
   const [mailSubject, setMailSubject] = useState("");
   const [mailBody, setMailBody] = useState("");
   const [suspendMessage, setSuspendMessage] = useState(""); // Message for suspension reason
+
+  const fetchUser = async (id) => {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/v1/management/getUser/${id}`
+    );
+    const { user } = data.data;
+
+    console.log(user);
+  };
+
+  useEffect(() => {
+    fetchUser(id);
+  }, []);
 
   const user = {
     id: "user123",
