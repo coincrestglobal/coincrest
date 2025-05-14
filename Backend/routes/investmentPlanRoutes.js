@@ -5,17 +5,21 @@ const investmentPlanController = require("../controllers//investmentPlanControll
 
 const router = express.Router();
 
-router.get("/", authMiddleware.protect, investmentPlanController.getPlans);
+router.get(
+  "/",
+  // authMiddleware.protect,
+  investmentPlanController.getPlans
+);
 
 router.post(
   "/create",
-  authMiddleware.protect,
+  // authMiddleware.protect,
   investmentPlanValidator.validateNewInvestmentPlan,
   investmentPlanController.createInvestmentPlan
 );
 
 router.patch(
-  "/update/:userId",
+  "/update/:planId",
   authMiddleware.protect,
   investmentPlanValidator.validateUpdateInvestmentPlan,
   investmentPlanController.updateInvestmentPlan

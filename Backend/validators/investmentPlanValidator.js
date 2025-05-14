@@ -1,12 +1,25 @@
-const { body, check } = require("express-validator");
+const { body } = require("express-validator");
 const validate = require("../middlewares/handleValidation");
 
 exports.validateNewInvestmentPlan = validate([
-  body("name")
+  body("level")
     .notEmpty()
-    .withMessage("Name is required")
+    .withMessage("Level is required")
+    .isInt({ min: 1 })
+    .withMessage("Level must be a positive integer"),
+
+  body("name")
+    .optional()
     .isLength({ min: 3 })
-    .withMessage("Name must be at least 3 characters long"),
+    .withMessage("Name must be at least 3 characters long")
+    .customSanitizer((value) =>
+      value
+        .replace(/\s*-\s*/g, "-") // remove spaces around hyphens
+        .replace(/\s+/g, " ") // normalize other spaces
+        .trim()
+    )
+    .matches(/^[A-Za-z\s-]+$/)
+    .withMessage("Name must contain only letters, spaces, or hyphens"),
 
   body("minAmount")
     .isNumeric()
@@ -31,7 +44,15 @@ exports.validateUpdateInvestmentPlan = validate([
   body("name")
     .optional()
     .isLength({ min: 3 })
-    .withMessage("Name must be at least 3 characters long"),
+    .withMessage("Name must be at least 3 characters long")
+    .customSanitizer((value) =>
+      value
+        .replace(/\s*-\s*/g, "-") // remove spaces around hyphens
+        .replace(/\s+/g, " ") // normalize other spaces
+        .trim()
+    )
+    .matches(/^[A-Za-z\s-]+$/)
+    .withMessage("Name must contain only letters, spaces, or hyphens"),
 
   body("minAmount")
     .optional()
