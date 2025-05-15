@@ -1,47 +1,46 @@
-// middleware/authMiddleware.js
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const config = require("../config/config");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
-// Middleware to protect routes
-exports.protect = async (req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-
-      const decoded = jwt.verify(token, config.jwtSecret);
-
-      const user = await User.findById(decoded.id).select("-password");
-
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-
-      req.user = { userId: decoded.id };
-
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: "Not authorized, login again" });
-    }
+    token = req.headers.authorization.split(" ")[1];
   }
 
   if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
+    return next(new AppError("Access denied. No token provided.", 401));
   }
-};
+
+  const decoded = jwt.verify(token, config.jwtSecret);
+
+  const user = await User.findById(decoded.id).select("-password");
+
+  if (!user) {
+    return next(new AppError("Access denied. User account not found.", 401));
+  }
+
+  req.user = { userId: decoded.id, role: user.role };
+
+  next();
+});
 
 // Middleware to authorize specific roles
 exports.authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: `User role (${req.user.role}) is not authorized to access this route`,
-      });
+      return next(
+        new AppError(
+          `Access denied. Your role (${req.user.role}) does not have permission to access this resource.`,
+          403
+        )
+      );
     }
     next();
   };

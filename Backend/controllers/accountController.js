@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { hasDaysPassed } = require("../utils/dateUtils");
+const { checkDaysPassed } = require("../utils/dateUtils");
 const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
@@ -25,7 +25,7 @@ exports.getBalance = catchAsync(async (req, res, next) => {
   );
 
   if (!user) {
-    return next(new AppError("User not found.", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   res.status(200).json({
@@ -44,7 +44,7 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   // Step 1: Find user
   const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError("User not found.", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   // Step 2: Verify password
@@ -173,7 +173,7 @@ exports.upsertWithdrawalAddress = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const addressInUse = await User.findOne({
@@ -218,7 +218,7 @@ exports.getWithdrawalAddresses = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId).select("withdrawalAddresses");
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const sanitizedAddresses = user.withdrawalAddresses.map((addr) => ({
@@ -239,7 +239,7 @@ exports.withdraw = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId); // Find the user
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   // Step 2: Verify password (optional, if required)
@@ -273,33 +273,28 @@ exports.withdraw = catchAsync(async (req, res, next) => {
   const lastWithdrawalTime = user.lastWithdrawnAt;
 
   if (lastWithdrawalTime) {
-    const timeDifference = new Date() - new Date(lastWithdrawalTime);
-    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    const { allowed, daysLeft } = checkDaysPassed(
+      lastWithdrawalTime,
+      MIN_WITHDRAWAL_INTERVAL_DAYS
+    );
 
-    if (daysDifference < MIN_WITHDRAWAL_INTERVAL_DAYS) {
-      const daysLeftToWithdraw = Math.ceil(
-        MIN_WITHDRAWAL_INTERVAL_DAYS - daysDifference
-      );
-
+    if (!allowed) {
       return next(
         new AppError(
-          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL_DAYS} days. Please try again after ${daysLeftToWithdraw} day(s).`,
+          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL_DAYS} days. Please try again after ${daysLeft} day(s).`,
           400
         )
       );
     }
   }
 
-  // Step 6: Create a withdrawal record (optional if needed for transaction history)
+  // Step 6: Create a withdrawal record
   const withdrawal = new Withdrawal({
     initiatedBy: userId,
     amount,
-    txId: "",
-    fromAddress: config.tronWalletAddress,
     toAddress: address,
     tokenType,
     status: "pending",
-    requestedAt: new Date(),
   });
 
   await withdrawal.save(); // Save withdrawal request
@@ -356,8 +351,9 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
   const userId = "681a62594f02297e3323ca25";
   const user = await User.findById(userId);
+
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const plan = await InvestmentPlan.findById(planId);
@@ -420,7 +416,7 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId).select("investments").lean();
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   let investments = user.investments || [];
@@ -452,8 +448,9 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
   const { investmentId } = req.params;
 
   const user = await User.findById(userId);
+
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const investment = user.investments.id(investmentId);
@@ -465,10 +462,15 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
     return next(new AppError("Investment is already redeemed", 400));
   }
 
-  if (!hasDaysPassed(investment.investDate, MIN_REDEMPTION_INTERVAL_DAYS)) {
+  const { allowed, daysLeft } = checkDaysPassed(
+    investment.investDate,
+    MIN_REDEMPTION_INTERVAL_DAYS
+  );
+
+  if (!allowed) {
     return next(
       new AppError(
-        `Investment can only be redeemed after ${MIN_REDEMPTION_INTERVAL_DAYS} day(s)`,
+        `You can redeem this investment after ${MIN_REDEMPTION_INTERVAL_DAYS} day(s). Please try again in ${daysLeft} day(s).`,
         400
       )
     );

@@ -13,6 +13,11 @@ const validateQueryParams = validate([
     .isIn(["user", "admin"])
     .withMessage('Invalid role. Allowed roles are "user" and "admin".'),
 
+  query("sort")
+    .optional()
+    .isIn(["asc", "desc"])
+    .withMessage("Sort must be either 'asc' or 'desc'"),
+
   query("status")
     .optional()
     .isIn(["pending", "processing", "completed", "failed"])

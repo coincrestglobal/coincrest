@@ -5,7 +5,7 @@ const Withdrawal = require("../models/withdrawalModel");
 const Deposit = require("../models/depositModel");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
-  const { search, role, startDate, endDate } = req.query;
+  const { search, role, sort, startDate, endDate } = req.query;
 
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -35,9 +35,11 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     };
   }
 
+  const sortOption = { createdAt: sort === "desc" ? -1 : 1 };
+
   const [users, total] = await Promise.all([
     User.find(filter)
-      .sort({ createdAt: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit)
       .select("name email updatedAt role"),
