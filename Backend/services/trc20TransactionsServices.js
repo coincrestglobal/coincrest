@@ -3,6 +3,7 @@ const delay = require("../utils/delay");
 const config = require("../config/config");
 const Deposit = require("../models/depositModel");
 const { updateSyncState, getSyncState } = require("./syncStates");
+const Decimal = require("decimal.js");
 
 // Static Wallet & Contract Info
 const myWalletAddress = "TDqSquXBgUCLYvYC4XZgrprLK589dkhSCf";
@@ -76,7 +77,9 @@ function filterTrc20Deposits(transactions) {
         tx.to.toLowerCase() === myWalletAddress.toLowerCase()
     )
     .map((tx) => ({
-      amount: parseInt(tx.value) / Math.pow(10, tx.token_info.decimals),
+      amount: new Decimal(tx.value)
+        .dividedBy(new Decimal(10).pow(new Decimal(tx.token_info.decimals)))
+        .toNumber(),
       txId: tx.transaction_id,
       fromAddress: tx.from,
       toAddress: tx.to,

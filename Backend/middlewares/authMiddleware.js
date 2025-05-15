@@ -15,7 +15,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new AppError("Access denied. No token provided.", 401));
+    return next(
+      new AppError("You are not logged in. Please log in to continue.", 401)
+    );
   }
 
   const decoded = jwt.verify(token, config.jwtSecret);
@@ -23,7 +25,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   const user = await User.findById(decoded.id).select("-password");
 
   if (!user) {
-    return next(new AppError("Access denied. User account not found.", 401));
+    return next(
+      new AppError("Your session has expired. Please log in again.", 401)
+    );
   }
 
   req.user = { userId: decoded.id, role: user.role };

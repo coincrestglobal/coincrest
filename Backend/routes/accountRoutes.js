@@ -1,6 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
 const accountValidator = require("../validators/accountValidator");
+const queryParamsValidator = require("../validators/queryParamsValidator");
 const accountController = require("../controllers/accountController");
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.post(
 router.get(
   "/deposits",
   authMiddleware.protect,
+  queryParamsValidator,
   accountController.getDepositHistory
 );
 
@@ -43,12 +45,13 @@ router.post(
 router.get(
   "/withdraw",
   authMiddleware.protect,
+  queryParamsValidator,
   accountController.getWithdrawalHistory
 );
 
 router.post(
   "/invest",
-  // authMiddleware.protect,
+  authMiddleware.protect,
   accountValidator.validateInvestment,
   accountController.investInPlan
 );
@@ -56,6 +59,7 @@ router.post(
 router.get(
   "/getInvestments",
   authMiddleware.protect,
+  queryParamsValidator,
   accountController.getInvestmentHistory
 );
 

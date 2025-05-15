@@ -1,7 +1,7 @@
 const { query } = require("express-validator");
 const validate = require("../middlewares/handleValidation");
 
-const paginationValidator = validate([
+module.exports = validate([
   query("page")
     .optional()
     .isInt({ min: 1 })
@@ -12,5 +12,3 @@ const paginationValidator = validate([
     .isInt({ min: 1 })
     .withMessage("Limit must be a positive integer"),
 ]);
-
-module.exports = paginationValidator;

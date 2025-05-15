@@ -1,6 +1,6 @@
-const { body } = require("express-validator");
+const { body, check } = require("express-validator");
 const validate = require("../middlewares/handleValidation");
-const { check } = require("express-validator");
+const { MIN_WITHDRAWAL_AMOUNT } = require("../config/constants");
 
 exports.validateVerifyDeposit = validate([
   body("tokenType")
@@ -64,8 +64,14 @@ exports.withdrawalValidator = validate([
   check("amount")
     .isNumeric()
     .withMessage("Amount must be a number")
-    .custom((value) => value > 0)
-    .withMessage("Amount must be greater than zero"),
+    .custom((value) => {
+      if (Number(value) < MIN_WITHDRAWAL_AMOUNT) {
+        throw new Error(
+          `Minimum withdrawal amount is ${MIN_WITHDRAWAL_AMOUNT}`
+        );
+      }
+      return true;
+    }),
 
   check("tokenType")
     .isIn(["TRC-20", "BEP-20"])

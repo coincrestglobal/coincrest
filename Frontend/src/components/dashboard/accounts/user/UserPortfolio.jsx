@@ -16,6 +16,7 @@ function UserPortfolio() {
       try {
         const res = await fetch("http://localhost:5000/api/v1/plans");
         const data = await res.json();
+
         if (data.status === "success") {
           const sorted = data.data.plans.sort((a, b) => a.level - b.level);
           setLevels(sorted);
@@ -67,7 +68,7 @@ function UserPortfolio() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            planId: selectedLevel._id, // Now using correct _id from DB
+            planId: selectedLevel._id,
             investedAmount: amount,
           }),
         });
@@ -77,7 +78,7 @@ function UserPortfolio() {
         if (response.status === "success") {
           navigate("investments");
         } else {
-          alert("Investment creation failed.");
+          alert(response.message);
         }
       } catch (err) {
         console.error("Investment error", err);

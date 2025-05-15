@@ -1,7 +1,7 @@
 const { query } = require("express-validator");
 const validate = require("../middlewares/handleValidation");
 
-const validateQueryParams = validate([
+module.exports = validate([
   query("search")
     .optional()
     .isString()
@@ -20,7 +20,14 @@ const validateQueryParams = validate([
 
   query("status")
     .optional()
-    .isIn(["pending", "processing", "completed", "failed"])
+    .isIn([
+      "pending",
+      "processing",
+      "completed",
+      "failed",
+      "active",
+      "redeemed",
+    ])
     .withMessage("Please select a valid status."),
 
   query("tokenType")
@@ -49,5 +56,3 @@ const validateQueryParams = validate([
     return true;
   }),
 ]);
-
-module.exports = validateQueryParams;
