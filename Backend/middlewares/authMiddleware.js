@@ -22,11 +22,11 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   const decoded = jwt.verify(token, config.jwtSecret);
 
-  const user = await User.findById(decoded.id).select("-password");
+  const user = await User.findById(decoded.id).select("role isDeleted");
 
-  if (!user) {
+  if (!user || user.isDeleted) {
     return next(
-      new AppError("Your session has expired. Please log in again.", 401)
+      new AppError("Your session is no longer valid. Please log in again.", 401)
     );
   }
 
@@ -35,7 +35,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-// Middleware to authorize specific roles
 exports.authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

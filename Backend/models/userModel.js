@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     investableBalance: { type: Number, default: 0 },
     withdrawableBalance: { type: Number, default: 0 },
     withdrawalAddresses: [
@@ -77,6 +81,10 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    priority: {
+      type: Boolean,
+      default: false,
+    },
     emailVerificationToken: String,
     emailVerificationTokenExpires: Date,
     passwordResetToken: String,

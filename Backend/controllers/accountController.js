@@ -159,13 +159,11 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: deposits,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
+    page,
+    results: deposits.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { deposits },
   });
 });
 
@@ -231,7 +229,7 @@ exports.getWithdrawalAddresses = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    withdrawalAddresses: sanitizedAddresses,
+    data: { withdrawalAddresses: sanitizedAddresses },
   });
 });
 
@@ -316,15 +314,23 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 5;
   const skip = (page - 1) * limit;
 
+  const filter = {};
+
+  filter.initiatedBy = userId;
+
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+
   const sortOrder = req.query.sort === "desc" ? -1 : 1;
 
   const [withdrawals, total] = await Promise.all([
-    Withdrawal.find({ initiatedBy: userId }) // or `userId` if that's the field
+    Withdrawal.find(filter)
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("amount createdAt status requestedAt -_id"),
-    Withdrawal.countDocuments({ initiatedBy: userId }),
+      .select("amount createdAt status _id txId"),
+    Withdrawal.countDocuments(filter),
   ]);
 
   if (page > 1 && withdrawals.length === 0) {
@@ -333,13 +339,11 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: withdrawals,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
+    page,
+    results: withdrawals.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { withdrawals },
   });
 });
 
@@ -411,6 +415,9 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
 exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+
   const { status, sort } = req.query;
 
   const user = await User.findById(userId).select("investments").lean();
@@ -436,10 +443,23 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     return sort === "desc" ? bDate - aDate : aDate - bDate;
   });
 
+  if (page > 1 && investments.length === 0) {
+    return next(new AppError("No more investments history found.", 404));
+  }
+
+  // Pagination
+  const total = investments.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  investments = investments.slice(startIndex, endIndex);
+
   res.status(200).json({
-    success: true,
-    total: investments.length,
-    data: investments,
+    status: "success",
+    page,
+    results: investments.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { investments },
   });
 });
 

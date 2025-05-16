@@ -9,7 +9,7 @@ module.exports = {
   port: process.env.PORT || 5000,
 
   // Database configuration
-  mongoURI: process.env.MONGODB_URI,
+  DBURI: process.env.DB_URI,
   dbUser: process.env.DB_USER,
   dbPassword: process.env.DB_PASSWORD,
   dbName: process.env.DB_NAME,

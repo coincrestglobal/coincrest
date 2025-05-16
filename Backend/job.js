@@ -12,7 +12,27 @@
 // //   new Date(maxTimestamp).getTime()
 // // );
 
-const Decimal = require("decimal.js");
-const x = 0.1 + 0.2;
-const y = new Decimal(0.1).plus(0.2).toNumber();
-console.log(x, y);
+// const Decimal = require("decimal.js");
+// const x = 0.1 + 0.2;
+// const y = new Decimal(0.1).plus(0.2).toNumber();
+// console.log(x, y);
+
+// const { default: mongoose } = require("mongoose");
+// const User = require("./models/userModel");
+// const config = require("./config/config");
+// const connectDB = require("./config/database");
+
+// const owner = new User({
+//   name: "Sudhir Sharma",
+//   email: "sudhirsharma123@gmail.com",
+//   role: "owner",
+//   isVerified: true,
+//   password: "password",
+// });
+
+// console.log(owner);
+
+// (async function fn() {
+//   await connectDB();
+//   await owner.save();
+// })();
