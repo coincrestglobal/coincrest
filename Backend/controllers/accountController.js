@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { hasDaysPassed } = require("../utils/dateUtils");
+const { checkDaysPassed } = require("../utils/dateUtils");
 const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
@@ -10,7 +10,6 @@ const {
   MIN_WITHDRAWAL_INTERVAL_DAYS,
   MIN_REDEMPTION_INTERVAL_DAYS,
 } = require("../config/constants");
-const config = require("../config/config");
 const {
   buildTrc20Url,
   fetchTrc20Transactions,
@@ -25,7 +24,7 @@ exports.getBalance = catchAsync(async (req, res, next) => {
   );
 
   if (!user) {
-    return next(new AppError("User not found.", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   res.status(200).json({
@@ -44,7 +43,7 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   // Step 1: Find user
   const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError("User not found.", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   // Step 2: Verify password
@@ -122,10 +121,12 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   // Step 8: Confirm deposit & update balance
   deposit.isConfirmed = true;
   deposit.depositedBy = userId;
-  deposit.verifiedAt = new Date().toISOString();
+  deposit.verifiedAt = new Date();
   await deposit.save();
 
-  user.investableBalance += deposit.amount;
+  user.investableBalance = new Decimal(user.investableBalance)
+    .plus(deposit.amount)
+    .toNumber();
   user.deposits.push(deposit._id);
   await user.save();
 
@@ -141,9 +142,11 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 5;
   const skip = (page - 1) * limit;
 
+  const sortOrder = req.query.sort === "desc" ? -1 : 1;
+
   const [deposits, total] = await Promise.all([
     Deposit.find({ depositedBy: userId })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
       .select("amount createdAt tokenType -_id"),
@@ -156,13 +159,11 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: deposits,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
+    page,
+    results: deposits.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { deposits },
   });
 });
 
@@ -173,7 +174,7 @@ exports.upsertWithdrawalAddress = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId);
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const addressInUse = await User.findOne({
@@ -218,7 +219,7 @@ exports.getWithdrawalAddresses = catchAsync(async (req, res, next) => {
   const user = await User.findById(userId).select("withdrawalAddresses");
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const sanitizedAddresses = user.withdrawalAddresses.map((addr) => ({
@@ -227,7 +228,8 @@ exports.getWithdrawalAddresses = catchAsync(async (req, res, next) => {
   }));
 
   res.status(200).json({
-    withdrawalAddresses: sanitizedAddresses,
+    status: "success",
+    data: { withdrawalAddresses: sanitizedAddresses },
   });
 });
 
@@ -235,32 +237,29 @@ exports.withdraw = catchAsync(async (req, res, next) => {
   const { amount, tokenType, address, password } = req.body;
   const { userId } = req.user;
 
-  // Step 1: Fetch the user
-  const user = await User.findById(userId); // Find the user
-
+  const user = await User.findById(userId);
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
-  // Step 2: Verify password (optional, if required)
-  const isPasswordCorrect = await user.verifyPassword(password); // Assuming verifyPassword is a method
+  const isPasswordCorrect = await user.verifyPassword(password);
   if (!isPasswordCorrect) {
-    return next(new AppError("Incorrect password", 400)); // Invalid password
+    return next(new AppError("Incorrect password", 400));
   }
 
-  // Step 3: Check if the user has sufficient balance
-  if (user.withdrawableBalance < amount) {
+  const balance = new Decimal(user.withdrawableBalance);
+  const withdrawalAmount = new Decimal(amount);
+
+  if (balance.lessThan(withdrawalAmount)) {
     return next(new AppError("Insufficient balance", 400));
   }
 
-  // Step 4: Check if the provided address is already in the user's withdrawalAddresses
   const withdrawalAddress = user.withdrawalAddresses.some(
     (addressObj) =>
       addressObj.tokenType === tokenType && addressObj.address === address
   );
 
   if (!withdrawalAddress) {
-    // If address does not exist in user's withdrawalAddresses array, inform the user
     return next(
       new AppError(
         "This address is not registered in your wallet. Please add it before proceeding.",
@@ -269,50 +268,40 @@ exports.withdraw = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Step 5: Check if last withdrawal was more than 4 days ago
   const lastWithdrawalTime = user.lastWithdrawnAt;
 
   if (lastWithdrawalTime) {
-    const timeDifference = new Date() - new Date(lastWithdrawalTime);
-    const daysDifference = timeDifference / (1000 * 3600 * 24);
+    const { allowed, daysLeft } = checkDaysPassed(
+      lastWithdrawalTime,
+      MIN_WITHDRAWAL_INTERVAL_DAYS
+    );
 
-    if (daysDifference < MIN_WITHDRAWAL_INTERVAL_DAYS) {
-      const daysLeftToWithdraw = Math.ceil(
-        MIN_WITHDRAWAL_INTERVAL_DAYS - daysDifference
-      );
-
+    if (!allowed) {
       return next(
         new AppError(
-          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL_DAYS} days. Please try again after ${daysLeftToWithdraw} day(s).`,
+          `You can only request a withdrawal once every ${MIN_WITHDRAWAL_INTERVAL_DAYS} days. Please try again after ${daysLeft} day(s).`,
           400
         )
       );
     }
   }
 
-  // Step 6: Create a withdrawal record (optional if needed for transaction history)
   const withdrawal = new Withdrawal({
     initiatedBy: userId,
-    amount,
-    txId: "",
-    fromAddress: config.tronWalletAddress,
+    amount: withdrawalAmount.toNumber(),
     toAddress: address,
     tokenType,
     status: "pending",
-    requestedAt: new Date(),
   });
 
-  await withdrawal.save(); // Save withdrawal request
+  await withdrawal.save();
 
-  // Step 7: Deduct the amount from the user's balance
-  user.withdrawableBalance -= amount;
-
-  // Step 8: Update the lastWithdrawnAt time for the address (in UTC)
+  // Subtract using Decimal
+  user.withdrawableBalance = balance.minus(withdrawalAmount).toNumber();
   user.lastWithdrawnAt = new Date();
 
-  await user.save(); // Save updated balance
+  await user.save();
 
-  // Respond with success message
   res.status(200).json({
     status: "success",
     message: "Withdrawal request submitted successfully",
@@ -325,13 +314,23 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 5;
   const skip = (page - 1) * limit;
 
+  const filter = {};
+
+  filter.initiatedBy = userId;
+
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
+
+  const sortOrder = req.query.sort === "desc" ? -1 : 1;
+
   const [withdrawals, total] = await Promise.all([
-    Withdrawal.find({ initiatedBy: userId }) // or `userId` if that's the field
-      .sort({ createdAt: -1 })
+    Withdrawal.find(filter)
+      .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("amount createdAt status requestedAt -_id"),
-    Withdrawal.countDocuments({ initiatedBy: userId }),
+      .select("amount createdAt status _id txId"),
+    Withdrawal.countDocuments(filter),
   ]);
 
   if (page > 1 && withdrawals.length === 0) {
@@ -340,24 +339,22 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: withdrawals,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
+    page,
+    results: withdrawals.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { withdrawals },
   });
 });
 
 exports.investInPlan = catchAsync(async (req, res, next) => {
-  // const { userId } = req.user;
+  const { userId } = req.user;
   const { planId, investedAmount } = req.body;
 
-  const userId = "681a62594f02297e3323ca25";
   const user = await User.findById(userId);
+
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const plan = await InvestmentPlan.findById(planId);
@@ -365,16 +362,19 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
     return next(new AppError("Investment plan not found", 404));
   }
 
-  if (investedAmount < plan.minAmount) {
+  const investAmount = new Decimal(investedAmount);
+  const minAmount = new Decimal(plan.minAmount);
+  if (investAmount.lt(minAmount)) {
     return next(
       new AppError(
-        `Amount to invest must be greater than or equal to the minimum amount (${plan.minAmount})`,
+        `Amount to invest must be greater than or equal to the minimum amount (${minAmount.toFixed(
+          2
+        )})`,
         400
       )
     );
   }
 
-  const investAmount = new Decimal(investedAmount);
   const investableBalance = new Decimal(user.investableBalance || 0);
   const withdrawableBalance = new Decimal(user.withdrawableBalance || 0);
 
@@ -401,7 +401,7 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
   user.investments.push({
     name: plan.name,
-    investedAmount: investAmount.toNumber(),
+    investedAmount: investAmount.toDecimalPlaces(2).toNumber(),
     interestRate: plan.interestRate,
   });
 
@@ -415,12 +415,15 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
 exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  const { status } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+
+  const { status, sort } = req.query;
 
   const user = await User.findById(userId).select("investments").lean();
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   let investments = user.investments || [];
@@ -437,13 +440,26 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     const bDate =
       b.status === "redeemed" ? new Date(b.redeemDate) : new Date(b.investDate);
 
-    return bDate - aDate;
+    return sort === "desc" ? bDate - aDate : aDate - bDate;
   });
 
+  if (page > 1 && investments.length === 0) {
+    return next(new AppError("No more investments history found.", 404));
+  }
+
+  // Pagination
+  const total = investments.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  investments = investments.slice(startIndex, endIndex);
+
   res.status(200).json({
-    success: true,
-    total: investments.length,
-    data: investments,
+    status: "success",
+    page,
+    results: investments.length,
+    total,
+    totalPages: Math.ceil(total / limit),
+    data: { investments },
   });
 });
 
@@ -452,8 +468,9 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
   const { investmentId } = req.params;
 
   const user = await User.findById(userId);
+
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(new AppError("Access denied. User account not found.", 401));
   }
 
   const investment = user.investments.id(investmentId);
@@ -465,10 +482,15 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
     return next(new AppError("Investment is already redeemed", 400));
   }
 
-  if (!hasDaysPassed(investment.investDate, MIN_REDEMPTION_INTERVAL_DAYS)) {
+  const { allowed, daysLeft } = checkDaysPassed(
+    investment.investDate,
+    MIN_REDEMPTION_INTERVAL_DAYS
+  );
+
+  if (!allowed) {
     return next(
       new AppError(
-        `Investment can only be redeemed after ${MIN_REDEMPTION_INTERVAL_DAYS} day(s)`,
+        `You can redeem this investment after ${MIN_REDEMPTION_INTERVAL_DAYS} day(s). Please try again in ${daysLeft} day(s).`,
         400
       )
     );
@@ -476,7 +498,10 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
 
   investment.status = "redeemed";
   investment.redeemDate = new Date();
-  user.withdrawableBalance += investment.investedAmount + investment.profit;
+  user.withdrawableBalance = new Decimal(user.withdrawableBalance)
+    .plus(new Decimal(investment.investedAmount))
+    .plus(new Decimal(investment.profit || 0))
+    .toNumber();
 
   await user.save();
 

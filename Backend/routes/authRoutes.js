@@ -27,6 +27,7 @@ router.patch(
 router.delete(
   "/deleteAccount",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   authValidator.deleteAccountValidator,
   authController.deleteAccount
 );

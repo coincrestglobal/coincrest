@@ -1,120 +1,88 @@
+import { useState, useEffect } from "react";
 import StatBox from "./StatBox";
-import { useState } from "react";
 import ConfirmationModal from "../../../common/ConfirmationModal";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
-import axios from "axios";
-
-const levels = [
-  {
-    level: 1,
-    minAmount: 100,
-    maxAmount: 299,
-    name: "Star",
-    interestRate: "2.0%",
-  },
-  {
-    level: 2,
-    minAmount: 500,
-    maxAmount: 999,
-    name: "Bronze",
-    interestRate: "2.5%",
-  },
-  {
-    level: 3,
-    minAmount: 1000,
-    maxAmount: 4999,
-    name: "Silver",
-    interestRate: "3.0%",
-  },
-  {
-    level: 4,
-    minAmount: 5000,
-    maxAmount: 9999,
-    name: "Gold",
-    interestRate: "3.25%",
-  },
-  {
-    level: 5,
-    minAmount: 10000,
-    maxAmount: 49999,
-    name: "Diamond",
-    interestRate: "3.37%",
-  },
-  {
-    level: 6,
-    minAmount: 50000,
-    maxAmount: 99999,
-    name: "Platinum",
-    interestRate: "3.5%",
-  },
-  {
-    level: 7,
-    minAmount: 100000,
-    maxAmount: Infinity,
-    name: "Satoshi",
-    interestRate: "3.75%",
-  },
-];
 
 function UserPortfolio() {
   const navigate = useSafeNavigate();
-  const [amount, setAmount] = useState(""); // Initialize as empty string
+  const [amount, setAmount] = useState("");
+  const [levels, setLevels] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Fetch plans from DB on mount
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/v1/plans");
+        const data = await res.json();
+
+        if (data.status === "success") {
+          const sorted = data.data.plans.sort((a, b) => a.level - b.level);
+          setLevels(sorted);
+
+          // Set default plan
+          if (sorted.length > 0) {
+            setSelectedLevel(sorted[0]);
+            setAmount(sorted[0].minAmount.toString());
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch investment plans", error);
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
     setAmount(value);
 
-    // Convert the value to number (parseFloat)
     const numericValue = parseFloat(value);
-
-    // Ensure valid numeric value is provided
     if (!isNaN(numericValue)) {
-      const matchedLevel = levels.find(
+      const matched = levels.find(
         (lvl) => numericValue >= lvl.minAmount && numericValue <= lvl.maxAmount
       );
-      if (matchedLevel) {
-        setSelectedLevel(matchedLevel);
-      } else {
-        setSelectedLevel(null);
-      }
+      setSelectedLevel(matched || null);
     } else {
-      setSelectedLevel(null); // Reset if non-numeric value entered
+      setSelectedLevel(null);
+    }
+  };
+
+  const handlePlanSelect = (e) => {
+    const levelId = parseInt(e.target.value);
+    const selected = levels.find((lvl) => lvl.level === levelId);
+    if (selected) {
+      setSelectedLevel(selected);
+      setAmount(selected.minAmount.toString());
     }
   };
 
   const handleConfirm = async () => {
     if (selectedLevel && amount) {
       try {
-        // 1. Backend call to create the investment using axios
-
-        const res = await fetch(`http://localhost:5000/api/v1/account/invest`, {
+        const res = await fetch("http://localhost:5000/api/v1/account/invest", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            planId: "681b68d7a95bfa3514cc8085",
+            planId: selectedLevel._id,
             investedAmount: amount,
           }),
         });
 
-        console.log(await res.json());
+        const response = await res.json();
 
-        if (response.status === "sucess") {
-          // 2. If investment is created successfully, navigate to the next page
+        if (response.status === "success") {
           navigate("investments");
         } else {
-          // Handle error response if investment creation fails
-          console.error("Investment creation failed", response.data);
-          alert("Investment creation failed. Please try again.");
+          alert(response.message);
         }
-      } catch (error) {
-        console.error("Error during investment creation", error);
-        alert("An error occurred. Please try again.");
-      } finally {
-        // setIsLoading(false);
+      } catch (err) {
+        console.error("Investment error", err);
+        alert("Something went wrong. Try again.");
       }
     }
   };
@@ -134,31 +102,40 @@ function UserPortfolio() {
         <h2 className="text-2xl font-semibold mb-8">Start Your Investment</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {/* Investment Amount */}
+          {/* Amount */}
           <div>
             <label className="block text-sm mb-2">Enter Amount</label>
             <input
-              type="text" // Text type to allow number input
+              type="text"
               value={amount}
               onChange={handleAmountChange}
-              className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading focus:outline-none placeholder:text-gray-400"
+              className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading focus:outline-none"
               placeholder="Enter your investment amount"
             />
           </div>
 
-          {/* Selected Plan */}
+          {/* Plan Select */}
           <div>
-            <label className="block text-sm mb-2">Selected Plan</label>
-            <div className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading">
-              {selectedLevel ? selectedLevel.name : "No Plan Found"}
-            </div>
+            <label className="block text-sm mb-2">Select Plan</label>
+            <select
+              value={selectedLevel?.level || ""}
+              onChange={handlePlanSelect}
+              className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading"
+            >
+              <option value="">-- Choose Plan --</option>
+              {levels.map((lvl) => (
+                <option key={lvl._id} value={lvl.level}>
+                  {lvl.name} (Min ${lvl.minAmount})
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Interest Rate */}
+          {/* Interest */}
           <div>
             <label className="block text-sm mb-2">Weekly Interest Rate</label>
             <div className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading">
-              {selectedLevel ? selectedLevel.interestRate : "--"}
+              {selectedLevel ? `${selectedLevel.interestRate}%` : "--"}
             </div>
           </div>
         </div>

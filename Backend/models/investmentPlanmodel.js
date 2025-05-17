@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const investmentPlanSchema = new mongoose.Schema(
   {
+    level: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,

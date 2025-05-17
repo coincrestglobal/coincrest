@@ -7,14 +7,28 @@ exports.signupValidator = validate([
     .trim()
     .notEmpty()
     .withMessage("Name is required")
+    .customSanitizer((value) => value.replace(/\s+/g, " ")) // Collapse multiple spaces into one
+    .customSanitizer((value) => value.replace(/^\s+|\s+$/g, "")) // Trim again
     .isLength({ min: 2, max: 20 })
-    .withMessage("Name must be between 2 and 50 characters"),
+    .withMessage("Name must be between 2 and 20 characters")
+    .matches(/^[A-Za-z ]+$/)
+    .withMessage("Name must contain only letters and spaces")
+    .customSanitizer((value) =>
+      value
+        .split(" ")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ")
+    ),
 
   // Email validation
   body("email").isEmail().withMessage("Please provide a valid email address"),
 
   // Password validation (min length, and strong password check)
   body("password")
+    .exists({ checkFalsy: true })
+    .withMessage("Password is required")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
     .matches(/[0-9]/) // Password must contain at least one number

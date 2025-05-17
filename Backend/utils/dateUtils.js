@@ -1,16 +1,22 @@
 /**
- * Checks if 'x' days have passed since a given date.
- * @param {Date|string} date - The initial date to compare.
- * @param {number} x - The number of days to check.
- * @returns {boolean} - Returns true if 'x' or more days have passed, otherwise false.
+ * Checks if the required number of days have passed since a given date.
+ * @param {Date} lastDate - The previous date (e.g., last withdrawal date).
+ * @param {number} minDays - Minimum number of days required to pass.
+ * @returns {{ allowed: boolean, daysLeft: number }}
  */
-function hasDaysPassed(date, x) {
-  const investDate = new Date(date); // Ensure the input is treated as a date object
-  const currentDate = new Date();
-  const timeDifference = currentDate - investDate; // Time difference in milliseconds
-  const daysDifference = timeDifference / (1000 * 3600 * 24); // Convert milliseconds to days
+function checkDaysPassed(lastDate, minDays) {
+  const now = new Date();
+  const last = new Date(lastDate);
 
-  return daysDifference >= x; // Return true if the days difference is >= 'x'
+  const msDiff = now - last;
+  const daysPassed = msDiff / (1000 * 60 * 60 * 24);
+
+  if (daysPassed >= minDays) {
+    return { allowed: true, daysLeft: 0 };
+  } else {
+    const daysLeft = Math.ceil(minDays - daysPassed);
+    return { allowed: false, daysLeft };
+  }
 }
 
-module.exports = { hasDaysPassed };
+module.exports = { checkDaysPassed };

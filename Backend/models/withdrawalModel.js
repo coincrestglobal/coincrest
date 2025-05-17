@@ -5,7 +5,7 @@ const withdrawalSchema = new mongoose.Schema(
     initiatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     amount: { type: Number, required: true },
     txId: { type: String },
-    fromAddress: { type: String, required: true },
+    fromAddress: { type: String },
     toAddress: { type: String, required: true },
     tokenType: { type: String, enum: ["TRC-20", "BEP-20"], required: true },
     timestamp: { type: Date },
@@ -16,6 +16,7 @@ const withdrawalSchema = new mongoose.Schema(
     },
     approvedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     isApproved: { type: Boolean, default: false },
+    completedAt: { type: Date },
   },
   { timestamps: true }
 );

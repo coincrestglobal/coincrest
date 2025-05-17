@@ -1,7 +1,7 @@
 const { query } = require("express-validator");
 const validate = require("../middlewares/handleValidation");
 
-const validateQueryParams = validate([
+module.exports = validate([
   query("search")
     .optional()
     .isString()
@@ -13,9 +13,21 @@ const validateQueryParams = validate([
     .isIn(["user", "admin"])
     .withMessage('Invalid role. Allowed roles are "user" and "admin".'),
 
+  query("sort")
+    .optional()
+    .isIn(["asc", "desc"])
+    .withMessage("Sort must be either 'asc' or 'desc'"),
+
   query("status")
     .optional()
-    .isIn(["pending", "processing", "completed", "failed"])
+    .isIn([
+      "pending",
+      "processing",
+      "completed",
+      "failed",
+      "active",
+      "redeemed",
+    ])
     .withMessage("Please select a valid status."),
 
   query("tokenType")
@@ -44,5 +56,3 @@ const validateQueryParams = validate([
     return true;
   }),
 ]);
-
-module.exports = validateQueryParams;
