@@ -1,8 +1,7 @@
 const BASE_URL = "http://localhost:5000/api/v1";
 
 // AUTH ENDPOINTS
-export const endpoints = {
-  SENDOTP_API: BASE_URL + "/auth/sendotp",
+export const authEndpoints = {
   SIGNUP_API: BASE_URL + "/auth/signup",
   LOGIN_API: BASE_URL + "/auth/login",
   RESETPASSTOKEN_API: BASE_URL + "/auth/reset-password-token",
@@ -12,4 +11,10 @@ export const endpoints = {
 // PROFILE ENDPOINTS
 export const profileEndpoints = {
   GET_USER_DETAILS_API: BASE_URL + "/profile/getUserDetails",
+};
+
+// PROFILE ENDPOINTS
+export const ownerAndAdminDashboardEndPoints = {
+  GET_ALL_USERS_API: BASE_URL + "/management/getUsers",
+  GET_USER_DETAILS_API: BASE_URL + "/management/getUser",
 };

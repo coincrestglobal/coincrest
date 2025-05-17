@@ -1,17 +1,37 @@
-import Navbar from "../components/common/Navbar";
-import Footer from "../components/common/Footer";
 import { Outlet } from "react-router";
+import { useEffect, useState } from "react";
 import ScrollToTop from "../components/common/ScrollTotop";
+import TopNav from "../components/common/MobileNav/TopNav";
+import BottomNav from "../components/common/MobileNav/BottomNav";
+import Navbar from "../components/common/Navbar"; // Desktop
+import Footer from "../components/common/Footer"; // Desktop
 
 function AppLayout() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // Tailwind's 'lg' breakpoint
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col min-h-screen relative ">
       <ScrollToTop />
-      <Navbar />
-      <main className="">
+
+      {/* Top Navigation */}
+      {isMobile ? <TopNav /> : <Navbar />}
+
+      {/* Main Content */}
+      <main className="flex-grow pt-16 pb-16 px-4 lg:px-0">
         <Outlet />
       </main>
-      <Footer />
+
+      {/* Footer or Bottom Navigation */}
+      {isMobile ? <BottomNav /> : <Footer />}
     </div>
   );
 }

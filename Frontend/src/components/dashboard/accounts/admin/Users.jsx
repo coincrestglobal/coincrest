@@ -2,14 +2,15 @@ import UsersHeader from "../../../common/DashboardHeader";
 import UsersTable from "../../../dashboard/Table";
 import { useEffect, useState } from "react";
 import NoResult from "../../../../pages/NoResult";
-import axios from "axios";
+import Loading from "../../../../pages/Loading";
+import { getAllUsers } from "../../../../services/operations/adminAndOwnerDashboardApi";
 
 const headers = [
   { label: "S No.", width: "10%" },
   { label: "Name", width: "20%" },
-  { label: "Email", width: "25%" },
-  { label: "Number", width: "25%" },
-  { label: "Last Visit", width: "20%" },
+  { label: "Email", width: "35%" },
+  // { label: "Number", width: "25%" },
+  { label: "Last Visit", width: "35%" },
 ];
 
 const getKeyFromLabel = (label) =>
@@ -40,14 +41,13 @@ function Users() {
         params.append("page", currentPage);
         params.append("limit", 9);
 
-        const response = await axios.get(
-          `http://localhost:5000/api/v1/management/getUsers?${params.toString()}`
-        );
+        // getting all users
+        const response = await getAllUsers(params.toString());
 
-        const { data } = response.data;
+        const { data } = response;
         setUsers(data.users);
-        setTotalPages(response.data.totalPages);
-        setTotalUsers(response.data.total);
+        setTotalPages(response.totalPages);
+        setTotalUsers(response.total);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -57,8 +57,7 @@ function Users() {
 
     fetchUsers();
   }, [currentPage, filterState]);
-
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
 
   const sortedUsers = [...users].sort((a, b) => {
     return filterState.sortOrder === "asc"
@@ -90,6 +89,15 @@ function Users() {
         totalCount={totalUsers}
         filterState={filterState}
         setFilterState={setFilterState}
+        filterOptions={[
+          {
+            label: "Date Interval",
+            children: [
+              { label: "Start Date", value: "startDate", type: "date" },
+              { label: "End Date", value: "endDate", type: "date" },
+            ],
+          },
+        ]}
       />
       {transformedUsers.length > 0 ? (
         <UsersTable

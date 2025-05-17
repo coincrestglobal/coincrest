@@ -1,57 +1,35 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { X, Mail } from "lucide-react"; // Importing the mail icon
-import axios from "axios";
+import Loading from "../../../../pages/Loading";
+import { getUserDetails } from "../../../../services/operations/adminAndOwnerDashboardApi";
 
 const UserDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isMailing, setIsMailing] = useState(false);
   const [isSuspended, setIsSuspended] = useState(false); // Track suspension status
   const [mailSubject, setMailSubject] = useState("");
   const [mailBody, setMailBody] = useState("");
   const [suspendMessage, setSuspendMessage] = useState(""); // Message for suspension reason
 
-  const fetchUser = async (id) => {
-    const { data } = await axios.get(
-      `http://localhost:5000/api/v1/management/getUser/${id}`
-    );
-    const { user } = data.data;
-
-    console.log(user);
-  };
-
   useEffect(() => {
-    fetchUser(id);
+    const fetchUser = async () => {
+      const params = new URLSearchParams();
+      params.append("id", id);
+      const userDetails = await getUserDetails(params);
+      setUser(userDetails.data.user);
+      setLoading(false);
+    };
+
+    fetchUser();
   }, []);
 
-  const user = {
-    id: "user123",
-    name: "Alice Smith",
-    email: "alice@coincrest.com",
-    phone: "+9876543210",
-    numberOfDeposits: 3,
-    totalDepositedAmount: 1000, // Total amount the user has deposited (in USDT)
-    totalWithdrawnAmount: 500, // Total amount the user has withdrawn
-    lastLogin: "2025-04-22", // Last login date
-    accountStatus: "Active", // Account status, could be 'Active', 'Suspended', etc.
-    depositHistory: [
-      { id: "d101", amount: 200, date: "2025-04-10", status: "Completed" },
-      { id: "d102", amount: 500, date: "2025-04-12", status: "Completed" },
-      { id: "d103", amount: 300, date: "2025-04-15", status: "Pending" },
-      { id: "d101", amount: 200, date: "2025-04-10", status: "Completed" },
-      { id: "d102", amount: 500, date: "2025-04-12", status: "Completed" },
-      { id: "d103", amount: 300, date: "2025-04-15", status: "Pending" },
-      { id: "d101", amount: 200, date: "2025-04-10", status: "Completed" },
-      { id: "d102", amount: 500, date: "2025-04-12", status: "Completed" },
-      { id: "d103", amount: 300, date: "2025-04-15", status: "Pending" },
-    ],
-    withdrawalHistory: [
-      { id: "w101", amount: 200, date: "2025-04-11", status: "Completed" },
-      { id: "w102", amount: 300, date: "2025-04-14", status: "Completed" },
-      { id: "w103", amount: 100, date: "2025-04-18", status: "Pending" },
-    ],
-  };
+  if (loading) {
+    return <Loading />;
+  }
 
   const handleSendMail = () => {
     setIsMailing(false);
@@ -74,8 +52,20 @@ const UserDetails = () => {
     setIsMailing(false); // Disable mailing functionality when suspending
   };
 
+  function findAccountStatus(updatedAt) {
+    const lastUpdatedDate = new Date(updatedAt);
+
+    const currentDate = new Date();
+
+    const diffInMs = currentDate - lastUpdatedDate;
+
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    return diffInDays > 15 ? "inactive" : "active";
+  }
+
   return (
-    <div className="p-6 space-y-6 border border-button rounded-md bg-primary-dark shadow-md h-full overflow-y-auto scrollbar-hide text-[#d1d5db]">
+    <div className="p-6 space-y-6  rounded-md bg-primary-dark shadow-md h-full overflow-y-auto scrollbar-hide text-[#d1d5db]">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-[#ffffff]">User Details</h2>
         <button
@@ -87,9 +77,9 @@ const UserDetails = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-2 p-4 bg-primary-dark border border-button rounded-md shadow">
-        <p>
+        {/* <p>
           <span className="font-semibold text-button">User ID:</span> {user.id}
-        </p>
+        </p> */}
         <p>
           <span className="font-semibold text-button">Name:</span> {user.name}
         </p>
@@ -97,11 +87,8 @@ const UserDetails = () => {
           <span className="font-semibold text-button">Email:</span> {user.email}
         </p>
         <p>
-          <span className="font-semibold text-button">Phone:</span> {user.phone}
-        </p>
-        <p>
           <span className="font-semibold text-button">Number of Deposits:</span>{" "}
-          {user.numberOfDeposits}
+          {user.deposits.length}
         </p>
         <p>
           <span className="font-semibold text-button">
@@ -112,19 +99,24 @@ const UserDetails = () => {
 
         <p>
           <span className="font-semibold text-button">Last Login:</span>{" "}
-          {user.lastLogin}
+          {new Date(user.updatedAt).toLocaleDateString()}
         </p>
         <p>
-          <span className="font-semibold text-button">Account Status:</span>{" "}
-          {user.accountStatus}
+          <span className="font-semibold text-button ">Account Status: </span>
+          <span className="px-3 py-1 bg-button rounded-md">
+            {findAccountStatus(user.updatedAt)}
+          </span>
         </p>
       </div>
 
       <div className="p-4 bg-primary-dark border border-button rounded-md shadow ">
         <h3 className="text-button font-semibold ">Deposit History</h3>
         <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
-          {user.depositHistory.map((deposit) => (
-            <li key={deposit.id} className="text-[#d1d5db]">
+          {user.deposits.map((deposit, index) => (
+            <li
+              key={`${deposit.id}-${deposit.date}-${index}`}
+              className="text-[#d1d5db]"
+            >
               Amount: {deposit.amount} USDT, Date: {deposit.date}, Status:{" "}
               {deposit.status}
             </li>
@@ -135,7 +127,7 @@ const UserDetails = () => {
       <div className="p-4 bg-primary-dark border border-button rounded-md shadow">
         <h3 className="text-button font-semibold">Withdrawal History</h3>
         <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
-          {user.withdrawalHistory.map((withdrawal) => (
+          {user.withdrawals.map((withdrawal) => (
             <li key={withdrawal.id} className="text-[#d1d5db]">
               Amount: {withdrawal.amount} USDT, Date: {withdrawal.date}, Status:{" "}
               {withdrawal.status}
@@ -166,20 +158,20 @@ const UserDetails = () => {
       </div>
 
       {isSuspended && (
-        <div className="relative p-4 bg-[#15142A] border border-[#7F7CFF] rounded-md shadow mt-4">
+        <div className="relative p-4 bg-primary  border border-buttonrounded-md shadow mt-4">
           <button
             onClick={() => setIsSuspended(!isSuspended)}
             className="absolute top-2 right-2 text-button hover:text-button"
           >
             <X size={20} />
           </button>
-          <p className="text-button font-semibold">Suspend Reason:</p>
+          <p className="text-button font-semibold py-2">Suspend Reason:</p>
           <textarea
             value={suspendMessage}
             onChange={(e) => setSuspendMessage(e.target.value)}
             rows="4"
             placeholder="Enter the reason for suspending the user..."
-            className="w-full p-2 border rounded-md bg-[#15142A] text-[#d1d5db] placeholder-[#A0A0B2]"
+            className="w-full p-2 border rounded-md  bg-primary-dark text-text-heading placeholder-text-heading"
           />
 
           <button
@@ -196,27 +188,27 @@ const UserDetails = () => {
       )}
 
       {isMailing && (
-        <div className="relative p-4 bg-[#15142A] border border-[#7F7CFF] rounded-md shadow">
+        <div className="relative px-4 py-2 bg-primary border border-button rounded-md shadow">
           <button
             onClick={() => setIsMailing(false)}
             className="absolute top-2 right-2 text-button hover:text-button"
           >
             <X size={20} />
           </button>
-          <p className="text-button font-semibold">Enter Your Message:</p>
+          <p className="text-button font-semibold py-2">Enter Your Message:</p>
           <input
             type="text"
             value={mailSubject}
             onChange={(e) => setMailSubject(e.target.value)}
             placeholder="Subject"
-            className="w-full p-2 border rounded-md bg-[#15142A] text-[#d1d5db] placeholder-[#A0A0B2]"
+            className="w-full p-2  border rounded-md bg-primary-dark text-text-heading placeholder-text-heading mb-1"
           />
           <textarea
             value={mailBody}
             onChange={(e) => setMailBody(e.target.value)}
             rows="4"
             placeholder="Enter message..."
-            className="w-full p-2 border rounded-md bg-[#15142A] text-[#d1d5db] placeholder-[#A0A0B2]"
+            className="w-full p-2 border rounded-md  bg-primary-dark text-text-heading placeholder-text-heading"
           />
           <button
             onClick={handleSendMail}

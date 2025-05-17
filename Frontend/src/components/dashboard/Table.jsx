@@ -67,7 +67,7 @@ export default function Table({
               <div
                 key={idx}
                 onClick={() => navigate(item._id)}
-                className="grid py-1 bg-primary-light text-text-heading shadow rounded-md hover:bg-secondary-light cursor-pointer transition px-3"
+                className="grid py-1 bg-primary-light text-text-heading shadow rounded-md hover:bg-secondary-light cursor-pointer transition px-3 hover:bg-primary-dark"
                 style={{
                   gridTemplateColumns: headers
                     .map((header) => header.width)

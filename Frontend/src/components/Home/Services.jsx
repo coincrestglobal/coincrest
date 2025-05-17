@@ -21,16 +21,28 @@ const services = [
 const ServiceCard = ({ title, desc, imgSrc, reverse = false }) => {
   return (
     <div
-      className={`flex flex-col md:flex-row items-center justify-center  ${
+      className={`flex flex-col md:flex-row items-center  ${
         reverse ? "md:flex-row-reverse" : ""
       }`}
     >
-      <div className="md:w-1/2 flex justify-center">
-        <img src={imgSrc} className="h-[300px]" alt={title} />
+      <div
+        className={`w-full ml-20 md:ml-0 md:w-1/2 flex justify-center px-4 sm:px-6 ${
+          reverse ? "mr-40 md:mr-0" : ""
+        }`}
+      >
+        <img
+          src={imgSrc}
+          className="h-[200px] sm:h-[250px] md:h-[300px] object-contain"
+          alt={title}
+        />
       </div>
-      <div className="md:w-1/2 space-y-4 flex flex-col items-start">
-        <h1 className="text-text-highlighted text-3xl w-[60%]">{title}</h1>
-        <p className="text-text-subheading w-[80%]">{desc}</p>
+      <div className={`w-full md:w-1/2 space-y-4 flex flex-col items-start `}>
+        <h1 className="w-full md:w-[60%] text-xl sm:text-2xl md:text-3xl text-text-highlighted font-semibold">
+          {title}
+        </h1>
+        <p className="text-sm sm:text-base text-text-subheading w-full md:w-[80%]">
+          {desc}
+        </p>
       </div>
     </div>
   );
@@ -38,15 +50,15 @@ const ServiceCard = ({ title, desc, imgSrc, reverse = false }) => {
 
 function Services() {
   return (
-    <div className="py-10 px-32 relative">
-      <h1 className="text-text-heading text-3xl sm:text-4xl font-bold flex justify-center items-center gap-4">
-        <span className="text-button text-4xl sm:text-5xl">««</span>
-        <span className="text-text-heading text-gr ">Our features</span>
-        <span className="text-button text-4xl sm:text-5xl">»»</span>
+    <div className="py-10 px-4 sm:px-8 md:px-16 lg:px-32 relative">
+      <h1 className="text-center text-2xl sm:text-3xl md:text-4xl font-bold text-text-heading flex justify-center items-center gap-4">
+        <span className="text-button text-3xl sm:text-4xl md:text-5xl">««</span>
+        <span className="text-text-heading">Our features</span>
+        <span className="text-button text-3xl sm:text-4xl md:text-5xl">»»</span>
       </h1>
-      <div className=" flex justify-center items-center flex-wrap py-10">
+      <div className="flex flex-col items-center justify-center py-10 ">
         {services.map((service, index) => (
-          <div key={index} className="flex flex-col items-center w-full">
+          <div key={index} className="w-full">
             <ServiceCard
               title={service.title}
               desc={service.desc}
@@ -56,8 +68,6 @@ function Services() {
           </div>
         ))}
       </div>
-
-      {/* <Gradient size="200px" top="50px" left="50px" color="secondary2" /> */}
     </div>
   );
 }

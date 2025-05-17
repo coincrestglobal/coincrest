@@ -15,7 +15,7 @@ router.get(
 );
 
 router.get(
-  "/getUser/:userId",
+  "/getUser",
   // authMiddleware.protect,
   managementController.getUserById
 );

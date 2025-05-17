@@ -35,6 +35,11 @@ function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/earnings" className="hover:text-white">
+                Earnings
+              </Link>
+            </li>
+            <li>
               <Link to="/aboutus" className="hover:text-white">
                 About Us
               </Link>

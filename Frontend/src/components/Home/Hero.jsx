@@ -33,7 +33,7 @@ const HeroSection = () => {
   const renderStyledText = () => {
     const lines = typedText.split("\n");
     return (
-      <h1 className="text-xl h-24 sm:text-4xl md:text-5xl font-bold whitespace-pre-line leading-tight text-text-heading">
+      <h1 className="text-xl h-16 md:h-24 sm:text-4xl md:text-5xl font-bold whitespace-pre-line leading-tight text-text-heading">
         {lines.map((line, i) => (
           <div key={i}>
             {line.includes("CoinCrest") ? (
@@ -51,11 +51,10 @@ const HeroSection = () => {
   };
 
   return (
-    <div className=" min-h-screen flex items-center justify-center text-text-heading text-3xl">
-      <div className="relative min-h-screen bg-white"></div>
-      <div className="grid grid-cols-2 h-[100vh] px-24 mt-10 ">
-        <div className="w-[50vw]  flex flex-col items-center justify-center gap-10">
-          {/* Typing Animated Text */}
+    <div className=" flex  py-10 md:py-0 justify-center text-text-heading ">
+      <div className="flex flex-col-reverse md:grid md:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 mt-10 gap-8">
+        {/* LEFT SECTION */}
+        <div className="w-full flex flex-col items-center md:items-start justify-center gap-3 md:gap-10  md:text-left">
           {renderStyledText()}
           <GradientBackground
             clor1="var(--grad2)"
@@ -65,16 +64,15 @@ const HeroSection = () => {
           />
           <GradientBackground size="35%" top="11%" left="99%" />
 
-          {/* Description */}
-          <p className=" sm:text-lg text-text-subheading mt-2 max-w-2xl">
+          <p className="text-sm sm:text-base  md:text-lg text-center text-text-subheading mt-2 max-w-2xl">
             Join <span className="text-button font-semibold">CoinCrest</span>{" "}
             today and start earning rewards through USDT staking. <br />
             Our platform supports TRC20 and BEP20 networks, making it easy{" "}
             <br />
             and secure to grow your investments.
           </p>
-          {/* CTA Buttons */}
-          <div className="flex gap-4 mt-4">
+
+          <div className="flex flex-row gap-4 mt-4">
             <button
               className="bg-button hover:bg-button-hover px-8 py-3 text-sm font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
               onClick={() => {
@@ -106,10 +104,13 @@ const HeroSection = () => {
             </button>
           </div>
         </div>
-        <div className="w-[50vw] flex flex-col items-center justify-center gap-10">
+
+        {/* RIGHT SECTION */}
+        <div className="w-full flex flex-col items-center justify-center">
           <img
             src="/images/heroImage2.png"
-            className="h-[600px] animate-spin-slow"
+            className="h-52 sm:h-72 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"
+            alt="Hero"
           />
         </div>
       </div>

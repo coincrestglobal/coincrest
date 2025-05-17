@@ -6,7 +6,6 @@ const Deposit = require("../models/depositModel");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, startDate, endDate } = req.query;
-
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
@@ -57,9 +56,11 @@ exports.getUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getUserById = catchAsync(async (req, res, next) => {
-  const { userId } = req.params;
+  const { id } = req.query;
 
-  const user = await User.findById(userId)
+  console.log(id);
+
+  const user = await User.findById(id)
     .select("name email updatedAt role")
     .populate("deposits", "amount tokenType verifiedAt -_id")
     .populate("withdrawals", "amount tokenType status createdAt -_id");
