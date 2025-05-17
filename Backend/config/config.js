@@ -21,6 +21,8 @@ module.exports = {
   tronApiKey: process.env.TRON_API_KEY,
   tronWalletPrivateKey: process.env.TRON_WALLET_PRIVATE_KEY,
 
+  trc20FeeLimit: process.env.TRC20_FEE_LIMIT,
+
   // JWT / Auth configuration
   jwtSecret: process.env.JWT_SECRET,
   jwtTokenExpiresIn: process.env.JWT_EXPIRES_IN || 3600, // in seconds

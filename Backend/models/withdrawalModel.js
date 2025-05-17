@@ -11,7 +11,7 @@ const withdrawalSchema = new mongoose.Schema(
     timestamp: { type: Date },
     status: {
       type: String,
-      enum: ["pending", "processing", "completed", "failed"],
+      enum: ["pending", , "completed"],
       default: "pending",
     },
     approvedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

@@ -36,3 +36,12 @@
 //   await connectDB();
 //   await owner.save();
 // })();
+
+const { transferTRC20 } = require("./services/trc20TransferService");
+
+async function fn() {
+  const result = await transferTRC20("TRjwFxxjfSexDtn5KvAktiUP7FnHwBQFUZ", 10);
+  console.log(result);
+}
+
+fn();

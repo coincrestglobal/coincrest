@@ -14,7 +14,7 @@ const {
   buildTrc20Url,
   fetchTrc20Transactions,
   filterTrc20Deposits,
-} = require("../services/trc20TransactionsServices");
+} = require("../services/trc20DepositService");
 
 exports.getBalance = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
