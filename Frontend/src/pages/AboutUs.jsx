@@ -31,7 +31,8 @@ const benefitsData = [
 ];
 
 export default function AboutUs() {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
+  const navigate = useSafeNavigate();
 
   const handleClick = () => {
     if (!user) {
@@ -40,11 +41,11 @@ export default function AboutUs() {
       navigate("/dashboard/user");
     }
   };
-  const navigate = useSafeNavigate();
+
   return (
-    <div className="mt-16 px-32 bg-primary text-text-heading py-10">
+    <div className="mt-16 px-4 md:px-16 lg:px-32 bg-primary text-text-heading py-10">
       {/* Hero Section */}
-      <div className="px-4 sm:px-6 lg:px-8 text-center">
+      <div className="text-center">
         <GradientBackground
           clor1="var(--grad2)"
           size="40%"
@@ -65,14 +66,15 @@ export default function AboutUs() {
         />
         <GradientBackground size="40%" top="22%" left="95%" />
         <GradientBackground size="40%" top="65%" left="95%" />
-        <h1 className="text-text-heading text-3xl sm:text-4xl font-bold flex justify-center items-center gap-4">
-          <span className=" text-4xl sm:text-5xl text-button">««</span>
+
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold flex justify-center items-center gap-2">
+          <span className="text-button text-3xl sm:text-4xl">««</span>
           <span>About CoinCrest</span>
-          <span className="text-4xl sm:text-5xl text-button">»»</span>
+          <span className="text-button text-3xl sm:text-4xl">»»</span>
         </h1>
-        <p className="text-text-heading text-lg sm:text-xl mt-2 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg mt-2 max-w-xl mx-auto">
           CoinCrest is the crypto investment platform designed for sustainable
-          returns. Secure, transparent, and user-focused.
+          returns.
         </p>
       </div>
 
@@ -83,37 +85,45 @@ export default function AboutUs() {
           subHeadings={subHeadings}
         />
       </div>
-      <section className="py-16">
-        <h1 className="text-text-heading text-3xl sm:text-4xl font-bold flex justify-center items-center gap-4">
-          <span className="text-button text-4xl sm:text-5xl">««</span>
-          <span> Why Choose CoinCrest?</span>
-          <span className="text-button text-4xl sm:text-5xl">»»</span>
+
+      {/* Why Choose */}
+      <section className="py-10">
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+            ««
+          </span>
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+            Why Choose CoinCrest?
+          </span>
+          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+            »»
+          </span>
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 py-16 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
           {benefitsData.map((benefit, index) => (
             <div
               key={index}
-              className="text-text-heading rounded-xl border bg-custom-gradient border-[#2D2642] w-full h-[200px] px-5 flex items-center justify-center relative shadow-sm shadow-text-link"
+              className="rounded-xl bg-custom-gradient shadow-md shadow-button h-[200px] px-5 flex items-center justify-center relative"
             >
-              {/* Left dots + circle */}
-              <div className="absolute left-4 top-16 flex flex-col items-center space-y-1">
+              {/* Left Dots */}
+              <div className="absolute left-4 top-20 flex flex-col items-center space-y-1">
                 <div className="w-4 h-4 border-2 bg-button rounded-full mb-1" />
                 <span className="w-1 h-1 bg-text-link rounded-full" />
                 <span className="w-1 h-1 bg-text-link rounded-full" />
                 <span className="w-1 h-1 bg-text-link rounded-full" />
               </div>
 
-              {/* Main Content */}
+              {/* Content */}
               <div className="text-center space-y-2 p-2">
-                <div className="text-xl font-semibold">{benefit.title}</div>
-                <p className="text-sm text-gray-300 mt-1">
-                  {benefit.description}
-                </p>
+                <div className="text-lg md:text-xl font-semibold">
+                  {benefit.title}
+                </div>
+                <p className="text-sm text-gray-300">{benefit.description}</p>
               </div>
 
-              {/* Right dots + circle */}
-              <div className="absolute right-4 top-16 flex flex-col items-center space-y-1">
+              {/* Right Dots */}
+              <div className="absolute right-4 top-20 flex flex-col items-center space-y-1">
                 <div className="w-4 h-4 border-2 bg-button rounded-full mb-1" />
                 <span className="w-1 h-1 bg-text-link rounded-full" />
                 <span className="w-1 h-1 bg-text-link rounded-full" />
@@ -124,65 +134,77 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* how it works */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              <span className="text-button text-4xl sm:text-5xl ">««</span>
-              <span className="p-4">How CoinCrest Works</span>
-              <span className="text-button text-4xl sm:text-5xl">»»</span>
-            </h2>
-            <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto">
+      {/* How It Works */}
+      <section className="py-10 ">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+              <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+                ««
+              </span>
+              <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+                How CoinCrest Works
+              </span>
+              <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+                »»
+              </span>
+            </h1>
+            <p className="text-gray-300 text-sm sm:text-base md:text-lg">
               Discover the benefits, process of staking USDT, and earning weekly
-              rewards efficiently with CoinCrest.
+              rewards.
             </p>
           </div>
 
-          {/* Stake */}
-          <div className="grid gap-10 md:grid-cols-2 items-center mb-10">
-            <div className="flex flex-col gap-4 order-2 md:order-none">
-              <h3 className="text-2xl sm:text-3xl font-semibold">
-                Stake Your USDT and Watch Your Earnings Grow Weekly!
+          {/* Stake Section */}
+          <div className="flex flex-col-reverse md:flex-row items-center">
+            <div className="w-full  bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 md:p-0 space-y-5">
+              <h3 className="text-xl sm:text-2xl font-semibold">
+                Stake Your USDT and Watch Your Earnings Grow!
               </h3>
-              <p className="text-gray-300 text-base sm:text-lg">
-                Deposit your USDT easily into CoinCrest to kickstart your
-                rewards. Start earning weekly interest and maximizing your
-                crypto passive income!
+              <p className="text-gray-300 text-sm sm:text-base">
+                Deposit your USDT into CoinCrest to start earning passive income
+                weekly.
               </p>
               <button
-                className="w-fit px-5 py-2 bg-button  text-text-heading rounded-md hover:bg-button-hover transition text-sm sm:text-base"
+                className="w-fit px-4 py-2 bg-button text-text-heading rounded hover:bg-button-hover transition text-sm sm:text-base"
                 onClick={handleClick}
               >
                 Start Earning Now
               </button>
             </div>
-            <img src="/images/aboutUs.png" className="h-72 w-full"></img>
+            <img
+              src="/images/aboutUs.png"
+              className="h-64 w-full object-contain"
+              alt="Stake USDT"
+            />
           </div>
 
-          {/* Refer */}
-          <div className="flex  items-center py-2">
-            <div className="flex flex-col gap-4 ">
-              <h3 className="text-2xl sm:text-3xl font-semibold">
+          {/* Refer Section */}
+          <div className="flex flex-col-reverse md:flex-row items-center">
+            <div className="w-full  bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 md:p-0 space-y-5">
+              <h3 className="text-xl sm:text-2xl font-semibold">
                 Grow Your Earnings Through Referrals
               </h3>
-              <p className="text-gray-300 text-base sm:text-lg">
-                Invite friends to join CoinCrest and watch your rewards grow.
-                Build your team and earn bonuses for every successful referral.
+              <p className="text-gray-300 text-sm sm:text-base">
+                Invite friends and build your team to increase your passive
+                income through bonuses.
               </p>
               <ul className="list-disc list-inside text-gray-400 text-sm sm:text-base">
                 <li>Earn more by sharing</li>
-                <li>Join our mission for faster and monthly max rewards</li>
+                <li>Unlock monthly max rewards</li>
               </ul>
               <button
-                className="w-fit px-5 py-2 bg-button  text-text-heading rounded-md hover:bg-button-hover transition text-sm sm:text-base"
+                className="w-fit px-4 py-2 bg-button text-text-heading rounded hover:bg-button-hover transition text-sm sm:text-base"
                 onClick={handleClick}
               >
                 Start Earning Now
               </button>
             </div>
-            <img src="/images/aboutUs2.png" className="mb-20 h-90 "></img>
+            <img
+              src="/images/aboutUs2.png"
+              className="h-64 w-full object-contain"
+              alt="Referral System"
+            />
           </div>
         </div>
       </section>

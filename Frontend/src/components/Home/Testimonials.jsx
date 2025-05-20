@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import AddReview from "../common/AddReview";
 import { useUser } from "../common/UserContext";
+import { useSwipeable } from "react-swipeable";
+
 const testimonialsInitial = [
   {
     quote:
@@ -40,31 +42,43 @@ export default function TestimonialSlider() {
     setReviewModal(false);
   };
 
+  // Inside your component:
+  const handlers = useSwipeable({
+    onSwipedLeft: () => next(),
+    onSwipedRight: () => prev(),
+    trackMouse: true, // Optional: also enable mouse drag for desktop testing
+  });
+
   return (
     <div className="py-8 px-4 sm:px-12 md:px-32 relative">
-      <h1 className="text-text-heading text-3xl sm:text-4xl font-bold flex justify-center items-center gap-4 drop-shadow-lg mb-8">
-        <span className="text-button text-4xl sm:text-5xl">««</span>
-        <span className="text-heading">What Our Users Say</span>
-        <span className="text-button text-4xl sm:text-5xl">»»</span>
+      <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading flex items-center justify-center gap-3 sm:gap-5">
+        <span className="text-button text-4xl sm:text-5xl md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+          What Our Users Say
+        </span>
+        <span className="text-button text-4xl sm:text-5xl md:text-6xl">»»</span>
       </h1>
 
-      <div className="backdrop-blur-sm text-text-heading py-16 flex items-center justify-center relative">
-        <div className="max-w-2xl text-center px-6">
+      <div
+        {...handlers} // Attach swipe handlers here
+        className="backdrop-blur-sm text-text-heading py-12 sm:py-16 flex items-center justify-center relative min-h-[22rem] md:min-h-[21rem]"
+      >
+        <div className="max-w-xl sm:max-w-2xl text-center px-4 sm:px-6 relative">
           <motion.blockquote
             key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex justify-center mb-2">
+            <div className="flex justify-center mb-3">
               <img
                 src={testimonials[index].image}
                 alt={testimonials[index].name}
                 className="w-12 h-12 rounded-full border-2 border-text-linkHover"
               />
             </div>
-            <p className="font-semibold">{testimonials[index].name}</p>
-            <p className="text-xl mb-2 text-text-body">
+            <p className="font-semibold text-lg">{testimonials[index].name}</p>
+            <p className="text-lg sm:text-xl mb-3 text-text-body px-2 sm:px-0">
               "{testimonials[index].quote}"
             </p>
             <p className="text-sm text-text-highlighted font-semibold flex items-center justify-center gap-1">
@@ -81,27 +95,29 @@ export default function TestimonialSlider() {
             </p>
           </motion.blockquote>
 
-          <div className="flex justify-center gap-2 items-center mt-8">
+          <div className="flex justify-center gap-3 items-center mt-8">
             {testimonials.map((_, i) => (
               <span
                 key={i}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-3 h-3 rounded-full transition-colors ${
                   i === index ? "bg-white" : "bg-gray-500"
                 }`}
               ></span>
             ))}
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - visible only on desktop */}
           <button
             onClick={prev}
-            className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 p-2 border border-white rounded-full hover:bg-white hover:text-black transition"
+            className="hidden md:block md:absolute md:-left-44 md:top-1/2 md:-translate-y-1/2 md:p-3 md:border md:border-white md:rounded-full md:hover:bg-white md:hover:text-black md:transition-all"
+            aria-label="Previous testimonial"
           >
             <ArrowLeft size={16} />
           </button>
           <button
             onClick={next}
-            className="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 p-2 border border-white rounded-full hover:bg-white hover:text-black transition"
+            className="hidden md:block md:absolute md:-right-44 md:top-1/2 md:-translate-y-1/2 md:p-3 md:border md:border-white md:rounded-full md:hover:bg-white md:hover:text-black md:transition-all"
+            aria-label="Next testimonial"
           >
             <ArrowRight size={16} />
           </button>
@@ -111,7 +127,7 @@ export default function TestimonialSlider() {
       {/* Add Review Button */}
       <div className="py-4 flex justify-center">
         <button
-          className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition"
+          className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition w-full max-w-xs sm:max-w-none sm:w-auto"
           onClick={() => setReviewModal(true)}
         >
           {user.review.rating > 0 ? "Edit Review" : "Add Review"}

@@ -1,10 +1,8 @@
 import { useState } from "react";
 import AboutSomething from "../components/common/AboutSomething";
 import GradientBackground from "../components/common/Gradient";
-import { ChevronDown } from "lucide-react";
-import { FaTimes } from "react-icons/fa";
-import ConfirmationModal from "../components/common/ConfirmationModal";
-import useSafeNavigate from "../utils/useSafeNavigate";
+import InvestCard from "../components/dashboard/accounts/user/InvestCard";
+import { FaMedal } from "react-icons/fa";
 
 const levels = [
   { level: 1, min: 100, title: "Star", weekly: "2.0%" },
@@ -18,9 +16,9 @@ const levels = [
 
 const levelIcons = [
   { level: 1, icon: "⭐", name: "Star" },
-  { level: 2, icon: "🥉", name: "Bronze" },
-  { level: 3, icon: "🥈", name: "Silver" },
-  { level: 4, icon: "🥇", name: "Gold" },
+  { level: 2, icon: <FaMedal color="#cd7f32" />, name: "Bronze" },
+  { level: 3, icon: <FaMedal color="#c0c0c0" />, name: "Silver" },
+  { level: 4, icon: <FaMedal color="#ffd700" />, name: "Gold" },
   { level: 5, icon: "💎", name: "Diamond" },
   { level: 6, icon: "🔷", name: "Platinum" },
   { level: 7, icon: "👑", name: "Satoshi" },
@@ -42,25 +40,10 @@ const earningDetails = [
 ];
 
 const EarningsPlansPage = () => {
-  const navigate = useSafeNavigate();
   const [isClickedOnInvestNow, setIsClickedOnInvestNow] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState(levels[0]);
-  const [amount, setAmount] = useState(levels[0].stake);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleLevelChange = (e) => {
-    const level = levels.find((lvl) => lvl.level === parseInt(e.target.value));
-    setSelectedLevel(level);
-    setAmount(level.stake);
-  };
-
-  const closeModal = () => {
-    setIsClickedOnInvestNow(false);
-    setSelectedLevel(null);
-  };
 
   return (
-    <div className="bg-primary mt-20 text-text-heading min-h-screen py-12 px-6 sm:px-16 md:px-32">
+    <div className="bg-primary mt-20 text-text-heading min-h-screen py-1 px-4 md:px-32">
       {/* Gradients */}
       <GradientBackground clor1="var(--grad2)" size="40%" top="9%" left="1%" />
       <GradientBackground
@@ -74,23 +57,35 @@ const EarningsPlansPage = () => {
       <GradientBackground size="40%" top="45%" left="5%" />
       <GradientBackground size="40%" top="78%" left="100%" />
 
-      <h1 className="text-3xl sm:text-4xl font-bold text-center flex items-center justify-center gap-4">
-        <span className="text-4xl sm:text-5xl text-button">««</span>
-        <span>Earning Plans</span>
-        <span className="text-button text-4xl sm:text-5xl">»»</span>
+      <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+        <span className="text-button text-4xl sm:text-5xl md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+          Earning Plans
+        </span>
+        <span className="text-button text-4xl sm:text-5xl md:text-6xl">»»</span>
       </h1>
 
       {/* How it works */}
       <AboutSomething heading="How You Earn" subHeadings={earningDetails} />
 
       {/* Level Cards */}
-      <div className="flex flex-col py-10 relative">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center flex items-center justify-center gap-4">
-          <span className="text-4xl sm:text-5xl text-button">««</span>
-          <span>7-Level Earning Structures</span>
-          <span className="text-4xl sm:text-5xl text-button">»»</span>
+      <div className="flex flex-col py-10 relative px-4 sm:px-6 md:px-10">
+        {/* Title */}
+
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+            ««
+          </span>
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+            7-Level Earning Structures
+          </span>
+          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+            »»
+          </span>
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 py-16 gap-6">
+
+        {/* Level Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-12 sm:py-14">
           {levels.map((plan) => {
             const getLevelIcon = (level) => {
               const found = levelIcons.find((item) => item.level === level);
@@ -100,35 +95,40 @@ const EarningsPlansPage = () => {
             return (
               <div
                 key={plan.level}
-                className="rounded-xl bg-custom-gradient shadow-md shadow-button w-full h-[200px] px-5 flex items-center justify-center relative"
+                className="rounded-xl bg-custom-gradient shadow-md shadow-button w-full h-auto min-h-[180px] px-6 py-6 flex items-center justify-center relative"
               >
-                <div className="absolute left-4 top-18 flex flex-col items-center space-y-1">
+                {/* Left dots */}
+                <div className="absolute left-4 top-16 flex flex-col items-center space-y-1">
                   <div className="w-4 h-4 border-2 bg-button rounded-full mb-1" />
                   <span className="w-1 h-1 bg-text-link rounded-full" />
                   <span className="w-1 h-1 bg-text-link rounded-full" />
                   <span className="w-1 h-1 bg-text-link rounded-full" />
                 </div>
 
-                <div className="flex  items-center justify-center  w-full">
-                  <p className="text-3xl w-[30%]">{getLevelIcon(plan.level)}</p>
+                {/* Content */}
+                <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-4">
+                  {/* Icon */}
+                  <p className="text-3xl sm:text-4xl md:text-5xl">
+                    {getLevelIcon(plan.level)}
+                  </p>
 
-                  <div className="flex flex-col  items-center justify-between space-y-2">
-                    <div className="w-[100%]">
-                      <div className="text-xl font-semibold">
-                        {plan.title} (Level {plan.level})
-                      </div>
-                      <p className="text-sm text-gray-300 mt-1">
-                        Min Stake:{" "}
-                        <span className="font-semibold">${plan.min}</span>
-                      </p>
-                      <p className="text-text-link mt-1">
-                        Weekly Return: <strong>{plan.weekly}</strong>
-                      </p>
+                  {/* Info */}
+                  <div className="flex flex-col text-center sm:text-left items-center sm:items-start justify-center space-y-2">
+                    <div className="text-lg sm:text-xl font-semibold">
+                      {plan.title} (Level {plan.level})
                     </div>
+                    <p className="text-sm text-gray-300">
+                      Min Stake:{" "}
+                      <span className="font-semibold">${plan.min}</span>
+                    </p>
+                    <p className="text-sm text-text-link">
+                      Weekly Return: <strong>{plan.weekly}</strong>
+                    </p>
                   </div>
                 </div>
 
-                <div className="absolute right-4 top-18 flex flex-col justify-between items-center space-y-1">
+                {/* Right dots */}
+                <div className="absolute right-4 top-16 flex flex-col items-center space-y-1">
                   <div className="w-4 h-4 border-2 bg-button rounded-full mb-1" />
                   <span className="w-1 h-1 bg-text-link rounded-full" />
                   <span className="w-1 h-1 bg-text-link rounded-full" />
@@ -138,108 +138,35 @@ const EarningsPlansPage = () => {
             );
           })}
         </div>
+
+        {/* Button */}
         <button
-          className="bg-button w-fit self-center px-4 py-2 rounded-md shadow-sm shadow-text-highlighted"
+          className="bg-button w-fit self-center px-6 py-2 text-sm sm:text-base rounded-md shadow-sm shadow-text-highlighted"
           onClick={() => setIsClickedOnInvestNow(true)}
         >
           Start Earning Now
         </button>
+
+        {/* Modal */}
         {isClickedOnInvestNow && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-            <div className="absolute bg-primary-light top-[30%] left-[25%] text-text-heading rounded-md p-8 w-full max-w-3xl shadow-sm shadow-text-link">
-              <h2 className="text-2xl font-semibold mb-8">
-                Start Your Investment
-              </h2>
-              <button
-                onClick={closeModal}
-                className="absolute top-2 right-2 text-2xl text-gray-600 hover:text-button"
-              >
-                <FaTimes />
-              </button>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                {/* Investment Amount */}
-                <div>
-                  <label className="block text-sm mb-2">
-                    Enter Amount (Min ${selectedLevel.min})
-                  </label>
-                  <input
-                    type="number"
-                    min={selectedLevel.min}
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading focus:outline-none placeholder:text-gray-400"
-                    placeholder={`Enter at least $${selectedLevel.min}`}
-                  />
-                </div>
-
-                {/* Investment Level */}
-                <div>
-                  <label className="block text-sm mb-2">
-                    Choose Investment Level
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 appearance-none text-text-heading focus:outline-none"
-                      value={selectedLevel.level}
-                      onChange={handleLevelChange}
-                    >
-                      {levels.map((lvl) => (
-                        <option key={lvl.level} value={lvl.level}>
-                          {lvl.title}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                      size={20}
-                    />
-                  </div>
-                </div>
-
-                {/* Weekly Interest */}
-                <div>
-                  <label className="block text-sm mb-2">
-                    Weekly Interest Rate
-                  </label>
-                  <div className="w-full bg-primary-dark border border-[#2d2b42] rounded-md py-3 px-4 text-text-heading">
-                    {selectedLevel.weekly}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-center">
-                <button
-                  className="bg-button hover:opacity-90 transition-all text-text-heading font-semibold px-12 py-3 rounded-xl shadow-inner shadow-text-link"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  Invest Now
-                </button>
-              </div>
-
-              {isModalOpen && (
-                <ConfirmationModal
-                  text={"Are you sure to want to pay"}
-                  onConfirm={() => navigate("/dashboard/user/investments")}
-                  onCancel={() => setIsModalOpen(false)}
-                />
-              )}
-            </div>
+            <InvestCard onClose={setIsClickedOnInvestNow} />
           </div>
         )}
       </div>
 
       {/* Referral Commission */}
-      <section className="bg-primary-dark p-6 rounded-xl shadow-md mb-12">
-        <h2 className="text-2xl font-semibold text-text-link flex items-center space-x-2 mb-4">
+      <section className="bg-primary-dark p-4 sm:p-6 rounded-xl shadow-md mb-10 sm:mb-12">
+        <h2 className="text-xl sm:text-2xl font-semibold text-text-link flex items-center space-x-2 mb-3 sm:mb-4">
           <span>🔗</span>
           <span className="text-text-heading">Referral Commission</span>
         </h2>
-        <p className="text-text-body mb-2">
+
+        <p className="text-sm sm:text-base text-text-body mb-2">
           Earn <span className="font-semibold text-text-highlighted">10%</span>{" "}
           from each direct referral's deposit.
         </p>
-        <p className="text-text-body">
+        <p className="text-sm sm:text-base text-text-body">
           For example, if your referral deposits $1,000, you get{" "}
           <span className="font-semibold text-text-highlighted">$100</span>{" "}
           instantly!
@@ -247,21 +174,30 @@ const EarningsPlansPage = () => {
       </section>
 
       {/* Team Rewards */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">🎁 Monthly Team Rewards</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border border-gray-600 rounded-lg overflow-hidden">
+      <section className="mb-10 sm:mb-12 ">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
+          🎁 Monthly Team Rewards
+        </h2>
+
+        <div className="overflow-x-auto ">
+          <table className="w-[310px] md:w-full text-left border border-gray-600">
             <thead className="bg-primary-dark text-text-heading">
               <tr>
-                <th className="px-4 py-3">Active Team Members</th>
-                <th className="px-4 py-3">Monthly Salary Reward</th>
+                <th className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
+                  Active Team Members
+                </th>
+                <th className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
+                  Monthly Salary Reward
+                </th>
               </tr>
             </thead>
             <tbody className="text-gray-300">
               {rewards.map((r, i) => (
                 <tr key={i} className="border-t border-gray-700">
-                  <td className="px-4 py-3">{r.members}</td>
-                  <td className="px-4 py-3 font-semibold text-text-link">
+                  <td className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
+                    {r.members}
+                  </td>
+                  <td className="px-3 sm:px-4 py-2 sm:py-3 font-semibold text-text-link text-sm sm:text-base">
                     {r.reward}
                   </td>
                 </tr>
@@ -269,13 +205,12 @@ const EarningsPlansPage = () => {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-sm text-gray-400">
+
+        <p className="mt-2 text-xs sm:text-sm text-gray-400">
           💡 Monthly bonuses are based on the number of active members in your
           team.
         </p>
       </section>
-
-      {/* Investment Modal */}
     </div>
   );
 };

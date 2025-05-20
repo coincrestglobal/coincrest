@@ -3,9 +3,10 @@ import { Outlet } from "react-router";
 
 function AccountLayout({ children }) {
   return (
-    <div className="px-32 mt-16 py-10 grid grid-cols-[0.3fr_0.7fr]  gap-10 bg-primary rounded-md overflow-hidden">
+    <div className=" md:px-12 lg:px-32 mt-16 py-10 grid grid-cols-1 lg:grid-cols-[0.3fr_0.7fr] gap-6 lg:gap-10 bg-primary rounded-md overflow-hidden h-fit ">
       <Sidebar>{children}</Sidebar>
-      <div className="  bg-primary overflow-y-scroll h-fit max-h-[80vh] scrollbar-hide border border-button rounded ">
+      <div className="bg-primary-dark overflow-y-auto h-fit  scrollbar-hide border border-button rounded">
+        {/* max-h-[87vh] */}
         <Outlet />
       </div>
     </div>

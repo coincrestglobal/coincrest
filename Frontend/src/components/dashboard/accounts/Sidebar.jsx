@@ -2,11 +2,16 @@ import Profile from "./Profile";
 
 function Sidebar({ children }) {
   return (
-    <div className="bg-primary-dark flex flex-col h-[80vh] py-4 space-y-4  border border-button rounded">
+    <div
+      className="
+        bg-primary-dark flex flex-col h-fit
+         max-h-[87vh]
+        py-4 space-y-4 border border-button rounded
+        w-full md:w-auto
+      "
+    >
       <Profile />
-      <div className="bg-button">
-        <div className="flex flex-col">{children}</div>
-      </div>
+      <div className=" flex flex-col">{children}</div>
     </div>
   );
 }

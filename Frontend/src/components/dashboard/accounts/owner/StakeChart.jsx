@@ -10,7 +10,7 @@ import {
 function StakedAmountChart({ timeFilter, statsData, title }) {
   const currentStatsData = statsData[timeFilter];
   return (
-    <div className="bg-primary p-4 rounded-xl shadow-md flex flex-col justify-center items-center w-full">
+    <div className="bg-primary-dark p-4 rounded-xl shadow-md flex flex-col justify-center items-center w-full">
       <h3 className="text-text-heading font-bold mb-4 text-center">{title}</h3>
 
       <div className="w-full">

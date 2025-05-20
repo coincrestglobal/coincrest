@@ -1,5 +1,3 @@
-import React from "react";
-import { FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useUser } from "../../common/UserContext"; // adjust path as needed
 import Avatar from "../Avatar";
@@ -35,8 +33,8 @@ function TopNav() {
         ) : (
           <Avatar
             size={48}
-            bgColor="bg-green-500"
-            textColor="text-white"
+            bgColor="bg-"
+            textColor="text-text-heading"
             textSize="text-xl"
             fontWeight="font-semibold"
             fullName={user.name}

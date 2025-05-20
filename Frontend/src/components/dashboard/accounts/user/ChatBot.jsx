@@ -84,11 +84,11 @@ function ChatBot() {
   }, [messages]);
 
   return (
-    <div className="w-full  mx-auto  rounded-md bg-primary border border-gray-700 h-full overflow-y-scroll scrollbar-hide">
+    <div className="w-full mx-auto rounded-md bg-primary border border-gray-700 h-full max-h-[90vh] flex flex-col overflow-hidden">
       {/* Chat messages */}
       <div
         ref={chatRef}
-        className="chat-box bg-primary-dark border border-gray-700 rounded-md h-80  p-4 mb-4 overflow-y-scroll scrollbar-hide"
+        className="flex-1 bg-primary-dark border-b border-gray-700 p-4 overflow-y-auto scrollbar-hide"
       >
         {messages.map((msg, index) => (
           <div
@@ -98,7 +98,7 @@ function ChatBot() {
             }`}
           >
             <div
-              className={`max-w-xs px-4 py-2 rounded-lg text-sm whitespace-pre-wrap ${
+              className={`max-w-[80%] sm:max-w-xs px-4 py-2 rounded-lg text-sm whitespace-pre-wrap ${
                 msg.sender === "user"
                   ? "bg-button text-text-heading"
                   : "bg-gray-900 text-gray-200"
@@ -112,7 +112,7 @@ function ChatBot() {
 
       {/* Quick replies */}
       {messages.length === 1 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 p-4 border-t border-gray-700">
           {["Deposit", "Withdraw", "Staking", "Referral", "Support"].map(
             (topic) => (
               <button
@@ -128,14 +128,14 @@ function ChatBot() {
       )}
 
       {/* Input field */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 p-4 border-t border-gray-700 ">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask about deposit, withdraw, staking, etc..."
-          className="flex-1 px-4 py-2 rounded bg-gray-800 border border-gray-600 text-text-heading focus:outline-none"
+          className="flex-1 px-4 py-2 rounded bg-gray-800 border border-gray-600 text-text-heading focus:outline-none text-sm sm:text-base"
         />
         <button
           onClick={() => sendMessage()}

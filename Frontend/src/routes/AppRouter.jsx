@@ -22,7 +22,7 @@ import Deposits from "../components/dashboard/accounts/user/Deposit";
 
 //admin
 import AdminDashBoard from "../components/dashboard/accounts/admin/DashBoard";
-import Stats from "../components/dashboard/accounts/admin/Stats";
+import Stats from "../components/dashboard/accounts/owner/Stats";
 import Users from "../components/dashboard/accounts/admin/Users";
 import UserDetails from "../components/dashboard/accounts/admin/UserDetails";
 import WithdrawalRequests from "../components/dashboard/accounts/admin/WithdrawRequests";

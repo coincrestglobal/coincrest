@@ -58,7 +58,7 @@ function Profile() {
         <span className="text-sm">{user.email}</span>
       </div>
 
-      <div className="absolute -bottom-5 w-[80%] left-[10%] border-b-2 border-gray-400"></div>
+      <div className="absolute -bottom-5 w-[80%] left-[10%] border-b-2 border-gray-400 mb-2"></div>
     </div>
   );
 }

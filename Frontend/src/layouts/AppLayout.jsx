@@ -31,7 +31,8 @@ function AppLayout() {
       </main>
 
       {/* Footer or Bottom Navigation */}
-      {isMobile ? <BottomNav /> : <Footer />}
+      <Footer />
+      {isMobile && <BottomNav />}
     </div>
   );
 }

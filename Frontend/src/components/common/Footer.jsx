@@ -29,26 +29,29 @@ function Footer() {
             Quick Links
           </h4>
           <ul className="space-y-2 text-sm">
-            <li>
+            {/* Desktop-only links */}
+            <li className="hidden lg:block">
               <Link to="/" className="hover:text-white">
                 Home
               </Link>
             </li>
-            <li>
+            <li className="hidden lg:block">
               <Link to="/earnings" className="hover:text-white">
                 Earnings
               </Link>
             </li>
-            <li>
+            <li className="hidden lg:block">
               <Link to="/aboutus" className="hover:text-white">
                 About Us
               </Link>
             </li>
-            <li>
+            <li className="hidden lg:block">
               <Link to="/contactus" className="hover:text-white">
                 Contact
               </Link>
             </li>
+
+            {/* Mobile/Tablet-only links */}
             <li>
               <Link to="/terms-and-conditions" className="hover:text-white">
                 Terms & Conditions

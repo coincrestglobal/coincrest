@@ -6,41 +6,48 @@ import {
   Settings,
   Users,
   HelpCircle,
+  LogOut,
 } from "lucide-react";
 
 import NavItem from "../NavItem";
 
 function UserLinks() {
   return (
-    <div className="flex flex-col">
-      <NavItem to={"."}>
-        <LayoutDashboard className="w-5 h-5" />
-        <span>Dashboard</span>
-      </NavItem>
-      <NavItem to={"investments"}>
-        <LineChart className="w-5 h-5" />
-        <span>Investing</span>
-      </NavItem>
-      <NavItem to={"deposits"}>
-        <Banknote className="w-5 h-5" />
-        <span>Deposit</span>
-      </NavItem>
-      <NavItem to={"withdraws"}>
-        <Wallet className="w-5 h-5" />
-        <span>Withdraw</span>
-      </NavItem>
-      <NavItem to={"settings"}>
-        <Settings className="w-5 h-5" />
-        <span>Settings</span>
-      </NavItem>
-      <NavItem to={"team"}>
-        <Users className="w-5 h-5" />
-        <span>Your Team</span>
-      </NavItem>
-      <NavItem to={"Help-and-Support"}>
-        <HelpCircle className="w-5 h-5" />
-        <span>Help & Support</span>
-      </NavItem>
+    <div className="w-full overflow-x-auto md:overflow-x-visible scrollbar-none">
+      <div className="flex md:flex-col gap-2 min-w-max md:min-w-0 px-2 md:px-0 ">
+        <NavItem to={"."}>
+          <LayoutDashboard className="w-5 h-4" />
+          <span>Dashboard</span>
+        </NavItem>
+        <NavItem to={"investments"}>
+          <LineChart className="w-5 h-4" />
+          <span>Investing</span>
+        </NavItem>
+        <NavItem to={"deposits"}>
+          <Banknote className="w-5 h-4" />
+          <span>Deposit</span>
+        </NavItem>
+        <NavItem to={"withdraws"}>
+          <Wallet className="w-5 h-4" />
+          <span>Withdraw</span>
+        </NavItem>
+        <NavItem to={"settings"}>
+          <Settings className="w-5 h-4" />
+          <span>Settings</span>
+        </NavItem>
+        <NavItem to={"team"}>
+          <Users className="w-5 h-4" />
+          <span>Your Team</span>
+        </NavItem>
+        <NavItem to={"Help-and-Support"}>
+          <HelpCircle className="w-5 h-4" />
+          <span>Help & Support</span>
+        </NavItem>
+        <NavItem to={"logout"}>
+          <LogOut className="w-5 h-4" />
+          <span>Logout</span>
+        </NavItem>
+      </div>
     </div>
   );
 }

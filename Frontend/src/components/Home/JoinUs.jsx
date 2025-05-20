@@ -9,9 +9,9 @@ function JoinUs() {
 
   const handlePrimaryAction = () => {
     if (user?.role === "user") {
-      navigate("/dashboard"); // If already a user, go to dashboard
+      navigate("/dashboard/user");
     } else {
-      navigate("/signup"); // If not, go to signup page
+      navigate("/signup");
     }
   };
 
@@ -20,8 +20,9 @@ function JoinUs() {
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row justify-between items-center px-8 md:px-44 py-16 gap-8">
-      <div className="flex flex-col gap-4 order-2 md:order-none">
+    <div className="w-full flex flex-col md:flex-row justify-between items-center px-6 sm:px-8 md:px-44 py-12 sm:py-16 gap-10 sm:gap-8">
+      {/* Text Section */}
+      <div className="flex flex-col gap-4 text-center md:text-left order-2 md:order-none w-full md:w-1/2">
         <GradientBackground
           clor1="var(--grad2)"
           size="40%"
@@ -36,28 +37,30 @@ function JoinUs() {
           Unlock the potential of your crypto assets with our seamless USDT
           staking platform
         </p>
-        <div className="flex gap-4">
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:justify-center md:justify-start mt-2">
           <button
             onClick={handlePrimaryAction}
-            className="w-fit cursor-pointer bg-button hover:bg-button-hover px-8 py-3 text-md font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            className="w-full sm:w-fit cursor-pointer bg-button hover:bg-button-hover px-8 py-3 text-md font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
           >
             {user?.role === "user" ? "Go to Dashboard" : "Sign Up"}
           </button>
           <button
             onClick={handleAboutUs}
-            className="w-fit bg-transparent border border-gray-300 px-8 py-3 text-md font-semibold rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="w-full sm:w-fit bg-transparent border border-gray-300 px-8 py-3 text-md font-semibold rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
             About Us
           </button>
         </div>
       </div>
 
-      {/* Right Side Image */}
-      <div className="rounded-lg">
+      {/* Image Section */}
+      <div className="w-full md:w-1/2 flex justify-center md:justify-end order-1 md:order-none">
         <img
           src="/images/joinUs.png"
           alt="Join Us"
-          className="h-72 object-cover"
+          className="h-64 sm:h-72 object-contain"
         />
       </div>
     </div>

@@ -39,6 +39,10 @@ body,
   scrollbar-width: none;
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
 /* Toast background */
 .custom-toast {
   background-color: var(--primary) !important;

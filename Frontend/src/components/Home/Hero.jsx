@@ -39,7 +39,7 @@ const HeroSection = () => {
             {line.includes("CoinCrest") ? (
               <>
                 {line.replace("CoinCrest", "")}
-                <span className="text-button">CoinCrest</span>
+                <span className="text-text-highlighted">CoinCrest</span>
               </>
             ) : (
               line
@@ -65,7 +65,10 @@ const HeroSection = () => {
           <GradientBackground size="35%" top="11%" left="99%" />
 
           <p className="text-sm sm:text-base  md:text-lg text-center text-text-subheading mt-2 max-w-2xl">
-            Join <span className="text-button font-semibold">CoinCrest</span>{" "}
+            Join{" "}
+            <span className="text-text-highlighted font-semibold">
+              CoinCrest
+            </span>{" "}
             today and start earning rewards through USDT staking. <br />
             Our platform supports TRC20 and BEP20 networks, making it easy{" "}
             <br />
@@ -109,7 +112,7 @@ const HeroSection = () => {
         <div className="w-full flex flex-col items-center justify-center">
           <img
             src="/images/heroImage2.png"
-            className="h-52 sm:h-72 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"
+            className="h-60 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"
             alt="Hero"
           />
         </div>

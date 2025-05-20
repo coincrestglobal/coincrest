@@ -41,14 +41,14 @@ const WithdrawPage = () => {
   }, [user]);
 
   return (
-    <div className="relative max-w-4xl mx-auto bg-primary-dark  rounded-md p-8">
+    <div className="relative max-w-4xl mx-auto bg-primary-dark rounded-md p-6 sm:p-8">
       {/* Tabs */}
-      <div className="flex space-x-10 mb-8">
+      <div className="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-10 mb-6 sm:mb-8">
         {["New Withdrawal", "History", "Guidelines"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-2 font-medium ${
+            className={`pb-2 font-medium w-1/3 sm:w-auto text-center sm:text-left ${
               activeTab === tab
                 ? "text-text-heading border-b-2 border-button"
                 : "text-gray-400"
@@ -59,9 +59,14 @@ const WithdrawPage = () => {
         ))}
       </div>
 
-      {/* New Withdrawal Form */}
-      {activeTab === "New Withdrawal" && (
-        <form className="space-y-6">
+      {/* All tabs rendered, show/hide via hidden */}
+      <div>
+        {/* New Withdrawal Form */}
+        <form
+          className={`space-y-6 ${
+            activeTab === "New Withdrawal" ? "" : "hidden"
+          }`}
+        >
           <div>
             <label className="block mb-2 text-sm text-gray-300">
               Amount ($)
@@ -112,11 +117,13 @@ const WithdrawPage = () => {
               : "Withdraw Now"}
           </button>
         </form>
-      )}
 
-      {/* Withdrawal History (static for now) */}
-      {activeTab === "History" && (
-        <div className="text-gray-300 space-y-4">
+        {/* Withdrawal History */}
+        <div
+          className={`${
+            activeTab === "History" ? "" : "hidden"
+          } text-gray-300 space-y-4`}
+        >
           <div className="bg-primary-light p-4 rounded-lg border border-[#383658]">
             <div className="flex justify-between">
               <span>Amount:</span>
@@ -135,9 +142,13 @@ const WithdrawPage = () => {
             No more withdrawals found.
           </p>
         </div>
-      )}
-      {activeTab === "Guidelines" && (
-        <div className="text-gray-300 space-y-4">
+
+        {/* Guidelines */}
+        <div
+          className={`${
+            activeTab === "Guidelines" ? "" : "hidden"
+          } text-gray-300 space-y-4`}
+        >
           <h2 className="text-xl font-semibold text-text-heading mb-4">
             Withdrawal Guidelines
           </h2>
@@ -159,7 +170,7 @@ const WithdrawPage = () => {
             </li>
           </ul>
         </div>
-      )}
+      </div>
     </div>
   );
 };

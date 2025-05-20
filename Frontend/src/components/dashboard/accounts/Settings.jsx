@@ -85,16 +85,7 @@ const ProfileForm = () => {
                   defaultValue={user.name}
                 />
               </div>
-              <div>
-                <label className="block text-sm mb-2 text-gray-300">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  className="w-full bg-transparent border border-[#2d2b42] rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-button"
-                  defaultValue={user.email}
-                />
-              </div>
+
               <div>
                 <label className="block text-sm mb-2 text-gray-300">
                   Phone

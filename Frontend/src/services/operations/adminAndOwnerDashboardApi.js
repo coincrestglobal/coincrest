@@ -22,6 +22,7 @@ export const getAllUsers = async (params) => {
   }
   return result;
 };
+
 export const getUserDetails = async (params) => {
   let result = [];
   try {

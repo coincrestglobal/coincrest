@@ -16,9 +16,9 @@ const DepositPage = () => {
   };
 
   return (
-    <div className="relative max-w-4xl mx-auto bg-primary-dark  rounded-md p-8">
+    <div className="relative w-full max-w-4xl bg-primary-dark rounded-md p-4 sm:p-6 md:p-8 flex flex-col ">
       {/* Tabs */}
-      <div className="flex space-x-10 mb-8">
+      <div className="flex flex-wrap gap-4 sm:space-x-10 mb-8">
         {["New Deposit", "History", "Guidelines"].map((tab) => (
           <button
             key={tab}
@@ -42,14 +42,14 @@ const DepositPage = () => {
               Please transfer USDT to one of the following wallet addresses:
             </p>
 
-            <div className="bg-primary-light rounded-md p-4 space-y-4">
+            <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
               {/* TRC20 Address */}
               <div>
                 <label className="block text-sm text-gray-400 mb-1">
                   TRC20 Address
                 </label>
-                <div className="flex items-center justify-between bg-primary-dark px-4 py-3 rounded-md">
-                  <span className="text-text-heading break-all">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                  <span className="text-text-heading break-words sm:break-all">
                     TVg...YourTRC20AddressHere
                   </span>
                   <button
@@ -58,7 +58,7 @@ const DepositPage = () => {
                         "TVg...YourTRC20AddressHere"
                       )
                     }
-                    className="ml-4 text-sm text-text-linkHover hover:underline"
+                    className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
                   >
                     Copy
                   </button>
@@ -70,15 +70,15 @@ const DepositPage = () => {
                 <label className="block text-sm text-gray-400 mb-1">
                   BEP20 Address
                 </label>
-                <div className="flex items-center justify-between bg-primary-dark px-4 py-3 rounded-md">
-                  <span className="text-text-heading break-all">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                  <span className="text-text-heading break-words sm:break-all">
                     0x...YourBEP20AddressHere
                   </span>
                   <button
                     onClick={() =>
                       navigator.clipboard.writeText("0x...YourBEP20AddressHere")
                     }
-                    className="ml-4 text-sm text-text-linkHover hover:underline"
+                    className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
                   >
                     Copy
                   </button>
@@ -105,7 +105,7 @@ const DepositPage = () => {
       {/* History Tab */}
       {activeTab === "History" && (
         <div className="text-gray-300 space-y-4">
-          <div className="bg-primary-light p-4 rounded-lg border border-[#383658]">
+          <div className="bg-primary-light p-4 rounded-lg border border-button">
             <div className="flex justify-between">
               <span>Amount:</span>
               <span>$500</span>
@@ -127,11 +127,12 @@ const DepositPage = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#1f1d2e] border border-[#2d2b42] p-6 rounded-lg w-full max-w-md relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-primary border border-button p-6 rounded-lg w-full max-w-md relative">
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-text-heading"
               onClick={() => setShowModal(false)}
+              aria-label="Close modal"
             >
               <FaTimes />
             </button>
@@ -149,7 +150,7 @@ const DepositPage = () => {
                   type="text"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full bg-transparent border border-[#2d2b42] rounded-md px-4 py-2 text-text-heading focus:outline-none"
+                  className="w-full bg-transparent border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
                   placeholder="Enter your transaction ID"
                 />
               </div>
@@ -162,7 +163,7 @@ const DepositPage = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border border-[#2d2b42] rounded-md px-4 py-2 text-text-heading focus:outline-none"
+                  className="w-full bg-transparent border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
                   placeholder="Enter your password"
                 />
               </div>

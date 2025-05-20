@@ -18,3 +18,7 @@ export const ownerAndAdminDashboardEndPoints = {
   GET_ALL_USERS_API: BASE_URL + "/management/getUsers",
   GET_USER_DETAILS_API: BASE_URL + "/management/getUser",
 };
+
+export const userDashboardEndPoints = {
+  GET_PLANS: BASE_URL + "/plans",
+};

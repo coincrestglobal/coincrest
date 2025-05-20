@@ -2,10 +2,10 @@ import { CirclePlus, Gem } from "lucide-react";
 
 function AboutCard({ heading, subHeadings }) {
   return (
-    <div className=" w-full max-w-4xl h-[320px]  bg-opacity-70 rounded-xl border-2 border-button text-white px-6 py-8     overflow-hidden flex items-center justify-center ">
+    <div className="relative w-full h-full sm:h-[360px] lg:h-[320px] bg-opacity-70 rounded-xl border-2 border-button text-text-heading px-4 sm:px-6 py-6 sm:py-8 overflow-hidden flex flex-col sm:flex-row items-center justify-center transition-all duration-300">
       {/* Shield Circle */}
-      <div className="absolute top-2 left-2.5 w-10 h-10 rounded-full border-2 border-button flex items-center justify-center bg-[#15152b]">
-        <Gem />
+      <div className="absolute top-2 left-2.5 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-button flex items-center justify-center bg-[#15152b]">
+        <Gem className="w-4 h-4 sm:w-5 sm:h-5" />
       </div>
 
       {/* Decorative Dots */}
@@ -31,17 +31,21 @@ function AboutCard({ heading, subHeadings }) {
       </div>
 
       {/* Plus Icons */}
-      <CirclePlus className="absolute top-5 right-5 text-[#44445c] w-5 h-5" />
-      <CirclePlus className="absolute bottom-5 left-5 text-[#44445c] w-5 h-5" />
-      <CirclePlus className="absolute bottom-5 right-5 text-[#44445c] w-5 h-5" />
+      <CirclePlus className="absolute top-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
+      <CirclePlus className="absolute bottom-5 left-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
+      <CirclePlus className="absolute bottom-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
 
       {/* Content */}
-      <div className="relative z-10 p-4 w-[90%]">
-        <h2 className="text-xl font-semibold mb-4">{heading}</h2>
-        <div className="text-sm text-white/80 space-y-2">
+      <div className="relative z-10 px-4 sm:px-16 py-6 md:py-3 text-center sm:text-left w-full sm:w-fit h-[250px] overflow-y-scroll scrollbar-none">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-text-heading">
+          {heading}
+        </h2>
+        <div className="text-sm sm:text-base text-text-heading/80 space-y-2">
           {subHeadings.map((item, index) => (
             <p key={index} className="flex items-start">
-              <span className="text-2xl text-text-link mr-2">•</span>
+              <span className="text-text-heading text-base sm:text-lg  ">
+                •
+              </span>
               {Object.values(item)[0]}
             </p>
           ))}
@@ -53,11 +57,10 @@ function AboutCard({ heading, subHeadings }) {
 
 function AboutSomething({ heading, subHeadings }) {
   return (
-    <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10">
+    <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10 sm:py-16">
       {/* Background overlay */}
-      <div className="absolute w-[80%] sm:w-[85%] md:w-[60%] lg:w-[70%] max-w-5xl h-[350px] sm:h-[350px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10"></div>{" "}
-        {/* Overlay for blur and darkness */}
+      <div className="absolute w-[72%] md:w-[70%] lg:w-[70%] max-w-5xl h-[350px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
+        <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10" />
         <video
           src="/images/video1.mp4"
           autoPlay
@@ -69,7 +72,7 @@ function AboutSomething({ heading, subHeadings }) {
         />
       </div>
       {/* Cards Container */}
-      <div className="relative w-[70%] z-10 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
+      <div className="relative z-10 w-full md:w-[70%] flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
         <AboutCard heading={heading} subHeadings={subHeadings} />
       </div>
     </div>

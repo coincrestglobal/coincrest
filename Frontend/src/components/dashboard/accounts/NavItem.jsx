@@ -10,7 +10,7 @@ function NavItem({ to, children }) {
     safeNavigate("/login");
   };
 
-  const style = `flex items-center px-8 py-4 text-xl uppercase bg-primary-dark text-text-link space-x-3 transition-all duration-75 ease-in-out `;
+  const style = `flex items-center px-2 md:px-8 py-2 md:py-3 md:text-xl uppercase bg-primary-dark text-text-link space-x-3 transition-all duration-75 ease-in-out `;
 
   if (to === "logout") {
     return (
@@ -25,7 +25,11 @@ function NavItem({ to, children }) {
       to={to}
       end
       className={({ isActive }) =>
-        `${style} ${isActive ? " ml-1 text-white " : " hover:ml-1"}`
+        `${style} ${
+          isActive
+            ? "text-white border-b-2 border-button md:border-b-0 md:border-l-4 md:border-l-button"
+            : " hover:ml-1 border-l-0"
+        }`
       }
     >
       <div className="flex items-center space-x-3  ">{children}</div>

@@ -5,10 +5,10 @@ import useSafeNavigate from "../../utils/useSafeNavigate";
 function InvestmentCard() {
   const navigate = useSafeNavigate();
   return (
-    <div className=" w-full  h-[320px]  bg-opacity-70 rounded-xl border-2 border-button text-text-heading px-6 py-8 overflow-hidden flex items-center justify-center transition-all duration-300 ">
+    <div className="relative w-full h-auto sm:h-[360px] lg:h-[320px] bg-opacity-70 rounded-xl border-2 border-button text-text-heading px-4 sm:px-6 py-6 sm:py-8 overflow-hidden flex flex-col sm:flex-row items-center justify-center transition-all duration-300">
       {/* Shield Circle */}
-      <div className="absolute top-2 left-2.5 w-10 h-10 rounded-full border-2 border-button flex items-center justify-center bg-[#15152b]">
-        <Gem />
+      <div className="absolute top-2 left-2.5 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-button flex items-center justify-center bg-[#15152b]">
+        <Gem className="w-4 h-4 sm:w-5 sm:h-5" />
       </div>
 
       {/* Decorative Dots */}
@@ -34,16 +34,16 @@ function InvestmentCard() {
       </div>
 
       {/* Plus Icons */}
-      <CirclePlus className="absolute top-5 right-5 text-[#44445c] w-5 h-5" />
-      <CirclePlus className="absolute bottom-5 left-5 text-[#44445c] w-5 h-5" />
-      <CirclePlus className="absolute bottom-5 right-5 text-[#44445c] w-5 h-5" />
+      <CirclePlus className="absolute top-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
+      <CirclePlus className="absolute bottom-5 left-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
+      <CirclePlus className="absolute bottom-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
 
       {/* Content */}
-      <div className="relative z-10 px-16 py-6 w-fit">
-        <h2 className="text-xl font-semibold mb-4 text-text-heading">
+      <div className="relative z-10 px-4 sm:px-16 py-4 sm:py-6 text-center sm:text-left w-full sm:w-fit">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-text-heading">
           For Investors
         </h2>
-        <div className="text-sm text-text-heading/80 space-y-2">
+        <div className="text-sm sm:text-base text-text-heading/80 space-y-2">
           <p>
             Stake USDT (TRC20) and earn weekly returns up to{" "}
             <span className="text-text-highlighted font-medium">7%</span>.
@@ -55,7 +55,7 @@ function InvestmentCard() {
             </span>{" "}
             starting at just $100:
           </p>
-          <p className="text-text-heading text-lg">
+          <p className="text-text-heading text-base sm:text-lg">
             Levels range from Star to Satoshi with increasing rewards.
           </p>
           <p>
@@ -82,26 +82,26 @@ function InvestmentTypes() {
   return (
     <div>
       <div className="px-4 sm:px-6 lg:px-8 text-center">
-        <h1
-          className="text-text-heading text-3xl sm:text-4xl font-bold flex justify-center 
-        items-center gap-4"
-        >
-          <span className="text-button text-4xl sm:text-5xl">««</span>
+        <h1 className="text-text-heading text-2xl sm:text-3xl lg:text-4xl font-bold flex justify-center items-center gap-2 sm:gap-4 tracking-tight">
+          <span className="text-button text-3xl sm:text-4xl lg:text-5xl">
+            ««
+          </span>
           <span className="text-text-heading">Grow with Us</span>
-          <span className="text-button text-4xl sm:text-5xl">»»</span>
+          <span className="text-button text-3xl sm:text-4xl lg:text-5xl">
+            »»
+          </span>
         </h1>
-        <p className="text-text-heading text-lg sm:text-xl mt-2 max-w-2xl mx-auto  ">
+        <p className="text-text-heading text-base sm:text-lg lg:text-xl mt-2 max-w-2xl mx-auto">
           Explore flexible and fixed-term staking plans designed to help you
           earn passive income and maximize your returns.
         </p>
       </div>
       <GradientBackground size="43%" top="44%" left="2%" />
 
-      <div className="relative flex items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-16">
+      <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10 sm:py-16">
         {/* Background overlay */}
-        <div className="absolute w-[80%] sm:w-[85%] md:w-[60%] lg:w-[70%] max-w-5xl h-[350px] sm:h-[350px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10"></div>{" "}
-          {/* Overlay for blur and darkness */}
+        <div className="absolute w-[100%] md:w-[70%] lg:w-[70%] max-w-5xl h-[330px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10" />
           <video
             src="/images/video1.mp4"
             autoPlay
