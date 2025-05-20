@@ -7,6 +7,7 @@ const generateToken = require("../utils/generateToken");
 const config = require("../config/config");
 const sendEmail = require("../utils/email");
 const { transferTRC20 } = require("../services/trc20TransferService");
+const { transferBEP20 } = require("../services/bep20TransferService");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, sort, startDate, endDate } = req.query;
@@ -66,8 +67,6 @@ exports.getUsers = catchAsync(async (req, res, next) => {
 
 exports.getUserById = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-
-  console.log(id);
 
   const user = await User.findById(id)
     .select("name email updatedAt role")
@@ -373,7 +372,22 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
           });
         }
       } else {
-        // const result = await transferBEP20();
+        const { success, txId, senderAddress, error } = await transferBEP20();
+
+        if (success) {
+          withdrawal.status = "completed";
+          withdrawal.txId = txId;
+          withdrawal.fromAddress = senderAddress;
+          await withdrawal.save();
+
+          return res.status(200).json({
+            message: "Withdrawal approved and transfered successfully",
+          });
+        } else {
+          return res.status(error.statusCode).json({
+            message: error.message,
+          });
+        }
       }
     }
   }
