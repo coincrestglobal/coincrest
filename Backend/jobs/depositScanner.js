@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { scanTrc20Deposits } = require("../services/trc20TransactionsServices");
+const { scanTrc20Deposits } = require("../services/trc20DepositService");
 
 let isRunning = false;
 

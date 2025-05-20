@@ -5,11 +5,22 @@ const Deposit = require("../models/depositModel");
 const { updateSyncState, getSyncState } = require("./syncStates");
 const Decimal = require("decimal.js");
 
-// Static Wallet & Contract Info
-const myWalletAddress = "TDqSquXBgUCLYvYC4XZgrprLK589dkhSCf";
-// const myWalletAddress = config.tronWalletAddress;
-// const trc20ContractAddress = "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf";
+const myWalletAddress = config.tronWalletAddress;
 const trc20ContractAddress = config.trc20ContractAddress;
+
+function buildTrc20Url(fromTimestamp, maxTimestamp) {
+  const params = new URLSearchParams({
+    limit: "200",
+    // only_confirmed: "true",
+  });
+
+  if (fromTimestamp) params.append("min_timestamp", fromTimestamp.toString());
+  if (maxTimestamp) params.append("max_timestamp", maxTimestamp.toString());
+
+  return `${
+    config.tronNodeUrl
+  }/v1/accounts/${myWalletAddress}/transactions/trc20?${params.toString()}`;
+}
 
 async function fetchTrc20Transactions(url, txId = null) {
   const allTransactions = [];
@@ -44,18 +55,6 @@ async function fetchTrc20Transactions(url, txId = null) {
   }
 }
 
-function buildTrc20Url(fromTimestamp, maxTimestamp) {
-  const params = new URLSearchParams({
-    limit: "200",
-    only_confirmed: "true",
-  });
-
-  if (fromTimestamp) params.append("min_timestamp", fromTimestamp.toString());
-  if (maxTimestamp) params.append("max_timestamp", maxTimestamp.toString());
-  // https://nile.trongrid.io/
-  return `https://api.trongrid.io/v1/accounts/${myWalletAddress}/transactions/trc20?${params.toString()}`;
-}
-
 async function getAllTrc20Deposits(fromTimestamp, maxTimestamp) {
   try {
     const url = buildTrc20Url(fromTimestamp, maxTimestamp);
@@ -74,7 +73,8 @@ function filterTrc20Deposits(transactions) {
       (tx) =>
         tx.token_info.address.toLowerCase() ===
           trc20ContractAddress.toLowerCase() &&
-        tx.to.toLowerCase() === myWalletAddress.toLowerCase()
+        tx.to.toLowerCase() === myWalletAddress.toLowerCase() &&
+        tx.to.toLowerCase() !== tx.from.toLowerCase()
     )
     .map((tx) => ({
       amount: new Decimal(tx.value)
@@ -127,7 +127,7 @@ async function scanTrc20Deposits() {
     if (!lastFetchedAt) return;
 
     const fromTimestamp = lastFetchedAt;
-    const maxTimestamp = Date.now() - 10 * 1000; // 10sec -ve margin
+    const maxTimestamp = Date.now() - 60 * 1000; // 1 minute -ve margin
 
     const deposits = await getAllTrc20Deposits(fromTimestamp, maxTimestamp);
 

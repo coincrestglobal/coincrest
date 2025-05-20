@@ -6,6 +6,7 @@ const Deposit = require("../models/depositModel");
 const generateToken = require("../utils/generateToken");
 const config = require("../config/config");
 const sendEmail = require("../utils/email");
+const { transferTRC20 } = require("../services/trc20TransferService");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, sort, startDate, endDate } = req.query;
@@ -119,9 +120,9 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
       .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit)
-      .select("amount tokenType status toAddress createdAt")
+      .select("amount tokenType status toAddress txId createdAt")
       .populate("initiatedBy", "name email -_id")
-      .populate("approvedBy", "name -_id"),
+      .populate("approvedBy", "name _id"),
     Withdrawal.countDocuments(filter),
   ]);
 
@@ -334,9 +335,7 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
     );
   }
 
-  if (
-    withdrawal.approvedBy.some((id) => id.toString() === user._id.toString())
-  ) {
+  if (withdrawal.approvedBy.includes(user._id)) {
     return next(new AppError("You have already approved this request", 400));
   }
 
@@ -351,7 +350,32 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
 
   if (ownerApproved && priorityAdminApproved) {
     withdrawal.isApproved = true;
-    withdrawal.status = "processing";
+
+    if (withdrawal.isApproved) {
+      if (withdrawal.tokenType === "TRC-20") {
+        const { success, txId, senderAddress, error } = await transferTRC20(
+          withdrawal.toAddress,
+          withdrawal.amount
+        );
+
+        if (success) {
+          withdrawal.status = "completed";
+          withdrawal.txId = txId;
+          withdrawal.fromAddress = senderAddress;
+          await withdrawal.save();
+
+          return res.status(200).json({
+            message: "Withdrawal approved and transfered successfully",
+          });
+        } else {
+          return res.status(error.statusCode).json({
+            message: error.message,
+          });
+        }
+      } else {
+        // const result = await transferBEP20();
+      }
+    }
   }
 
   await withdrawal.save();
