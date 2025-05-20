@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const syncStateSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
-    data: { type: Object, default: {} },
+    lastFetchedAt: { type: Date, required: true },
   },
   { timestamps: true }
 );

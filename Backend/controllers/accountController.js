@@ -15,6 +15,11 @@ const {
   fetchTrc20Transactions,
   filterTrc20Deposits,
 } = require("../services/trc20DepositService");
+const {
+  buildBep20Url,
+  fetchBep20Transactions,
+  filterBep20Deposits,
+} = require("../services/bep20DepositService");
 
 exports.getBalance = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
@@ -86,9 +91,26 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
       // Step 6: Validate it's a deposit
       transaction = processedTransaction[0];
     } else {
-      return res
-        .status(401)
-        .json({ status: "fail", message: "abi nhi h re bep20" });
+      const url = buildBep20Url(fromTimestamp, maxTimestamp);
+
+      if (!url) return [];
+
+      const transactionData = await fetchBep20Transactions(url, txId);
+
+      if (transactionData.length === 0) {
+        return next(
+          new AppError(
+            "Transaction not found. Please try again after a few minutes. It can take up to 30 minutes to process your deposit.",
+            404
+          )
+        );
+      }
+
+      // Step 5: Process the transaction
+      const processedTransaction = filterBep20Deposits(transactionData);
+
+      // Step 6: Validate it's a deposit
+      transaction = processedTransaction[0];
     }
     // Step 7: Save it in DB
     deposit = await Deposit.findOneAndUpdate(
