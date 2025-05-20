@@ -1,6 +1,8 @@
 // // let trxDateTime = new Date("2025-05-06 06:23:42Z");
 // let trxDateTime = new Date();
 
+const { json } = require("express");
+
 // console.log(trxDateTime.getTimezoneOffset());
 
 // // const fromTimestamp = trxDateTime - 1 * 60 * 1000,
@@ -37,11 +39,13 @@
 //   await owner.save();
 // })();
 
-const { transferTRC20 } = require("./services/trc20TransferService");
+// const { transferTRC20 } = require("./services/trc20TransferService");
 
-async function fn() {
-  const result = await transferTRC20("TRjwFxxjfSexDtn5KvAktiUP7FnHwBQFUZ", 10);
-  console.log(result);
-}
+// async function fn() {
+//   const result = await transferTRC20("TRjwFxxjfSexDtn5KvAktiUP7FnHwBQFUZ", 10);
+//   console.log(result);
+// }
 
-fn();
+// fn();
+
+// console.log(new Date("2025-05-19T18:29:06.865+00:00").toLocaleString());

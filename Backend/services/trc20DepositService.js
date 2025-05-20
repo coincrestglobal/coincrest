@@ -2,7 +2,7 @@ const axios = require("axios");
 const delay = require("../utils/delay");
 const config = require("../config/config");
 const Deposit = require("../models/depositModel");
-const { updateSyncState, getSyncState } = require("./syncStates");
+const { getTrc20SyncState, updateTrc20SyncState } = require("./syncStates");
 const Decimal = require("decimal.js");
 
 const myWalletAddress = config.tronWalletAddress;
@@ -11,12 +11,9 @@ const trc20ContractAddress = config.trc20ContractAddress;
 function buildTrc20Url(fromTimestamp, maxTimestamp) {
   const params = new URLSearchParams({
     limit: "200",
-    // only_confirmed: "true",
+    min_timestamp: fromTimestamp.toString(),
+    max_timestamp: maxTimestamp.toString(),
   });
-
-  if (fromTimestamp) params.append("min_timestamp", fromTimestamp.toString());
-  if (maxTimestamp) params.append("max_timestamp", maxTimestamp.toString());
-
   return `${
     config.tronNodeUrl
   }/v1/accounts/${myWalletAddress}/transactions/trc20?${params.toString()}`;
@@ -55,18 +52,6 @@ async function fetchTrc20Transactions(url, txId = null) {
   }
 }
 
-async function getAllTrc20Deposits(fromTimestamp, maxTimestamp) {
-  try {
-    const url = buildTrc20Url(fromTimestamp, maxTimestamp);
-    const rawTransactions = await fetchTrc20Transactions(url);
-
-    return filterTrc20Deposits(rawTransactions);
-  } catch (error) {
-    console.error("Error in getAllTrc20Deposits:", error);
-    return [];
-  }
-}
-
 function filterTrc20Deposits(transactions) {
   return transactions
     .filter(
@@ -78,7 +63,7 @@ function filterTrc20Deposits(transactions) {
     )
     .map((tx) => ({
       amount: new Decimal(tx.value)
-        .dividedBy(new Decimal(10).pow(new Decimal(tx.token_info.decimals)))
+        .dividedBy(new Decimal(10).pow(tx.token_info.decimals))
         .toNumber(),
       txId: tx.transaction_id,
       fromAddress: tx.from,
@@ -89,12 +74,15 @@ function filterTrc20Deposits(transactions) {
 }
 
 async function saveDeposits(transactions, currentTimestamp) {
-  if (!transactions || transactions.length === 0) {
-    console.log("No new deposits to save.");
-    return false;
-  }
-
   try {
+    if (!transactions || transactions.length === 0) {
+      console.log("No new deposits to save (trc20).");
+      if (currentTimestamp) {
+        await updateTrc20SyncState(currentTimestamp);
+      }
+      return;
+    }
+
     const existing = await Deposit.find({
       txId: { $in: transactions.map((tx) => tx.txId) },
     })
@@ -108,39 +96,53 @@ async function saveDeposits(transactions, currentTimestamp) {
 
     if (uniqueDeposits.length > 0) {
       await Deposit.insertMany(uniqueDeposits, { ordered: false });
-      console.log(`${uniqueDeposits.length} new deposits saved.`);
+      console.log(`${uniqueDeposits.length} new deposits(TRC-20) saved.`);
     }
 
     if (currentTimestamp) {
-      await updateSyncState("lastfetch", { lastFetchedAt: currentTimestamp });
+      await updateTrc20SyncState(currentTimestamp);
+      console.log(
+        `[saveDeposits] Updated TRC_20(lastFetchedAt) to ${new Date(
+          currentTimestamp
+        ).toLocaleString()}`
+      );
     }
   } catch (error) {
-    console.error("Error saving deposits:", error.message || error);
+    console.error("Error in saveDeposits(TRC-20):", error);
   }
 }
 
 async function scanTrc20Deposits() {
   try {
-    const lastFetchData = await getSyncState("lastfetch");
-    const lastFetchedAt = lastFetchData?.lastFetchedAt || config.launchDate;
+    let lastFetchedAt = await getTrc20SyncState();
+    lastFetchedAt = lastFetchedAt
+      ? new Date(lastFetchedAt).getTime()
+      : new Date(config.launchDate).getTime();
 
-    if (!lastFetchedAt) return;
+    let fromTimestamp = lastFetchedAt;
+    const maxTimestamp = Date.now() - 60 * 1000;
+    const step = 3 * 60 * 1000; // 3 minutes per batch
 
-    const fromTimestamp = lastFetchedAt;
-    const maxTimestamp = Date.now() - 60 * 1000; // 1 minute -ve margin
+    while (fromTimestamp < maxTimestamp) {
+      const fromTs = fromTimestamp;
+      const toTs = Math.min(fromTimestamp + step, maxTimestamp);
 
-    const deposits = await getAllTrc20Deposits(fromTimestamp, maxTimestamp);
+      const url = buildTrc20Url(fromTs, toTs);
 
-    await saveDeposits(deposits, maxTimestamp);
-  } catch (error) {
-    console.log(error);
+      const transactions = await fetchTrc20Transactions(url);
+      const deposits = filterTrc20Deposits(transactions);
+
+      await saveDeposits(deposits, toTs);
+      fromTimestamp = toTs;
+    }
+  } catch (err) {
+    console.error("[scanTrc20DepositsByBlock] Error:", err.message);
   }
 }
 
 module.exports = {
   buildTrc20Url,
   fetchTrc20Transactions,
-  getAllTrc20Deposits,
   filterTrc20Deposits,
   saveDeposits,
   scanTrc20Deposits,

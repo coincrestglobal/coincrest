@@ -23,6 +23,10 @@ module.exports = {
 
   trc20FeeLimit: process.env.TRC20_FEE_LIMIT,
 
+  bscWalletAddress: process.env.BSC_WALLET_ADDRESS,
+  bep20ContractAddress: process.env.BEP20_CONTRACT_ADDRESS,
+  bscScanApiKey: process.env.BSCSCAN_API_KEY,
+
   // JWT / Auth configuration
   jwtSecret: process.env.JWT_SECRET,
   jwtTokenExpiresIn: process.env.JWT_EXPIRES_IN || 3600, // in seconds
