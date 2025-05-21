@@ -7,6 +7,7 @@ const accountRoutes = require("./routes/accountRoutes");
 const managementRoutes = require("./routes/managementRoutes");
 const investmentPlanRoutes = require("./routes/investmentPlanRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 const errorHandler = require("./middlewares/errorMiddleware");
 
 // Middleware
@@ -23,6 +24,7 @@ app.use("/api/v1/account", accountRoutes);
 app.use("/api/v1/management", managementRoutes);
 app.use("/api/v1/plans", investmentPlanRoutes);
 app.use("/api/v1/review", reviewRoutes);
+app.use("/api/v1/feedback", feedbackRoutes);
 
 app.use(errorHandler);
 

@@ -40,4 +40,13 @@ router.get(
   reviewController.getReviews
 );
 
+router.patch(
+  "/approve/:reviewId",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("owner", "admin"),
+  reviewController.approveReview
+);
+
+router.get("/recentReviews", reviewController.getRecentReviews);
+
 module.exports = router;

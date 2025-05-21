@@ -29,7 +29,12 @@ exports.getReviews = catchAsync(async (req, res) => {
   const sortOrder = sort === "desc" ? -1 : 1;
 
   const [reviews, total] = await Promise.all([
-    Review.find(filter).sort({ createdAt: sortOrder }).skip(skip).limit(limit),
+    Review.find(filter)
+      .sort({ createdAt: sortOrder })
+      .skip(skip)
+      .limit(limit)
+      .select("rating comment createdAt")
+      .populate("user", "name profile -_id"),
     Review.countDocuments(filter),
   ]);
 
@@ -120,11 +125,32 @@ exports.approveReview = catchAsync(async (req, res, next) => {
     return next(new AppError("Review not found", 404));
   }
 
+  if (review.isApproved) {
+    return res.status(200).json({
+      status: "success",
+      message: "Review is already approved",
+    });
+  }
+
   review.isApproved = true;
   await review.save();
 
   res.status(200).json({
     status: "success",
     message: "Review approved successfully",
+  });
+});
+
+exports.getRecentReviews = catchAsync(async (req, res) => {
+  const reviews = await Review.find({ isApproved: true })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select("rating comment createdAt")
+    .populate("user", "name profile -_id");
+
+  res.status(200).json({
+    status: "success",
+    results: reviews.length,
+    data: { reviews },
   });
 });

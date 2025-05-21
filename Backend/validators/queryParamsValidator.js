@@ -28,6 +28,8 @@ module.exports = validate([
       "active",
       "redeemed",
       "approved",
+      "resolved",
+      "unresolved",
     ])
     .withMessage("Please select a valid status."),
 
