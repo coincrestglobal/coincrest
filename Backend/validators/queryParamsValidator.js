@@ -10,8 +10,8 @@ module.exports = validate([
 
   query("role")
     .optional()
-    .isIn(["user", "admin"])
-    .withMessage('Invalid role. Allowed roles are "user" and "admin".'),
+    .isIn(["user", "admin", "owner"])
+    .withMessage('Invalid role. Allowed roles are "user", "admin" and "owner.'),
 
   query("sort")
     .optional()
@@ -27,6 +27,7 @@ module.exports = validate([
       "failed",
       "active",
       "redeemed",
+      "approved",
     ])
     .withMessage("Please select a valid status."),
 

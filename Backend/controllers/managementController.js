@@ -262,15 +262,47 @@ exports.toggleAdminPriority = catchAsync(async (req, res, next) => {
     return next(new AppError("Admin not found or invalid role", 404));
   }
 
-  admin.priority = !admin.priority;
-  await admin.save();
+  if (!admin.priority) {
+    // Case: Assigning priority to this admin
+    // Remove priority from any other admin
+    await User.updateMany(
+      { role: "admin", priority: true, _id: { $ne: adminId } },
+      { $set: { priority: false } }
+    );
 
-  res.status(200).json({
-    status: "success",
-    message: `Priority has been ${
-      admin.priority ? "assigned to" : "removed from"
-    } admin ${admin.name}.`,
-  });
+    admin.priority = true;
+    await admin.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `Priority has been assigned to admin ${admin.name}.`,
+    });
+  } else {
+    // Case: Trying to remove priority from this admin
+    // Check if there's any other admin with priority
+    const otherPriorityAdmin = await User.findOne({
+      role: "admin",
+      priority: true,
+      _id: { $ne: adminId },
+    });
+
+    if (!otherPriorityAdmin) {
+      return next(
+        new AppError(
+          "Cannot remove priority as no other admin has priority.",
+          400
+        )
+      );
+    }
+
+    admin.priority = false;
+    await admin.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `Priority has been removed from admin ${admin.name}.`,
+    });
+  }
 });
 
 exports.deleteAdmin = catchAsync(async (req, res, next) => {
