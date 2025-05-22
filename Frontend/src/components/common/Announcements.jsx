@@ -3,6 +3,8 @@ import ViewAnnouncementPost from "./ViewAnnouncementPost";
 import { useEffect, useState } from "react";
 import Header from "./DashboardHeader";
 import NoResult from "../../pages/NoResult";
+import { FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 const announcementsData = [
   {
@@ -35,6 +37,7 @@ const announcementsData = [
 
 function Announcement() {
   const [showForm, setShowForm] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [selectedAudience, setSelectedAudience] = useState("All Users");
@@ -91,6 +94,10 @@ function Announcement() {
 
     setFilteredAnnouncements(sorted);
   }, [filterState, announcements]);
+
+  function deleteAnnouncement(announcement) {
+    setDeleteModal(false);
+  }
 
   return (
     <div className="p-4 bg-primary shadow-lg h-full space-y-4 rounded-xl  overflow-hidden text-text-body">
@@ -180,7 +187,7 @@ function Announcement() {
               {filteredAnnouncements.map((announcement) => (
                 <div
                   key={announcement.id}
-                  className="p-3 bg-primary-light border border-secondary rounded-lg shadow flex justify-between items-center"
+                  className="p-3 bg-primary-light border border-secondary rounded-lg shadow flex justify-between items-center relative"
                 >
                   <div>
                     <h3 className="font-semibold text-text-heading">
@@ -191,12 +198,28 @@ function Announcement() {
                       {announcement.date}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setSelectedAnnouncement(announcement)}
-                    className="text-secondary hover:text-secondary-light transition"
-                  >
-                    <Eye size={18} />
-                  </button>
+                  <div className="space-x-3">
+                    <button
+                      onClick={() => setSelectedAnnouncement(announcement)}
+                      className="text-secondary hover:text-secondary-light transition"
+                    >
+                      <Eye size={18} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteModal(true)}
+                      className="text-red-500 hover:text-red-700 ml-4"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                  {deleteModal && (
+                    <ConfirmationModal
+                      text={"Are you sure you want to delete the announcement:"}
+                      onConfirm={() => deleteAnnouncement(announcement)}
+                      onCancel={() => setDeleteModal(false)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
