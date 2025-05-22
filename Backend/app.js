@@ -18,6 +18,11 @@ if (process.env.NODE_ENV === "development") {
 app.use(cors());
 app.use(express.json());
 
+// ✅ Health check route
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is live and running!");
+});
+
 // Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/account", accountRoutes);
