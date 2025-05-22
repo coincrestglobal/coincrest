@@ -67,10 +67,16 @@ export default function AboutUs() {
         <GradientBackground size="40%" top="22%" left="95%" />
         <GradientBackground size="40%" top="65%" left="95%" />
 
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold flex justify-center items-center gap-2">
-          <span className="text-button text-3xl sm:text-4xl">««</span>
-          <span>About CoinCrest</span>
-          <span className="text-button text-3xl sm:text-4xl">»»</span>
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+          <span className="text-text-highlighted text-4xl  md:text-6xl">
+            ««
+          </span>
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
+            About CoinCrest
+          </span>
+          <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
+            »»
+          </span>
         </h1>
         <p className="text-base sm:text-lg mt-2 max-w-xl mx-auto">
           CoinCrest is the crypto investment platform designed for sustainable
@@ -89,13 +95,13 @@ export default function AboutUs() {
       {/* Why Choose */}
       <section className="py-10">
         <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
-          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+          <span className="text-text-highlighted text-4xl  md:text-6xl">
             ««
           </span>
-          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
-            Why Choose CoinCrest?
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
+            WHy Choose CoinCrest
           </span>
-          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+          <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
             »»
           </span>
         </h1>
@@ -135,30 +141,32 @@ export default function AboutUs() {
       </section>
 
       {/* How It Works */}
-      <section className="py-10 ">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
-              <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+      <section className="py-10 bg-background">
+        <div className="max-w-7xl mx-auto flex flex-col px-4">
+          {/* Section Heading */}
+          <div className="text-center mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading flex items-center justify-center gap-4">
+              <span className="text-text-highlighted text-2xl md:text-6xl">
                 ««
               </span>
-              <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+              <span className="tracking-tight pt-1 md:pt-2 text-2xl sm:text-3xl md:text-4xl">
                 How CoinCrest Works
               </span>
-              <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+              <span className="text-text-highlighted text-4xl md:text-6xl">
                 »»
               </span>
             </h1>
-            <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+            <p className="text-gray-300 mt-4 text-sm md:text-lg max-w-xl mx-auto">
               Discover the benefits, process of staking USDT, and earning weekly
               rewards.
             </p>
           </div>
 
           {/* Stake Section */}
-          <div className="flex flex-col-reverse md:flex-row items-center">
-            <div className="w-full  bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 md:p-0 space-y-5">
-              <h3 className="text-xl sm:text-2xl font-semibold">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-6 mb-10">
+            {/* Content */}
+            <div className="w-full md:w-1/2 bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 space-y-5">
+              <h3 className="text-xl md:text-2xl font-semibold">
                 Stake Your USDT and Watch Your Earnings Grow!
               </h3>
               <p className="text-gray-300 text-sm sm:text-base">
@@ -172,16 +180,19 @@ export default function AboutUs() {
                 Start Earning Now
               </button>
             </div>
+
+            {/* Image */}
             <img
               src="/images/aboutUs.png"
-              className="h-64 w-full object-contain"
+              className="h-64 w-full md:w-1/2 object-contain"
               alt="Stake USDT"
             />
           </div>
 
           {/* Refer Section */}
-          <div className="flex flex-col-reverse md:flex-row items-center">
-            <div className="w-full  bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 md:p-0 space-y-5">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-6">
+            {/* Content */}
+            <div className="w-full md:w-1/2 bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 space-y-5">
               <h3 className="text-xl sm:text-2xl font-semibold">
                 Grow Your Earnings Through Referrals
               </h3>
@@ -189,7 +200,7 @@ export default function AboutUs() {
                 Invite friends and build your team to increase your passive
                 income through bonuses.
               </p>
-              <ul className="list-disc list-inside text-gray-400 text-sm sm:text-base">
+              <ul className="list-disc list-inside text-gray-400 text-sm sm:text-base space-y-1">
                 <li>Earn more by sharing</li>
                 <li>Unlock monthly max rewards</li>
               </ul>
@@ -200,9 +211,11 @@ export default function AboutUs() {
                 Start Earning Now
               </button>
             </div>
+
+            {/* Image */}
             <img
               src="/images/aboutUs2.png"
-              className="h-64 w-full object-contain"
+              className="h-64 w-full md:w-1/2 object-contain"
               alt="Referral System"
             />
           </div>

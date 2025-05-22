@@ -25,7 +25,14 @@ function BottomNav() {
                 : "text-text-link"
             }`}
           >
-            <div className="text-xl">{item.icon}</div>
+            <div
+              className={`text-xl ${
+                item.label === "Contact Us" ? "rotate-90" : ""
+              }`}
+            >
+              {item.icon}
+            </div>
+
             <span>{item.label}</span>
           </button>
         ))}

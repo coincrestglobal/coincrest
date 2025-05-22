@@ -164,17 +164,22 @@ const payoutAmmount = {
 
 function SummaryCard({ title, value, inc = null, filter }) {
   return (
-    <div className="bg-primary-dark rounded-md py-2 px-2 flex items-center justify-between transition-all duration-300">
+    <div className="bg-primary-dark rounded-md py-2 px-2 flex items-center justify-between transition-all duration-300 w-full">
       <div className="bg-secondary text-text-heading p-2 rounded-full">
-        <h2 className="text-lg text-text-heading font-medium">{title}</h2>
-        <p className="text-xl text-text-heading font-bold ">{value}</p>
+        <h2 className="text-sm sm:text-lg text-text-heading font-medium">
+          {title}
+        </h2>
+        <p className="text-base sm:text-xl text-text-heading font-bold">
+          {value}
+        </p>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="text-xl text-text-heading  text-right">{filter}</p>
+      <div className="flex flex-col items-end gap-1 sm:gap-2">
+        <p className="text-sm sm:text-xl text-text-heading text-right">
+          {filter}
+        </p>
         {inc && (
-          <p className="text-xl text-text-linkHover font-bold text-right">
-            <span>+ </span>
-            {inc}
+          <p className="text-sm sm:text-xl text-text-linkHover font-bold text-right">
+            + {inc}
           </p>
         )}
       </div>
@@ -187,27 +192,24 @@ function Stats() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    // Set the dummy data on initial load
     setData(dummyData);
   }, []);
 
-  if (!data) {
-    return <div>Loading...</div>; // Show a loading message while data is being fetched
-  }
+  if (!data) return <div className="text-center p-4">Loading...</div>;
 
-  const currentData = data[timeFilter]; // Get data for the selected time filter
+  const currentData = data[timeFilter];
 
   return (
-    <div className="bg-primary-light space-y-2 h-full p-2 overflow-y-auto scrollbar-hide">
-      {/* Time Filter Selection */}
-      <div className="flex justify-between items-center px-32 text-text-heading">
+    <div className="bg-primary-light space-y-2 h-full p-2 sm:p-4 overflow-y-auto scrollbar-hide">
+      {/* Time Filter */}
+      <div className="flex flex-wrap justify-between items-center gap-2 sm:px-32 text-text-heading">
         {["24h", "1 week", "1 month", "1 year", "all time"].map((filter) => (
           <p
             key={filter}
             onClick={() => setTimeFilter(filter)}
-            className={`cursor-pointer ${
+            className={`cursor-pointer text-sm sm:text-base ${
               timeFilter === filter
-                ? "font-bold text-text-linkHover bg-primary-dark p-2 rounded-3xl"
+                ? "font-bold text-text-linkHover bg-primary-dark py-1 px-3 rounded-3xl"
                 : "text-text-body"
             }`}
           >
@@ -218,51 +220,41 @@ function Stats() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
-        {/* Total users */}
         <SummaryCard
           title="Total Users"
-          icon={IndianRupee}
           value={currentData.totalUsers}
           inc={currentData.incTotalUsers}
           filter={timeFilter}
         />
-
-        {/* Total Available Balance */}
         <SummaryCard
           title="Total Available Balance"
-          icon={CheckCircle}
           value={currentData.totalProfit}
           inc={currentData.incTotalProfit}
           filter={timeFilter}
         />
-        {/* Total Deposits */}
         <SummaryCard
           title="Total Deposit Amount"
-          icon={IndianRupee}
           value={currentData.totalDeposit}
           inc={currentData.incTotalDeposit}
           filter={timeFilter}
         />
-
-        {/* Total Payouts to Users */}
         <SummaryCard
           title="Payouts to Users"
-          icon={Clock}
           value={currentData.payouts}
           inc={currentData.incPayouts}
           filter={timeFilter}
         />
       </div>
 
-      {/* Staked Amount Charts */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StakedAmountChart
           title={"Total Staked Amount of Users"}
           timeFilter={timeFilter}
           statsData={stakedAmount}
         />
         <StakedAmountChart
-          title={"Total Payout Ammount to Users"}
+          title={"Total Payout Amount to Users"}
           timeFilter={timeFilter}
           statsData={payoutAmmount}
         />

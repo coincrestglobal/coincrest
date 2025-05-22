@@ -3,6 +3,7 @@ import WithdrawHeader from "../../../common/DashboardHeader";
 import { FaChevronDown, FaChevronUp, FaCheck } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
 import Pagination from "../../../common/Pagination";
+import ConfirmationModal from "../../../common/ConfirmationModal";
 
 const withdrawalList = [
   {
@@ -54,7 +55,10 @@ function Withdrawals() {
   const [withdrawals, setWithdrawals] = useState([]);
   const [expandedWithdrawal, setExpandedWithdrawal] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 1;
+  const [modal, setModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
+  const itemsPerPage = 2;
 
   const currentAdmin = "Admin A";
 
@@ -104,6 +108,7 @@ function Withdrawals() {
         return w;
       })
     );
+    setModal(false);
   };
 
   return (
@@ -168,11 +173,11 @@ function Withdrawals() {
             </div>
 
             {expandedWithdrawal === withdrawal.id && (
-              <div className="p-4 bg-primary rounded-md text-text-body space-y-1">
-                <p>
+              <div className="p-4 bg-primary rounded-md text-sm md:text-lg text-text-body space-y-1 overflow-y-auto">
+                <p className="break-words whitespace-normal">
                   <strong>Email:</strong> {withdrawal.email}
                 </p>
-                <p>
+                <p className="break-words whitespace-normal">
                   <strong>Wallet Address:</strong> {withdrawal.walletAddress}
                 </p>
                 <p>
@@ -185,9 +190,12 @@ function Withdrawals() {
             )}
 
             {withdrawal.status !== "Approved" && (
-              <div className="flex justify-between items-center mt-4 flex-wrap gap-4">
+              <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
-                  onClick={() => handleApprove(withdrawal.id)}
+                  onClick={() => {
+                    setSelectedId(withdrawal.id);
+                    setModal(true);
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-button text-text-heading rounded-lg hover:bg-button-hover"
                 >
                   <FaCheck size={16} /> Approve
@@ -199,6 +207,13 @@ function Withdrawals() {
                     ? withdrawal.approvedBy.join(", ")
                     : "No one yet"}
                 </div>
+                {modal && (
+                  <ConfirmationModal
+                    text={"Are you sure you want to approve this withdrawal?"}
+                    onConfirm={() => handleApprove(selectedId)}
+                    onCancel={() => setModal(false)}
+                  />
+                )}
               </div>
             )}
           </div>

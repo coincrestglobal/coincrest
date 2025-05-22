@@ -58,11 +58,13 @@ const EarningsPlansPage = () => {
       <GradientBackground size="40%" top="78%" left="100%" />
 
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">««</span>
-        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+        <span className="text-text-highlighted text-4xl  md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
           Earning Plans
         </span>
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">»»</span>
+        <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
+          »»
+        </span>
       </h1>
 
       {/* How it works */}
@@ -73,13 +75,13 @@ const EarningsPlansPage = () => {
         {/* Title */}
 
         <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
-          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+          <span className="text-text-highlighted text-4xl  md:text-6xl">
             ««
           </span>
-          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
             7-Level Earning Structures
           </span>
-          <span className="text-button text-4xl sm:text-5xl md:text-6xl">
+          <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
             »»
           </span>
         </h1>

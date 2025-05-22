@@ -32,18 +32,13 @@ export default function Table({
 }) {
   const navigate = useSafeNavigate();
 
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
   const getKeyFromLabel = (label) =>
     label.toLowerCase().replace(/\s+/g, "").replace(/\./g, "");
 
   return (
     <div className="w-full pb-4">
-      <div className="overflow-x-auto">
+      {/* For Desktop: Scrollable Grid View */}
+      <div className="hidden md:block overflow-x-auto">
         <div className="min-w-max space-y-1">
           {/* Header */}
           <div
@@ -61,7 +56,7 @@ export default function Table({
             ))}
           </div>
 
-          {/* Body */}
+          {/* Rows */}
           <div className="space-y-0.5">
             {data.map((item, idx) => (
               <div
@@ -69,9 +64,7 @@ export default function Table({
                 onClick={() => navigate(item._id)}
                 className="grid py-1 bg-primary-light text-text-heading shadow rounded-md hover:bg-secondary-light cursor-pointer transition px-3 hover:bg-primary-dark"
                 style={{
-                  gridTemplateColumns: headers
-                    .map((header) => header.width)
-                    .join(" "),
+                  gridTemplateColumns: headers.map((h) => h.width).join(" "),
                 }}
               >
                 {headers.map((header, i) => {
@@ -102,6 +95,46 @@ export default function Table({
         </div>
       </div>
 
+      {/* For Mobile: Card View */}
+      <div className="block md:hidden space-y-2">
+        {data.map((item, idx) => (
+          <div
+            key={idx}
+            onClick={() => navigate(item._id)}
+            className="bg-primary-light text-text-heading shadow rounded-md p-4 hover:bg-primary-dark transition cursor-pointer"
+          >
+            {headers.map((header, i) => {
+              const key = getKeyFromLabel(header.label);
+              const value = item[key];
+
+              return (
+                <div key={i} className="mb-2 flex flex-wrap items-center">
+                  <p className="text-xs font-semibold text-text-subtle">
+                    {header.label}:
+                  </p>
+                  {key === "status" ? (
+                    <span
+                      className={`text-sm rounded-md border px-2 py-1 inline-block mt-1 ${getStatusStyle(
+                        value
+                      )}`}
+                    >
+                      {value}
+                    </span>
+                  ) : key === "rating" ? (
+                    <div className="">
+                      <RatingStars Review_Count={value} />
+                    </div>
+                  ) : (
+                    <p className="text-sm ">{value}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}

@@ -68,17 +68,16 @@ const AdminEarningsManagement = () => {
   return (
     <div className="admin-page px-8 py-6 bg-primary-dark text-text-body">
       <div className="flex items-center justify-between bg-primary p-2 rounded-md mb-2">
-        <h3 className="text-lg font-semibold text-[var(--text-subheading)]">
-          Admin Earnings Management
+        <h3 className="text-md md:text-lg font-semibold text-[var(--text-heading)]">
+          Earnings Management
         </h3>
         <button
           onClick={() => navigate(-1)}
-          className="bg-button px-3 text-lg rounded-md py-2"
+          className="bg-button px-3 text-md md:text-lg rounded-md py-2"
         >
           Go Back
         </button>
       </div>
-
       {/* Section Tabs */}
       <div className="flex justify-center gap-4 mb-6 text-text-heading">
         {["levels", "referral", "team"].map((section) => (
@@ -131,7 +130,7 @@ const AdminEarningsManagement = () => {
               </button>
 
               {editLevel === level.level && (
-                <div className="relative mt-4 bg-primary-dark p-4">
+                <div className="relative mt-4 bg-primary-light p-4">
                   {/* Close icon */}
                   <button
                     onClick={() => setEditLevel(null)}
@@ -211,7 +210,7 @@ const AdminEarningsManagement = () => {
             </button>
 
             {editReferral && (
-              <div className="relative mt-4 bg-primary-dark p-4 rounded-md">
+              <div className="relative mt-4 bg-primary-light p-4 rounded-md w-full">
                 {/* Close button */}
                 <button
                   onClick={() => setEditReferral(false)}
@@ -279,7 +278,7 @@ const AdminEarningsManagement = () => {
               </button>
 
               {editLevel === `team-${team.members}` && (
-                <div className="relative mt-4 bg-primary-dark p-4">
+                <div className="relative mt-4 bg-primary-light p-4 w-full">
                   <button
                     onClick={() => setEditLevel(null)}
                     className="absolute top-1 right-1 text-button text-xl"

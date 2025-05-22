@@ -114,50 +114,55 @@ export default function FAQs() {
   };
 
   return (
-    <div className="p-2 bg-primary-light max-w-5xl mx-auto border border-button rounded">
-      <div className="flex items-center justify-between bg-primary p-2 rounded-md mb-2">
+    <div className="p-2 md:p-4 bg-primary-light max-w-5xl mx-auto border border-button rounded">
+      {/* Header */}
+      <div className="flex items-center justify-between bg-primary p-2 md:p-4 rounded-md mb-4 space-y-2 md:space-y-0">
         <h3 className="text-lg font-semibold text-text-heading">
           FAQs Management
         </h3>
         <button
           onClick={() => navigate(-1)}
-          className="bg-button px-3 text-lg rounded-md py-2"
+          className="bg-button px-3 py-2 text-lg rounded-md w-fit md:w-auto text-center"
         >
           Go Back
         </button>
       </div>
 
       {/* Toggle Buttons for View/Add */}
-      <div className="mb-6 p-2 text-center space-x-4 space-y-4 bg-primary">
-        <button
-          className={`pb-2 border-b-2 text-text-heading ${
-            viewMode === "view"
-              ? "border-text-highlighted text-text-linkHover"
-              : "border-transparent"
-          }`}
-          onClick={() => setViewMode("view")}
-        >
-          View FAQs
-        </button>
-        <button
-          className={`pb-2 border-b-2 text-text-heading ${
-            viewMode === "add"
-              ? "border-text-highlighted text-text-linkHover"
-              : "border-transparent"
-          }`}
-          onClick={() => setViewMode("add")}
-        >
-          Add FAQ
-        </button>
+      <div className="mb-6 p-2 md:p-4 text-center space-y-4 bg-primary">
+        <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-2 md:space-y-0">
+          <button
+            className={`pb-2 border-b-2 text-text-heading ${
+              viewMode === "view"
+                ? "border-text-highlighted text-text-linkHover"
+                : "border-transparent"
+            }`}
+            onClick={() => setViewMode("view")}
+          >
+            View FAQs
+          </button>
+          <button
+            className={`pb-2 border-b-2 text-text-heading ${
+              viewMode === "add"
+                ? "border-text-highlighted text-text-linkHover"
+                : "border-transparent"
+            }`}
+            onClick={() => setViewMode("add")}
+          >
+            Add FAQ
+          </button>
+        </div>
+
+        {/* Section Tabs */}
         {viewMode === "view" && (
-          <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4 mb-4">
             {sectionTabs.map((section) => (
               <button
                 key={section}
-                className={`pb-2 border-b-2 text-text-heading ${
+                className={`pb-1 border-b-2 text-text-heading ${
                   selectedSection === section
                     ? "border-button text-text-linkHover"
-                    : "border-transparent "
+                    : "border-transparent"
                 }`}
                 onClick={() => {
                   setSelectedSection(section);
@@ -171,31 +176,30 @@ export default function FAQs() {
           </div>
         )}
       </div>
-      {/* Section Tabs */}
 
       {/* View Mode */}
       {viewMode === "view" && (
-        <div className="bg-primary p-2 rounded-md">
+        <div className="bg-primary p-2 md:p-4 rounded-md">
           <h2 className="text-2xl font-semibold text-text-heading mb-4">
             {selectedSection} FAQs
           </h2>
           {faqData[selectedSection].length === 0 ? (
             <p className="text-gray-500">No FAQs added yet.</p>
           ) : (
-            <div className="space-y-3 h-[300px] overflow-y-scroll scrollbar-hide ">
+            <div className="space-y-3 max-h-[300px] overflow-y-scroll scrollbar-hide">
               {faqData[selectedSection].map((faq, idx) => (
                 <div
                   key={idx}
                   className="p-4 bg-primary-dark border-l-4 border-button-hover shadow-sm rounded-md flex justify-between items-start"
                 >
-                  <div>
+                  <div className="pr-2">
                     <p className="font-semibold text-text-heading">
                       {faq.question}
                     </p>
                     <p className="text-gray-700 mt-1">{faq.answer}</p>
                   </div>
                   <button
-                    className="text-red-500 hover:text-red-700 ml-4"
+                    className="text-red-500 hover:text-red-700 ml-2"
                     onClick={() => handleDelete(idx)}
                   >
                     <FaTrash />
@@ -209,7 +213,7 @@ export default function FAQs() {
 
       {/* Add Mode */}
       {viewMode === "add" && (
-        <div className="bg-primary-dark p-6 rounded shadow-md">
+        <div className="bg-primary-dark p-4 md:p-6 rounded shadow-md">
           <h2 className="text-xl font-semibold text-button mb-4">
             Add New FAQ
           </h2>
@@ -217,23 +221,21 @@ export default function FAQs() {
             <input
               type="text"
               placeholder="Question"
-              className="p-2 border border-button-hover rounded text-text-heading bg-primary"
+              className="p-2 border border-button-hover rounded text-text-heading bg-primary w-full"
               value={newFAQ.question}
               onChange={(e) =>
                 setNewFAQ({ ...newFAQ, question: e.target.value })
               }
             />
-
-            <select className="w-full border border-button-hover  p-2  rounded focus:outline-none focus:ring-2 focus:ring-primary text-text-heading bg-primary">
+            <select className="w-full border border-button-hover p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary text-text-heading bg-primary">
               <option value="">Choose FAQ type</option>
               <option value="general">General</option>
               <option value="deposit">Deposit</option>
               <option value="payouts">Payouts</option>
             </select>
-
             <textarea
               placeholder="Answer"
-              className="p-2 border border-button-hover rounded text-text-heading bg-primary"
+              className="p-2 border border-button-hover rounded text-text-heading bg-primary w-full"
               rows={3}
               value={newFAQ.answer}
               onChange={(e) => setNewFAQ({ ...newFAQ, answer: e.target.value })}

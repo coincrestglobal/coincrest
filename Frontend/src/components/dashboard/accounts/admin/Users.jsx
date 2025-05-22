@@ -28,7 +28,7 @@ function Users() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
-
+  const numberOfEntries = 2;
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -39,12 +39,14 @@ function Users() {
         if (selectedFilters.length > 0)
           params.append("selectedFilters", selectedFilters.join(","));
         params.append("page", currentPage);
-        params.append("limit", 9);
+        params.append("limit", numberOfEntries);
 
         // getting all users
         const response = await getAllUsers(params.toString());
 
         const { data } = response;
+        console.log(data.users);
+
         setUsers(data.users);
         setTotalPages(response.totalPages);
         setTotalUsers(response.total);
@@ -70,7 +72,7 @@ function Users() {
     headers.forEach((header, i) => {
       const key = getKeyFromLabel(header.label);
       if (key === "sno") {
-        row[key] = (currentPage - 1) * 9 + idx + 1;
+        row[key] = (currentPage - 1) * numberOfEntries + idx + 1;
       } else if (key === "lastvisit") {
         row[key] = new Date(user.updatedAt).toDateString();
       } else {

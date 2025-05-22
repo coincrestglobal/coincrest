@@ -32,8 +32,9 @@ function DashboardHeader({
   }
 
   return (
-    <div className="flex items-center justify-between bg-[var(--primary)] border border-[var(--secondary2)] p-3 rounded-md shadow-sm mb-2 w-full">
-      <div className="flex items-center space-x-4">
+    <div className="bg-[var(--primary)] border border-[var(--secondary2)] p-3 rounded-md shadow-sm mb-2 w-full flex flex-col lg:flex-row justify-between gap-3">
+      {/* Title and Back */}
+      <div className="flex items-center space-x-3 flex-shrink-0">
         {title !== "Recent Platform Updates" && (
           <button
             onClick={() => navigate(-1)}
@@ -42,65 +43,73 @@ function DashboardHeader({
             <ArrowLeft className="w-4 h-4 text-[var(--text-heading)]" />
           </button>
         )}
-
-        <h3 className="text-lg font-semibold text-[var(--text-subheading)]">
+        <h3 className="text-base sm:text-lg font-semibold text-[var(--text-subheading)]">
           {title}: {totalCount}
         </h3>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <input
-          type="text"
-          placeholder={`Search ${title.toLowerCase()}`}
-          value={query}
-          onChange={(e) => {
-            const value = e.target.value;
-            setQuery(value);
-            if (value === "") {
-              setFilterState((prevState) => ({
-                ...prevState,
-                searchQuery: "",
-              }));
-            }
-          }}
-          className="bg-[var(--primary-light)] border border-[var(--secondary2)] px-3 py-1.5 rounded-md text-sm w-64 focus:border-[var(--button-hover)] text-[var(--text-body)] outline-none h-9"
-        />
-        <button
-          onClick={() =>
-            setFilterState((prevState) => ({
-              ...prevState,
-              searchQuery: query,
-            }))
-          }
-          className="bg-[var(--button)] hover:bg-[var(--button-hover)] text-white px-3 py-1.5 rounded-md shadow-md flex cursor-pointer items-center h-9"
-        >
-          <Search className="w-4 h-4 text-[var(--text-heading)]" />
-        </button>
-
-        <button
-          onClick={() => {
-            setFilterState((prevState) => ({
-              ...prevState,
-              sortOrder: prevState.sortOrder === "asc" ? "desc" : "asc",
-            }));
-          }}
-          className="bg-[var(--button)] hover:bg-[var(--button-hover)] text-white px-3 py-1.5 rounded-md shadow-md h-9 cursor-pointer"
-        >
-          {filterState.sortOrder === "asc" ? (
-            <ArrowUp className="w-4 h-4 text-[var(--text-heading)]" />
-          ) : (
-            <ArrowDown className="w-4 h-4 text-[var(--text-heading)]" />
-          )}
-        </button>
-
-        {filterOptions && (
-          <FilterDropdown
-            options={filterOptions}
-            selectedFilters={filterState.selectedFilters}
-            setSelectedFilters={setFilterState}
-            style={{ width: "w-48", maxHeight: "max-h-64" }}
+      {/* Controls container */}
+      <div className="flex flex-col sm:flex-row lg:items-center w-full gap-2">
+        {/* Search input with button */}
+        <div className="flex flex-1">
+          <input
+            type="text"
+            placeholder={`Search ${title.toLowerCase()}`}
+            value={query}
+            onChange={(e) => {
+              const value = e.target.value;
+              setQuery(value);
+              if (value === "") {
+                setFilterState((prev) => ({
+                  ...prev,
+                  searchQuery: "",
+                }));
+              }
+            }}
+            className="bg-[var(--primary-light)] border border-[var(--secondary2)] px-3 py-1.5 rounded-l-md text-sm w-full focus:border-[var(--button-hover)] text-[var(--text-body)] outline-none h-9"
           />
-        )}
+          <button
+            onClick={() =>
+              setFilterState((prev) => ({
+                ...prev,
+                searchQuery: query,
+              }))
+            }
+            className="bg-[var(--button)] hover:bg-[var(--button-hover)] text-white px-3 py-1.5 rounded-r-md shadow-md flex items-center h-9"
+          >
+            <Search className="w-4 h-4 text-[var(--text-heading)]" />
+          </button>
+        </div>
+
+        {/* Sort & Filter buttons */}
+        <div className="flex items-center gap-2 justify-end">
+          <button
+            onClick={() => {
+              setFilterState((prev) => ({
+                ...prev,
+                sortOrder: prev.sortOrder === "asc" ? "desc" : "asc",
+              }));
+            }}
+            className="bg-[var(--button)] hover:bg-[var(--button-hover)] text-white px-3 py-1.5 rounded-md shadow-md h-9"
+          >
+            {filterState.sortOrder === "asc" ? (
+              <ArrowUp className="w-4 h-4 text-[var(--text-heading)]" />
+            ) : (
+              <ArrowDown className="w-4 h-4 text-[var(--text-heading)]" />
+            )}
+          </button>
+
+          {filterOptions && (
+            <div className="w-full sm:w-auto">
+              <FilterDropdown
+                options={filterOptions}
+                selectedFilters={filterState.selectedFilters}
+                setSelectedFilters={setFilterState}
+                style={{ width: "w-48", maxHeight: "max-h-64" }}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

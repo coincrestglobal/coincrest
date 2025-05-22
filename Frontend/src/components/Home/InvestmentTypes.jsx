@@ -82,12 +82,14 @@ function InvestmentTypes() {
   return (
     <div>
       <div className="px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-text-heading text-2xl sm:text-3xl lg:text-4xl font-bold flex justify-center items-center gap-2 sm:gap-4 tracking-tight">
-          <span className="text-button text-3xl sm:text-4xl lg:text-5xl">
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+          <span className="text-text-highlighted text-4xl  md:text-6xl">
             ««
           </span>
-          <span className="text-text-heading">Grow with Us</span>
-          <span className="text-button text-3xl sm:text-4xl lg:text-5xl">
+          <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
+            Grow with Us
+          </span>
+          <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
             »»
           </span>
         </h1>
@@ -100,7 +102,7 @@ function InvestmentTypes() {
 
       <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10 sm:py-16">
         {/* Background overlay */}
-        <div className="absolute w-[100%] md:w-[70%] lg:w-[70%] max-w-5xl h-[330px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
+        <div className="absolute w-[73%] md:w-[70%] lg:w-[70%] max-w-5xl h-[450px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10" />
           <video
             src="/images/video1.mp4"

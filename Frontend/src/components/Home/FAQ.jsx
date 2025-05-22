@@ -90,10 +90,14 @@ const FAQ = () => {
 
   return (
     <div className="relative px-6 md:px-20 lg:px-96 py-8 space-y-8 text-center text-text-heading">
-      <h1 className="text-text-heading text-3xl md:text-4xl font-bold flex items-center gap-4 justify-center flex-wrap">
-        <span className="text-button text-3xl md:text-4xl">««</span>
-        <span className="text-heading">FAQ</span>
-        <span className="text-button text-3xl md:text-4xl">»»</span>
+      <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+        <span className="text-text-highlighted text-4xl  md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
+          FAQ
+        </span>
+        <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
+          »»
+        </span>
       </h1>
       <p className="text-base md:text-lg mb-6 max-w-xl md:max-w-2xl mx-auto px-2">
         Here you’ll find answers to frequently asked questions about our company
