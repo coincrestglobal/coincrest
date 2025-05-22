@@ -59,7 +59,7 @@ function AboutSomething({ heading, subHeadings }) {
   return (
     <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10 sm:py-16">
       {/* Background overlay */}
-      <div className="absolute w-[72%] md:w-[70%] lg:w-[70%] max-w-5xl h-[350px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
+      <div className="absolute w-[100%] md:w-[70%] lg:w-[70%] max-w-5xl h-[230px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10" />
         <video
           src="/images/video1.mp4"

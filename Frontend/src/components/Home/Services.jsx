@@ -21,7 +21,7 @@ const services = [
 const ServiceCard = ({ title, desc, imgSrc, reverse = false }) => {
   return (
     <div
-      className={`flex flex-col md:flex-row items-center gap-8 md:gap-16 my-10 md:my-16 ${
+      className={`flex flex-col md:flex-row h-fit items-center gap-8 md:gap-16 my-10 md:my-16 ${
         reverse ? "md:flex-row-reverse" : ""
       }`}
     >
@@ -37,7 +37,7 @@ const ServiceCard = ({ title, desc, imgSrc, reverse = false }) => {
         />
       </div>
       <div className="w-full md:w-1/2 bg-primary-light md:bg-transparent rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 space-y-5">
-        <h2 className="text-2xl sm:text-3xl font-bold text-text-highlighted ">
+        <h2 className="text-lg md:text-3xl font-bold text-text-highlighted ">
           {title}
         </h2>
         <p className="text-text-subheading text-base sm:text-lg leading-relaxed">
@@ -52,11 +52,13 @@ function Services() {
   return (
     <div className="py-16 px-4  md:px-16 lg:px-32 ">
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">««</span>
-        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+        <span className="text-text-highlighted text-4xl  md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
           Our Features
         </span>
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">»»</span>
+        <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
+          »»
+        </span>
       </h1>
 
       <div className="flex flex-col items-center justify-center">

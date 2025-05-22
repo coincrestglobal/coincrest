@@ -2,8 +2,9 @@ import ReviewsHeader from "../../../common/DashboardHeader";
 import ReviewsTable from "../../../dashboard/Table";
 import { useEffect, useState } from "react";
 import NoResult from "../../../../pages/NoResult";
+import Loading from "../../../../pages/Loading";
 
-const reivewsData = Array.from({ length: 50 }, (_, i) => ({
+const reivewsData = Array.from({ length: 10 }, (_, i) => ({
   id: (i + 1).toString(),
   name: ["John Doe", "Jane Smith", "Sam Wilson", "Lucy Heart"][i % 4],
   email: [
@@ -24,6 +25,9 @@ const headers = [
   { label: "Rating", width: "20%" },
 ];
 
+const getKeyFromLabel = (label) =>
+  label.toLowerCase().replace(/\s+/g, "").replace(/\./g, "");
+
 function Reviews() {
   const [filterState, setFilterState] = useState({
     searchQuery: "",
@@ -31,33 +35,70 @@ function Reviews() {
     selectedFilters: [],
   });
 
-  const [reviews, setReviews] = useState(reivewsData);
+  const [reviews, setReviews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    function fetchReviews(query) {
-      return reivewsData.filter(
-        (review) =>
-          review &&
-          review.name &&
-          review.name.toLowerCase().includes(query.toLowerCase())
-      );
-    }
+    const fetchReviews = async () => {
+      try {
+        const { searchQuery, selectedFilters } = filterState;
 
-    const filteredReviews = fetchReviews(filterState.searchQuery);
-    setReviews(filteredReviews);
-  }, [filterState.searchQuery, filterState.selectedFilters]);
+        // const params = new URLSearchParams();
+        // if (searchQuery) params.append("search", searchQuery);
+        // if (selectedFilters.length > 0)
+        //   params.append("selectedFilters", selectedFilters.join(","));
+        // params.append("page", currentPage);
+        // params.append("limit", 3);
+
+        // const response = await getAllReviews(params.toString()); // ← You need to have this API function
+
+        // const { data } = response;
+        setReviews(reivewsData);
+        setTotalPages(reivewsData.totalPages);
+        setTotalReviews(reivewsData.total);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [currentPage, filterState]);
+
+  if (loading) return <Loading />;
 
   const sortedReviews = [...reviews].sort((a, b) => {
     return filterState.sortOrder === "asc"
-      ? new Date(a.date) - new Date(b.date)
-      : new Date(b.date) - new Date(a.date);
+      ? a.name?.localeCompare(b.name) // if review has a user name
+      : b.name?.localeCompare(a.name);
+  });
+
+  const transformedReviews = sortedReviews.map((review, idx) => {
+    const row = {};
+    headers.forEach((header, i) => {
+      const key = getKeyFromLabel(header.label);
+      if (key === "sno") {
+        row[key] = (currentPage - 1) * 9 + idx + 1;
+      } else if (key === "lastvisit") {
+        row[key] = new Date(review.updatedAt).toDateString();
+      } else {
+        row[key] = review[key] || "-";
+      }
+    });
+
+    row._id = review.id;
+    return row;
   });
 
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <ReviewsHeader
         title="Reviews"
-        totalCount={sortedReviews.length}
+        totalCount={totalReviews}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={[
@@ -83,10 +124,10 @@ function Reviews() {
       {sortedReviews.length > 0 ? (
         <ReviewsTable
           headers={headers}
-          data={sortedReviews}
-          itemsPerPage={9}
-          rowClassName="text-text-body"
-          headerClassName="text-text-heading bg-primary"
+          data={transformedReviews}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
         />
       ) : (
         <NoResult />

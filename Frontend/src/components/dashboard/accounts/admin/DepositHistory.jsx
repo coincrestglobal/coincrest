@@ -167,7 +167,7 @@ function Deposits() {
             </div>
 
             {expandedDeposit === deposit.id && (
-              <div className="p-4 bg-primary rounded-md text-text-body space-y-1">
+              <div className="p-4 bg-primary rounded-md text-text-body space-y-1 break-words whitespace-normal">
                 <p>
                   <strong>Email:</strong> {deposit.email}
                 </p>

@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="p-2 bg-primary-light max-w-4xl mx-auto">
       <div className="flex items-center justify-between bg-primary-dark p-2 rounded-md mb-2">
-        <h3 className="text-lg font-semibold text-[var(--text-subheading)]">
+        <h3 className="text-lg font-semibold text-[var(--text-heading)]">
           Manage Privacy Policy
         </h3>
         <button

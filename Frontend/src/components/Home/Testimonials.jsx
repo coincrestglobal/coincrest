@@ -51,12 +51,14 @@ export default function TestimonialSlider() {
 
   return (
     <div className="py-8 px-4 sm:px-12 md:px-32 relative">
-      <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading flex items-center justify-center gap-3 sm:gap-5">
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">««</span>
-        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight">
+      <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
+        <span className="text-text-highlighted text-4xl  md:text-6xl">««</span>
+        <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
           What Our Users Say
         </span>
-        <span className="text-button text-4xl sm:text-5xl md:text-6xl">»»</span>
+        <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
+          »»
+        </span>
       </h1>
 
       <div

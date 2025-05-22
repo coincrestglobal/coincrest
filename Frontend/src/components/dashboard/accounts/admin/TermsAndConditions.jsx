@@ -28,13 +28,11 @@ export default function ManageTermsConditions() {
 
   return (
     <div className="p-2 bg-primary max-w-4xl mx-auto">
-      <div className="flex items-center justify-between bg-primary-dark p-2 rounded-md mb-2">
-        <h3 className="text-lg font-semibold text-text-heading">
-          Manage Terms & Conditions
-        </h3>
+      <div className="flex items-center justify-between bg-primary-light p-2 md:p-2 rounded-md mb-4 space-y-2 md:space-y-0">
+        <h3 className="text-lg font-semibold text-text-heading">Manage T&C</h3>
         <button
           onClick={() => navigate(-1)}
-          className="bg-button px-3 text-lg rounded-md py-2"
+          className="bg-button px-3 py-2 text-lg rounded-md w-fit md:w-auto text-center"
         >
           Go Back
         </button>

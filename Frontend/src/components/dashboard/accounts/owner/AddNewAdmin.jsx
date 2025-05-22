@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import useSafeNavigate from "../../../../utils/useSafeNavigate";
 
 function AddNewAdmin({ onSubmitAdmin }) {
+  const navigate = useSafeNavigate();
   const {
     register,
     handleSubmit,
@@ -44,13 +46,20 @@ function AddNewAdmin({ onSubmitAdmin }) {
               <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-button hover:bg-button-hover text-white py-2 rounded-md transition"
-          >
-            Add Admin
-          </button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+            >
+              Discard
+            </button>
+            <button
+              type="submit"
+              className="w-fit px-3 bg-button hover:bg-button-hover text-white py-2 rounded-md transition"
+            >
+              Add Admin
+            </button>
+          </div>
         </form>
       </div>
     </div>
