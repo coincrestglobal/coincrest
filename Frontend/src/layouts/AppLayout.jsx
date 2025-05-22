@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import { useEffect, useState } from "react";
-import ScrollToTop from "../components/common/ScrollTotop";
+import ScrollToTop from "../components/common/ScrollToTop";
 import TopNav from "../components/common/MobileNav/TopNav";
 import BottomNav from "../components/common/MobileNav/BottomNav";
 import Navbar from "../components/common/Navbar"; // Desktop
