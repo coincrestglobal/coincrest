@@ -7,6 +7,7 @@ const generateToken = require("../utils/generateToken");
 const config = require("../config/config");
 const sendEmail = require("../utils/email");
 const { transferTRC20 } = require("../services/trc20TransferService");
+const { transferBEP20 } = require("../services/bep20TransferService");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, sort, startDate, endDate } = req.query;
@@ -66,8 +67,6 @@ exports.getUsers = catchAsync(async (req, res, next) => {
 
 exports.getUserById = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-
-  console.log(id);
 
   const user = await User.findById(id)
     .select("name email updatedAt role")
@@ -263,15 +262,47 @@ exports.toggleAdminPriority = catchAsync(async (req, res, next) => {
     return next(new AppError("Admin not found or invalid role", 404));
   }
 
-  admin.priority = !admin.priority;
-  await admin.save();
+  if (!admin.priority) {
+    // Case: Assigning priority to this admin
+    // Remove priority from any other admin
+    await User.updateMany(
+      { role: "admin", priority: true, _id: { $ne: adminId } },
+      { $set: { priority: false } }
+    );
 
-  res.status(200).json({
-    status: "success",
-    message: `Priority has been ${
-      admin.priority ? "assigned to" : "removed from"
-    } admin ${admin.name}.`,
-  });
+    admin.priority = true;
+    await admin.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `Priority has been assigned to admin ${admin.name}.`,
+    });
+  } else {
+    // Case: Trying to remove priority from this admin
+    // Check if there's any other admin with priority
+    const otherPriorityAdmin = await User.findOne({
+      role: "admin",
+      priority: true,
+      _id: { $ne: adminId },
+    });
+
+    if (!otherPriorityAdmin) {
+      return next(
+        new AppError(
+          "Cannot remove priority as no other admin has priority.",
+          400
+        )
+      );
+    }
+
+    admin.priority = false;
+    await admin.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `Priority has been removed from admin ${admin.name}.`,
+    });
+  }
 });
 
 exports.deleteAdmin = catchAsync(async (req, res, next) => {
@@ -373,7 +404,22 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
           });
         }
       } else {
-        // const result = await transferBEP20();
+        const { success, txId, senderAddress, error } = await transferBEP20();
+
+        if (success) {
+          withdrawal.status = "completed";
+          withdrawal.txId = txId;
+          withdrawal.fromAddress = senderAddress;
+          await withdrawal.save();
+
+          return res.status(200).json({
+            message: "Withdrawal approved and transfered successfully",
+          });
+        } else {
+          return res.status(error.statusCode).json({
+            message: error.message,
+          });
+        }
       }
     }
   }

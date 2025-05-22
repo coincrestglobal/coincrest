@@ -1,39 +1,58 @@
 const cron = require("node-cron");
 const { scanTrc20Deposits } = require("../services/trc20DepositService");
+const { scanBep20Deposits } = require("../services/bep20DepositService");
 
-let isRunning = false;
+let isRunningTrc20 = false;
+let isRunningBep20 = false;
 
-// STEP 1: Immediately run on server start
+// Immediate TRC-20 scan
 (async () => {
-  console.log("Running immediate transaction scan...");
-  isRunning = true; // ✅ Start running
+  console.log("Running immediate TRC-20 scan...");
+  isRunningTrc20 = true;
   try {
     await scanTrc20Deposits();
-  } catch (error) {
-    console.log("Error running immediate transaction scan:", error);
+  } catch (err) {
+    console.log("TRC-20 Error:", err);
   } finally {
-    isRunning = false; // ✅ Release after done
-    console.log("Immediate transaction scan completed.");
+    isRunningTrc20 = false;
   }
 })();
 
-// STEP 2: Schedule to run every 5 minutes using node-cron
-cron.schedule("*/5 * * * *", async () => {
-  if (isRunning) {
-    console.log("Previous job is still running, skipping this run.");
-    isRunning = false;
-    return;
+// Immediate BEP-20 scan
+(async () => {
+  console.log("Running immediate BEP-20 scan...");
+  isRunningBep20 = true;
+  try {
+    await scanBep20Deposits();
+  } catch (err) {
+    console.log("BEP-20 Error:", err);
+  } finally {
+    isRunningBep20 = false;
   }
+})();
 
-  console.log("Running scheduled transaction scan...");
-  isRunning = true;
-
+// Scheduled every 5 min for TRC-20
+cron.schedule("*/5 * * * *", async () => {
+  if (isRunningTrc20) return console.log("TRC-20 scan already running.");
+  isRunningTrc20 = true;
   try {
     await scanTrc20Deposits();
-  } catch (error) {
-    console.log("Error running scheduled transaction scan:", error);
+  } catch (err) {
+    console.log("Scheduled TRC-20 Error:", err);
   } finally {
-    isRunning = false;
-    console.log("Scheduled transaction scan completed.");
+    isRunningTrc20 = false;
+  }
+});
+
+// Scheduled every 5 min for BEP-20
+cron.schedule("*/5 * * * *", async () => {
+  if (isRunningBep20) return console.log("BEP-20 scan already running.");
+  isRunningBep20 = true;
+  try {
+    await scanBep20Deposits();
+  } catch (err) {
+    console.log("Scheduled BEP-20 Error:", err);
+  } finally {
+    isRunningBep20 = false;
   }
 });

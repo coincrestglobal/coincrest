@@ -129,7 +129,7 @@ const sendEmail = async (options) => {
     html = generateEmailTemplate({
       heading: escapeHTML(options.heading),
       greeting: options.greeting ? escapeHTML(options.greeting) : "",
-      message: escapeHTML(options.message),
+      message: escapeHTML(options.message).replace(/\n/g, "<br>"),
       buttonText: escapeHTML(options.buttonText),
       buttonUrl: options.buttonUrl,
     });
