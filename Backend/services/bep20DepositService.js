@@ -140,7 +140,7 @@ async function scanBep20Deposits() {
     const fromTimestamp = lastFetchedAt;
     const maxTimestamp = Date.now() - 60 * 1000;
 
-    const url = buildBep20Url(fromTimestamp, maxTimestamp);
+    const url = await buildBep20Url(fromTimestamp, maxTimestamp);
 
     if (!url) return;
 

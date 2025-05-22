@@ -98,7 +98,7 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
       transaction = processedTransaction[0];
     } else {
-      const url = buildBep20Url(fromTimestamp, maxTimestamp);
+      const url = await buildBep20Url(fromTimestamp, maxTimestamp);
 
       if (!url) return [];
 
