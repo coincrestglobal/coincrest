@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        lastInterestCreditedAt: {
+          type: Date,
+          default: null,
+        },
         investDate: {
           type: Date,
           default: Date.now,
