@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
 const InvestmentPlan = require("../models/investmentPlanmodel");
+const Setting = require("../models/settingModel");
 const Decimal = require("decimal.js");
 const {
   MIN_WITHDRAWAL_INTERVAL_DAYS,
@@ -157,6 +158,42 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
   user.deposits.push(deposit._id);
   await user.save();
+
+  if (user.referredBy && !deposit.bonusGiven) {
+    const referrer = await User.findOne({ referralCode: user.referredBy });
+
+    if (referrer) {
+      const setting = await Setting.findOne({ key: "deposit_bonus" })
+        .select("value")
+        .lean();
+      const bonusRate = setting?.value || 0;
+      const bonusAmount = new Decimal(deposit.amount).mul(
+        new Decimal(bonusRate).div(100)
+      );
+
+      console.log(
+        bonusRate,
+        bonusAmount,
+        deposit.amount * (setting.value / 100),
+        deposit.amount
+      );
+
+      referrer.referralBonuses.push({
+        type: "deposit",
+        amount: bonusAmount.toDecimalPlaces(6).toNumber(),
+        fromUser: user._id,
+      });
+
+      referrer.withdrawableBalance = new Decimal(referrer.withdrawableBalance)
+        .plus(bonusAmount)
+        .toDecimalPlaces(6)
+        .toNumber();
+
+      await referrer.save();
+      deposit.bonusGiven = true;
+      await deposit.save();
+    }
+  }
 
   res.status(200).json({
     message: "Deposit verified and your balance has been updated successfully.",

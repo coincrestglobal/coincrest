@@ -18,6 +18,10 @@ const depositSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    bonusGiven: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const generateReferralCode = require("../utils/referralCodeGenerator");
 const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
@@ -12,6 +13,9 @@ const passwordResetUrl = config.frontendUrl + "/auth/reset-password/";
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body;
+  const { ref: refByRaw } = req.query;
+
+  const refBy = refByRaw?.toString().trim();
 
   let existingUser = await User.findOne({ email });
 
@@ -21,21 +25,29 @@ exports.signup = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (refBy) {
+    const referer = await User.findOne({ referralCode: refBy });
+
+    if (!referer) return next(new AppError("Invalid referral code", 400));
+  }
+
+  const referralCode = generateReferralCode();
+
   if (existingUser) {
     if (existingUser.isDeleted) {
       existingUser.name = name;
       existingUser.password = password;
       existingUser.isDeleted = false;
       existingUser.isVerified = false;
+      existingUser.referralCode = referralCode;
+      existingUser.referredBy = refBy;
 
-      // ✅ Add token
       const { token, tokenExpiresIn } = generateToken(30);
       existingUser.emailVerificationToken = token;
       existingUser.emailVerificationTokenExpires = tokenExpiresIn;
 
       await existingUser.save();
 
-      // ✅ Send verification email again
       await sendEmail({
         email: existingUser.email,
         subject: "Please verify your email",
@@ -54,7 +66,13 @@ exports.signup = catchAsync(async (req, res, next) => {
     return next(new AppError("User already exists with this email.", 400));
   }
 
-  const user = await User.create({ name, email, password });
+  const user = await User.create({
+    name,
+    email,
+    password,
+    referralCode,
+    referredBy: refBy ? refBy : null,
+  });
 
   const { token, tokenExpiresIn } = generateToken(30);
   user.emailVerificationToken = token;
