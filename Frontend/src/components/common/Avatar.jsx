@@ -19,7 +19,7 @@ function Avatar({
 
   return (
     <div
-      className={`${bgColor} ${textColor} ${textSize} ${fontWeight} rounded-full flex items-center justify-center shadow-sm shadow-text-linkHover `}
+      className={`${bgColor} ${textColor} ${textSize} ${fontWeight} rounded-full flex items-center justify-center shadow-sm shadow-nav-highlighted `}
       style={{ width: `${size}px`, height: `${size}px` }}
     >
       {fullName.charAt(0)}

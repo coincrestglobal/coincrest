@@ -23,7 +23,7 @@ function TopNav() {
     <div className="fixed top-0  left-0 right-0 bg-primary-light shadow-md z-50 px-4 py-3 flex justify-between items-center">
       {/* Logo or Title */}
       <NavLink to="/">
-        <img className="h-26 w-40" src="/images/logo.png" alt="logo" />
+        <img className="h-26 w-40" src="/images/logo4.png" alt="logo" />
       </NavLink>
 
       {/* Profile Icon */}

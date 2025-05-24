@@ -76,7 +76,7 @@ const UserDetails = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 p-4 bg-primary-dark border border-button rounded-md shadow">
+      <div className="grid md:grid-cols-2 gap-4 p-4 bg-primary border border-button rounded-md shadow">
         {/* <p>
           <span className="font-semibold text-button">User ID:</span> {user.id}
         </p> */}

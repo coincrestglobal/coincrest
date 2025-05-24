@@ -11,6 +11,7 @@ export const useUser = () => {
 // UserContext provider component
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
+    token: "131312313131323131",
     name: "Salman Khan",
     firstName: "Salman",
     lastName: "Khan",
@@ -34,7 +35,7 @@ export const UserProvider = ({ children }) => {
       rating: 4.5,
       reviewText: "abc",
     },
-    lastWithdrawalDate: "2025-05-18T10:00:00Z",
+    lastWithdrawalDate: "2025-05-10T10:00:00Z",
   });
 
   return (

@@ -8,8 +8,10 @@ import AboutUs from "../pages/AboutUs";
 import Earnings from "../pages/Earnings";
 import SignUp from "../components/authentication/SignupForm";
 import Login from "../components/authentication/LoginForm";
+// import BeforeEmailVerify from "../components/authentication/BeforeEmailVerify";
+import EmailVerifyingScreen from "../components/authentication/EmailVerificationPage";
 import TermsAndCondition from "../pages/TermsAndConditions";
-import UpdatePassword from "../components/authentication/UpdatePassword";
+import ResetPassword from "../components/authentication/ResetPassword";
 import MainPrivacyPolicy from "../pages/PrivacyPolicy";
 
 //user
@@ -55,7 +57,9 @@ const router = createBrowserRouter([
       { path: "/earnings", Component: Earnings },
       { path: "/signup", Component: SignUp },
       { path: "/login", Component: Login },
-      { path: "/update-password", Component: UpdatePassword },
+      // { path: "/before-verify-email", Component: BeforeEmailVerify },
+      { path: "/verify-email/:token", Component: EmailVerifyingScreen },
+      { path: "/reset-password/:token", Component: ResetPassword },
       { path: "/terms-and-conditions", Component: TermsAndCondition },
       { path: "/privacy-policy", Component: MainPrivacyPolicy },
 

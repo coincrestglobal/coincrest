@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LucideCoins } from "lucide-react";
+import ConfirmationModal from "../../../common/ConfirmationModal";
 
 const levels = [
   { level: 1, stake: 100, title: "Star", weekly: "3%" },
@@ -13,36 +14,43 @@ const levels = [
 
 const activeData = [
   {
+    id: "abcdek",
     name: "Satoshi",
     stake: 10000,
     openedAt: "07.10.2023 12:22:44 PM",
     deposit: "$10000",
   },
   {
+    id: "abcdej",
     name: "Platinum",
     stake: 5000,
     openedAt: "08.10.2023 10:15:30 AM",
     deposit: "$5000",
   },
   {
+    id: "abcdei",
     name: "Satoshi",
     stake: 10000,
     openedAt: "07.10.2023 12:22:44 PM",
     deposit: "$10000",
   },
   {
+    id: "abcdefg",
     name: "Platinum",
     stake: 5000,
     openedAt: "08.10.2023 10:15:30 AM",
     deposit: "$5000",
   },
   {
+    id: "abcdef",
+
     name: "Satoshi",
     stake: 10000,
     openedAt: "07.10.2023 12:22:44 PM",
     deposit: "$10000",
   },
   {
+    id: "abcde",
     name: "Platinum",
     stake: 5000,
     openedAt: "08.10.2023 10:15:30 AM",
@@ -71,6 +79,7 @@ const tabs = ["Active", "Closed"];
 
 function Investments() {
   const [activeTab, setActiveTab] = useState("Active");
+  const [closeModal, setCloseModal] = useState(false);
 
   const calculateWeeklyReturn = (stake) => {
     const level = levels.find((lvl) => stake >= lvl.stake);
@@ -87,7 +96,9 @@ function Investments() {
     return numericDeposit * rate;
   };
 
-  function cancelPlan() {} //to be implemented
+  function cancelPlan(id) {
+    setCloseModal(false);
+  } //to be implemented
 
   return (
     <div className="relative bg-primary-dark max-w-6xl mx-auto rounded-md p-6 sm:p-8 max-h-[87vh] flex flex-col">
@@ -122,7 +133,7 @@ function Investments() {
               return (
                 <div
                   key={index}
-                  className="mb-8 pb-4 border-b border-gray-700 space-y-4 text-text-heading"
+                  className="mb-8 pb-4 border-b border-gray-700 space-y-4 text-text-heading "
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     {/* Left Info */}
@@ -155,9 +166,9 @@ function Investments() {
                     </div>
 
                     {/* Right Profit */}
-                    <div className="flex md:flex-col gap-3 w-full md:w-auto">
+                    <div className="flex md:flex-col gap-2 w-full md:w-auto">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                        <p className="text-text-highlighted text-base sm:text-lg mb-1 sm:mb-0">
+                        <p className="text-text-highlighted text-base sm:text-lg  sm:mb-0">
                           Total Amount:
                         </p>
                         <p className="text-2xl sm:text-3xl font-semibold">
@@ -166,14 +177,14 @@ function Investments() {
                       </div>
 
                       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                        <p className="text-text-highlighted text-base sm:text-lg mb-1 self-end">
+                        <p className="text-text-highlighted text-base sm:text-lg md:mb-6 self-end">
                           Total Profit:
                         </p>
                         <div className="text-right">
-                          <p className="text-2xl sm:text-3xl font-semibold">
+                          <p className="text-2xl sm:text-3xl  font-semibold">
                             {profit.toFixed(2)}
                           </p>
-                          <p className="text-green-400 text-sm">
+                          <p className="text-green-400 text-sm ">
                             +{profit.toFixed(2)}
                           </p>
                         </div>
@@ -183,10 +194,20 @@ function Investments() {
 
                   <button
                     className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
-                    onClick={() => cancelPlan()}
+                    onClick={() => setCloseModal(true)}
                   >
                     Close
                   </button>
+
+                  {closeModal && (
+                    <ConfirmationModal
+                      text={
+                        "Are you sure you want to cancel this plan? This action cannot be undone."
+                      }
+                      onConfirm={() => cancelPlan(data.id)}
+                      onCancel={() => setCloseModal(false)}
+                    />
+                  )}
                 </div>
               );
             })}

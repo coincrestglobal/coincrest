@@ -28,7 +28,7 @@ function Users() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
-  const numberOfEntries = 2;
+  const numberOfEntries = 10;
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -45,7 +45,6 @@ function Users() {
         const response = await getAllUsers(params.toString());
 
         const { data } = response;
-        console.log(data.users);
 
         setUsers(data.users);
         setTotalPages(response.totalPages);

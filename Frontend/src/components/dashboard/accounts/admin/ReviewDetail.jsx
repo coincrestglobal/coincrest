@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { FaTrash } from "react-icons/fa";
 import StarRatings from "react-star-ratings";
+import ConfirmationModal from "../../../common/ConfirmationModal";
 
 const ReviewDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [acceptModal, setAcceptModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState({
     show: false,
     reviewId: null,
@@ -31,6 +33,10 @@ const ReviewDetails = () => {
 
   const cancelDelete = () => {
     setDeleteConfirm({ show: false, reviewId: null });
+  };
+
+  const handleAccept = (review_id) => {
+    setAcceptModal(false);
   };
 
   return (
@@ -86,7 +92,12 @@ const ReviewDetails = () => {
 
       {/* Buttons */}
       <div className="flex flex-wrap gap-4">
-        <button className="bg-button px-4 py-2 rounded-lg">Accept</button>
+        <button
+          className="bg-button px-4 py-2 rounded-lg"
+          onClick={() => setAcceptModal(true)}
+        >
+          Accept
+        </button>
         <button
           onClick={() => handleDelete(review.id)}
           disabled={deleteConfirm.reviewId === review.id}
@@ -99,6 +110,16 @@ const ReviewDetails = () => {
           <FaTrash size={16} /> Delete
         </button>
       </div>
+
+      {acceptModal && (
+        <ConfirmationModal
+          text={
+            "Are you sure you want to approve this review? This action will make it visible to all users."
+          }
+          onConfirm={() => handleAccept(review.id)}
+          onCancel={() => setAcceptModal(false)}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (

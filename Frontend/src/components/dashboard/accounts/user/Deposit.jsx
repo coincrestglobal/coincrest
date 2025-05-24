@@ -1,19 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
+import {
+  getUserDeposits,
+  verifyDeposit,
+} from "../../../../services/operations/userDashboardApi";
 
 const DepositPage = () => {
   const [activeTab, setActiveTab] = useState("New Deposit");
   const [showModal, setShowModal] = useState(false);
+  const [chainType, setChainType] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [password, setPassword] = useState("");
+  const [dateAndTime, setDateAndTime] = useState("");
 
-  const handleVerify = () => {
-    // You can integrate API call here
-    console.log("Transaction ID:", transactionId);
-    console.log("Password:", password);
-    // After verification:
+  const handleVerify = async () => {
+    const data = {
+      tokenType: chainType,
+      txId: transactionId,
+      trxDateTime: new Date(dateAndTime).getTime(),
+      password: password,
+    };
+
+    await verifyDeposit(data);
+
+    //get admin's wallet addresess
+
     setShowModal(false);
   };
+
+  useEffect(() => {
+    const getHistory = async () => {
+      const params = new URLSearchParams();
+      params.append("sort", "desc");
+      params.append("page", 1);
+      params.append("limit", 10);
+
+      // getting all users
+      const response = await getUserDeposits(params.toString());
+      console.log(response);
+    };
+    getHistory();
+  }, []);
 
   return (
     <div className="relative w-full max-w-4xl bg-primary-dark rounded-md p-4 sm:p-6 md:p-8 flex flex-col ">
@@ -142,32 +169,79 @@ const DepositPage = () => {
             </h2>
 
             <div className="space-y-4">
+              {/* Chain Type */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
+                <label className="block text-sm text-text-heading mb-1">
+                  Chain Type
+                </label>
+                <select
+                  value={chainType}
+                  onChange={(e) => setChainType(e.target.value)}
+                  className="w-full bg-gray-800  border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
+                >
+                  <option
+                    className="bg-primary-dark border-b-2  border-white"
+                    value=""
+                  >
+                    Select Chain Type
+                  </option>
+                  <option
+                    className="bg-primary-dark border-b-2 border-white"
+                    value="BEP-20"
+                  >
+                    BEP-20
+                  </option>
+                  <option
+                    className="bg-primary-dark border-b-2 border-white"
+                    value="TRC-20"
+                  >
+                    TRC-20
+                  </option>
+                </select>
+              </div>
+
+              {/* Transaction ID */}
+              <div>
+                <label className="block text-sm text-text-heading mb-1">
                   Transaction ID
                 </label>
                 <input
                   type="text"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full bg-transparent border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
+                  className="w-full bg-gray-800  border border-button rounded-md px-4 py-2 placeholder-white   focus:outline-none"
                   placeholder="Enter your transaction ID"
                 />
               </div>
 
+              {/* Date And Time */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
+                <label className="block text-sm text-text-heading mb-1">
+                  Date And Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={dateAndTime}
+                  onChange={(e) => setDateAndTime(e.target.value)}
+                  className="w-full bg-gray-800 border border-button rounded-md px-4 py-2 text-white placeholder-white text-text-heading focus:outline-none"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm text-text-heading mb-1">
                   Password
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
+                  className="w-full bg-gray-800  border border-button rounded-md px-4 py-2 text-text-heading placeholder-white  focus:outline-none"
                   placeholder="Enter your password"
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 className="w-full bg-button hover:bg-button-hover py-2 mt-4 rounded-md text-text-heading font-medium"
                 onClick={handleVerify}

@@ -7,12 +7,18 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    app.listen(config.port, () => {
+    // app.listen(config.port, () => {
+    //   console.log(`Server running on ${config.serverUrl}`);
+    // });
+
+    //for mobile plus desktop -->>
+
+    app.listen(config.port, "0.0.0.0", () => {
       console.log(`Server running on ${config.serverUrl}`);
     });
 
     // Start background jobs after server starts
-    require("./jobs/depositScanner");
+    // require("./jobs/depositScanner");
   } catch (error) {
     console.error("Failed to connect to server:", error);
     process.exit(1); // Exit process with failure

@@ -7,8 +7,8 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
 // url variables
-const emailVerificationUrl = config.frontendUrl + "/auth/verify-email/";
-const passwordResetUrl = config.frontendUrl + "/auth/reset-password/";
+const emailVerificationUrl = config.frontendUrl + "/verify-email/";
+const passwordResetUrl = config.frontendUrl + "/reset-password/";
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body;

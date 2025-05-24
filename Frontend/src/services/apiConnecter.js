@@ -1,20 +1,34 @@
-export const apiConnector = async (method, url, bodyData, headers, params) => {
-  // console.log("body data is -> ", bodyData);
-  // console.log("headers is -> ", headers);
-  // console.log("params is -> ", params);
-  // return axiosInstance({
-  //   method: method,
-  //   url: url,
-  //   data: bodyData ?? undefined,
-  //   headers: headers ?? undefined,
-  //   params: params ?? undefined,
-  // });
+export const apiConnector = async (
+  method,
+  url,
+  bodyData = null,
+  headers = {},
+  params = null
+) => {
+  // console.log(bodyData);
+  const queryString = params
+    ? "?" + new URLSearchParams(params).toString()
+    : "";
 
-  const queryString = params?.toString() ? `?${params.toString()}` : "";
-  const response = await fetch(url + queryString, {
-    method: method,
-    headers: headers ? headers : {},
-    body: bodyData ? bodyData : null,
-  });
-  return await response.json();
+  const options = {
+    method: method.toUpperCase(),
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  };
+
+  if (bodyData && !["GET", "DELETE"].includes(method.toUpperCase())) {
+    options.body = JSON.stringify(bodyData);
+  }
+
+  const response = await fetch(url + queryString, options);
+  const result = await response.json();
+
+  if (!response.ok) {
+    console.error("API Error", result);
+    throw new Error(result.message || "API call failed");
+  }
+
+  return result;
 };

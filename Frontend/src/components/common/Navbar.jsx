@@ -30,7 +30,7 @@ function Navbar() {
       {/* Navbar */}
       <div className="  flex justify-between items-center px-8 sm:px-12 lg:px-28 py-4 z-10 relative">
         <NavLink to="/">
-          <img className="h-26 w-40" src="/images/logo.png" alt="logo" />
+          <img className="h-26 w-40" src="/images/logo4.png" alt="logo" />
         </NavLink>
 
         {/* Navigation Links (desktop version) */}
@@ -40,8 +40,8 @@ function Navbar() {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -52,8 +52,8 @@ function Navbar() {
               <NavLink
                 to="/earnings"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -64,8 +64,8 @@ function Navbar() {
               <NavLink
                 to="/contactus"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -76,8 +76,8 @@ function Navbar() {
               <NavLink
                 to="/aboutus"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
