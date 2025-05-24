@@ -21,6 +21,37 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
     },
     role: { type: String, enum: ["user", "admin", "owner"], default: "user" },
+    referralCode: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    referredBy: {
+      type: String,
+      default: null,
+    },
+    referralBonuses: [
+      {
+        type: {
+          type: String,
+          required: true,
+          enum: ["deposit", "team"],
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+        fromUser: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     isVerified: {
       type: Boolean,
       default: false,
@@ -61,6 +92,10 @@ const userSchema = new mongoose.Schema(
         interestRate: {
           type: Number,
           required: true,
+        },
+        lastInterestCreditedAt: {
+          type: Date,
+          default: null,
         },
         investDate: {
           type: Date,

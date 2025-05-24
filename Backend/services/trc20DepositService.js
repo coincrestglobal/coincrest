@@ -56,14 +56,15 @@ function filterTrc20Deposits(transactions) {
   return transactions
     .filter(
       (tx) =>
-        tx.token_info.address.toLowerCase() ===
+        tx?.token_info.address.toLowerCase() ===
           trc20ContractAddress.toLowerCase() &&
-        tx.to.toLowerCase() === myWalletAddress.toLowerCase() &&
-        tx.to.toLowerCase() !== tx.from.toLowerCase()
+        tx?.to.toLowerCase() === myWalletAddress.toLowerCase() &&
+        tx?.to.toLowerCase() !== tx?.from.toLowerCase()
     )
     .map((tx) => ({
       amount: new Decimal(tx.value)
         .dividedBy(new Decimal(10).pow(tx.token_info.decimals))
+        .toDecimalPlaces(6)
         .toNumber(),
       txId: tx.transaction_id,
       fromAddress: tx.from,

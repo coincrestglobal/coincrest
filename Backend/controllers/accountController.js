@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
 const InvestmentPlan = require("../models/investmentPlanmodel");
+const Setting = require("../models/settingModel");
 const Decimal = require("decimal.js");
 const {
   MIN_WITHDRAWAL_INTERVAL_DAYS,
@@ -35,8 +36,12 @@ exports.getBalance = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      investableBalance: user.investableBalance,
-      withdrawableBalance: user.withdrawableBalance,
+      investableBalance: new Decimal(user.investableBalance)
+        .toDecimalPlaces(2)
+        .toNumber(),
+      withdrawableBalance: new Decimal(user.withdrawableBalance)
+        .toDecimalPlaces(2)
+        .toNumber(),
     },
   });
 });
@@ -45,27 +50,32 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   const { tokenType, txId, trxDateTime, password } = req.body;
   const { userId } = req.user;
 
-  // Step 1: Find user
   const user = await User.findById(userId);
   if (!user) {
     return next(new AppError("Access denied. User account not found.", 401));
   }
 
-  // Step 2: Verify password
   const isPasswordCorrect = await user.verifyPassword(password);
   if (!isPasswordCorrect) {
     return next(new AppError("Incorrect password. Please try again.", 400));
   }
 
-  // Step 3: Check if deposit already exists in DB
   let deposit = await Deposit.findOne({ txId });
 
   if (deposit) {
     if (deposit.isConfirmed) {
       return next(new AppError("This deposit has already been verified.", 400));
     }
+
+    if (deposit.tokenType !== tokenType) {
+      return next(
+        new AppError(
+          `The token type you provided (${tokenType}) does not match the existing record (${deposit.tokenType}).`,
+          400
+        )
+      );
+    }
   } else {
-    // Step 4: Fetch from blockchain
     const fromTimestamp = trxDateTime - 30 * 1000,
       maxTimestamp = trxDateTime + 5 * 60 * 1000;
 
@@ -85,13 +95,11 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
         );
       }
 
-      // Step 5: Process the transaction
       const processedTransaction = filterTrc20Deposits(transactionData);
 
-      // Step 6: Validate it's a deposit
       transaction = processedTransaction[0];
     } else {
-      const url = buildBep20Url(fromTimestamp, maxTimestamp);
+      const url = await buildBep20Url(fromTimestamp, maxTimestamp);
 
       if (!url) return [];
 
@@ -106,13 +114,11 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
         );
       }
 
-      // Step 5: Process the transaction
       const processedTransaction = filterBep20Deposits(transactionData);
 
-      // Step 6: Validate it's a deposit
       transaction = processedTransaction[0];
     }
-    // Step 7: Save it in DB
+
     deposit = await Deposit.findOneAndUpdate(
       { txId },
       {
@@ -140,7 +146,6 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Step 8: Confirm deposit & update balance
   deposit.isConfirmed = true;
   deposit.depositedBy = userId;
   deposit.verifiedAt = new Date();
@@ -148,11 +153,48 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
   user.investableBalance = new Decimal(user.investableBalance)
     .plus(deposit.amount)
+    .toDecimalPlaces(6)
     .toNumber();
+
   user.deposits.push(deposit._id);
   await user.save();
 
-  // Step 9: Respond
+  if (user.referredBy && !deposit.bonusGiven) {
+    const referrer = await User.findOne({ referralCode: user.referredBy });
+
+    if (referrer) {
+      const setting = await Setting.findOne({ key: "deposit_bonus" })
+        .select("value")
+        .lean();
+      const bonusRate = setting?.value || 0;
+      const bonusAmount = new Decimal(deposit.amount).mul(
+        new Decimal(bonusRate).div(100)
+      );
+
+      console.log(
+        bonusRate,
+        bonusAmount,
+        deposit.amount * (setting.value / 100),
+        deposit.amount
+      );
+
+      referrer.referralBonuses.push({
+        type: "deposit",
+        amount: bonusAmount.toDecimalPlaces(6).toNumber(),
+        fromUser: user._id,
+      });
+
+      referrer.withdrawableBalance = new Decimal(referrer.withdrawableBalance)
+        .plus(bonusAmount)
+        .toDecimalPlaces(6)
+        .toNumber();
+
+      await referrer.save();
+      deposit.bonusGiven = true;
+      await deposit.save();
+    }
+  }
+
   res.status(200).json({
     message: "Deposit verified and your balance has been updated successfully.",
   });
@@ -318,8 +360,10 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
   await withdrawal.save();
 
-  // Subtract using Decimal
-  user.withdrawableBalance = balance.minus(withdrawalAmount).toNumber();
+  user.withdrawableBalance = balance
+    .minus(withdrawalAmount)
+    .toDecimalPlaces(6)
+    .toNumber();
   user.lastWithdrawnAt = new Date();
 
   await user.save();
@@ -412,18 +456,22 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
   }
 
   if (investableBalance.gte(investAmount)) {
-    user.investableBalance = investableBalance.minus(investAmount).toNumber();
+    user.investableBalance = investableBalance
+      .minus(investAmount)
+      .toDecimalPlaces(6)
+      .toNumber();
   } else {
     const remainingAmount = investAmount.minus(investableBalance);
     user.investableBalance = 0;
     user.withdrawableBalance = withdrawableBalance
       .minus(remainingAmount)
+      .toDecimalPlaces(6)
       .toNumber();
   }
 
   user.investments.push({
     name: plan.name,
-    investedAmount: investAmount.toDecimalPlaces(2).toNumber(),
+    investedAmount: investAmount.toDecimalPlaces(6).toNumber(),
     interestRate: plan.interestRate,
   });
 
@@ -456,6 +504,11 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     );
   }
 
+  investments = investments.map(({ profit, ...rest }) => ({
+    ...rest,
+    profit: new Decimal(profit).toDecimalPlaces(2).toNumber(),
+  }));
+
   investments = investments.sort((a, b) => {
     const aDate =
       a.status === "redeemed" ? new Date(a.redeemDate) : new Date(a.investDate);
@@ -465,11 +518,6 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     return sort === "desc" ? bDate - aDate : aDate - bDate;
   });
 
-  if (page > 1 && investments.length === 0) {
-    return next(new AppError("No more investments history found.", 404));
-  }
-
-  // Pagination
   const total = investments.length;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -522,7 +570,7 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
   investment.redeemDate = new Date();
   user.withdrawableBalance = new Decimal(user.withdrawableBalance)
     .plus(new Decimal(investment.investedAmount))
-    .plus(new Decimal(investment.profit || 0))
+    .toDecimalPlaces(6)
     .toNumber();
 
   await user.save();

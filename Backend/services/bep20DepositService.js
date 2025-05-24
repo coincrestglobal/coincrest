@@ -9,9 +9,11 @@ const myWalletAddress = config.bscWalletAddress;
 const bep20ContractAddress = config.bep20ContractAddress;
 const bscScanApiKey = config.bscScanApiKey;
 
-function buildBep20Url(fromTimestamp, maxTimestamp) {
-  const startBlock = getBlockByTimestamp(Math.floor(fromTimestamp / 1000));
-  const endBlock = getBlockByTimestamp(Math.floor(maxTimestamp / 1000));
+async function buildBep20Url(fromTimestamp, maxTimestamp) {
+  const startBlock = await getBlockByTimestamp(
+    Math.floor(fromTimestamp / 1000)
+  );
+  const endBlock = await getBlockByTimestamp(Math.floor(maxTimestamp / 1000));
 
   if (!startBlock || !endBlock) return null;
 
@@ -69,14 +71,15 @@ function filterBep20Deposits(transactions) {
   const filtered = transactions
     .filter(
       (tx) =>
-        tx.contractAddress.toLowerCase() ===
+        tx?.contractAddress.toLowerCase() ===
           bep20ContractAddress.toLowerCase() &&
-        tx.to.toLowerCase() === myWalletAddress.toLowerCase() &&
-        tx.to.toLowerCase() !== tx.from.toLowerCase()
+        tx?.to.toLowerCase() === myWalletAddress.toLowerCase() &&
+        tx?.to.toLowerCase() !== tx?.from.toLowerCase()
     )
     .map((tx) => ({
       amount: new Decimal(tx.value)
         .dividedBy(new Decimal(10).pow(tx.tokenDecimal))
+        .toDecimalPlaces(6)
         .toNumber(),
       txId: tx.hash,
       fromAddress: tx.from,
@@ -137,7 +140,7 @@ async function scanBep20Deposits() {
     const fromTimestamp = lastFetchedAt;
     const maxTimestamp = Date.now() - 60 * 1000;
 
-    const url = buildBep20Url(fromTimestamp, maxTimestamp);
+    const url = await buildBep20Url(fromTimestamp, maxTimestamp);
 
     if (!url) return;
 

@@ -7,11 +7,17 @@ const accountController = require("../controllers/accountController");
 
 const router = express.Router();
 
-router.get("/balance", authMiddleware.protect, accountController.getBalance);
+router.get(
+  "/balance",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
+  accountController.getBalance
+);
 
 router.post(
   "/verifyDeposit",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountValidator.validateVerifyDeposit,
   accountController.verifyDeposit
 );
@@ -19,6 +25,7 @@ router.post(
 router.get(
   "/deposits",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   queryParamsValidator,
   paginationValidator,
   accountController.getDepositHistory
@@ -27,6 +34,7 @@ router.get(
 router.post(
   "/upsertWithdrawalAddress",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountValidator.validateAddWithdrawalAddress,
   accountController.upsertWithdrawalAddress
 );
@@ -34,12 +42,14 @@ router.post(
 router.get(
   "/withdrawalAddresses",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountController.getWithdrawalAddresses
 );
 
 router.post(
   "/withdraw",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountValidator.withdrawalValidator,
   accountController.withdraw
 );
@@ -47,6 +57,7 @@ router.post(
 router.get(
   "/withdraw",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   queryParamsValidator,
   paginationValidator,
   accountController.getWithdrawalHistory
@@ -55,6 +66,7 @@ router.get(
 router.post(
   "/invest",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountValidator.validateInvestment,
   accountController.investInPlan
 );
@@ -62,6 +74,7 @@ router.post(
 router.get(
   "/getInvestments",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   queryParamsValidator,
   paginationValidator,
   accountController.getInvestmentHistory
@@ -69,6 +82,7 @@ router.get(
 
 router.patch(
   "/redeem/:investmentId",
+  authMiddleware.authorizeRoles("user"),
   authMiddleware.protect,
   accountController.redeemInvestment
 );

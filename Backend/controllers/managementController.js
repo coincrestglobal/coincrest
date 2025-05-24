@@ -42,14 +42,14 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     };
   }
 
-  const sortOption = { createdAt: sort === "desc" ? -1 : 1 };
+  const sortOrder = { createdAt: sort === "desc" ? -1 : 1 };
 
   const [users, total] = await Promise.all([
     User.find(filter)
-      .sort(sortOption)
+      .sort(sortOrder)
       .skip(skip)
       .limit(limit)
-      .select("name email updatedAt rolem priority"),
+      .select("name email updatedAt role priority"),
     User.countDocuments(filter),
   ]);
 
