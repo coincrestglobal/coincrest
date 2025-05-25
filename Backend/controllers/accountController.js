@@ -171,13 +171,6 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
         new Decimal(bonusRate).div(100)
       );
 
-      console.log(
-        bonusRate,
-        bonusAmount,
-        deposit.amount * (setting.value / 100),
-        deposit.amount
-      );
-
       referrer.referralBonuses.push({
         type: "deposit",
         amount: bonusAmount.toDecimalPlaces(6).toNumber(),
@@ -578,5 +571,23 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: "success",
     message: "Investment redeemed successfully",
+  });
+});
+
+exports.getReferredUsers = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+
+  const user = await User.findById(userId);
+
+  const referredUsers = await User.find({
+    referredBy: user.referralCode,
+  })
+    .sort({ createdAt: -1 })
+    .select("name email");
+
+  res.json({
+    status: "success",
+    message: "Referred users fetched successfully",
+    data: { referredUsers },
   });
 });
