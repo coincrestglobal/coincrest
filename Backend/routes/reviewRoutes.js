@@ -40,6 +40,13 @@ router.get(
   reviewController.getReviews
 );
 
+router.get(
+  "/:reviewId",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  reviewController.getReviewById
+);
+
 router.patch(
   "/approve/:reviewId",
   authMiddleware.protect,

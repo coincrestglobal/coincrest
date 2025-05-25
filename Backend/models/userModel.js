@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
     },
     role: { type: String, enum: ["user", "admin", "owner"], default: "user" },
+    profilePicUrl: {
+      type: String,
+      default: null,
+    },
     referralCode: {
       type: String,
       unique: true,

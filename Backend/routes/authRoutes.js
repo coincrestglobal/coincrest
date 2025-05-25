@@ -18,6 +18,23 @@ router.patch(
   authValidator.resetPasswordValidator,
   authController.resetPassword
 );
+
+router.patch(
+  "/updateName",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user", "admin", "owner"),
+  authValidator.updateNameValidator,
+  authController.updateName
+);
+
+router.patch(
+  "/updateProfilePicture",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user", "admin", "owner"),
+  authValidator.profilePictureValidator(),
+  authController.updateProfilePicture
+);
+
 router.patch(
   "/updateMyPassword",
   authMiddleware.protect,

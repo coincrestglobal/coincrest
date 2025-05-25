@@ -1,6 +1,8 @@
 const Review = require("../models/reviewModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const jwt = require("jsonwebtoken");
+const config = require("../config/config");
 
 exports.getReviews = catchAsync(async (req, res) => {
   let { page, limit, status, sort, startDate, endDate } = req.query;
@@ -33,8 +35,8 @@ exports.getReviews = catchAsync(async (req, res) => {
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("rating comment createdAt")
-      .populate("user", "name profile -_id"),
+      .select("rating createdAt")
+      .populate("user", "name email -_id"),
     Review.countDocuments(filter),
   ]);
 
@@ -45,6 +47,26 @@ exports.getReviews = catchAsync(async (req, res) => {
     total,
     totalPages: Math.ceil(total / limit),
     data: { reviews },
+  });
+});
+
+exports.getReviewById = catchAsync(async (req, res, next) => {
+  const { reviewId } = req.params;
+
+  const review = await Review.findById(reviewId)
+    .select("rating comment createdAt")
+    .populate("user", "name profile email -_id");
+
+  if (!review) {
+    const error = new Error("Review not found");
+    error.statusCode = 404;
+    return next(error);
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Review fetched successfully",
+    data: { review },
   });
 });
 
@@ -141,16 +163,73 @@ exports.approveReview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getRecentReviews = catchAsync(async (req, res) => {
-  const reviews = await Review.find({ isApproved: true })
+exports.getRecentReviews = catchAsync(async (req, res, next) => {
+  let userId = null;
+  let hasUserReviewed = false;
+  let userReview = null;
+
+  const authHeader = req.headers.authorization;
+  const cookieToken = req.cookies?.jwt;
+  let token =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : cookieToken;
+
+  // Decode token (if exists)
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, config.jwtSecret);
+      userId = decoded.id;
+    } catch (err) {
+      // Invalid token — skip
+    }
+  }
+
+  // Base query params
+  const queryOptions = {
+    isApproved: true,
+  };
+
+  // If user logged in, check if they have a review
+  if (userId) {
+    userReview = await Review.findOne({
+      ...queryOptions,
+      user: userId,
+    })
+      .select("rating comment")
+      .populate("user", "name profilePicUrl -_id")
+      .lean();
+
+    hasUserReviewed = !!userReview;
+
+    // Exclude user's review from next query
+    if (hasUserReviewed) queryOptions.user = { $ne: userId };
+  }
+
+  // Fetch remaining reviews (14 or 15 depending)
+  const remainingLimit = hasUserReviewed ? 14 : 15;
+  const recentReviews = await Review.find(queryOptions)
     .sort({ createdAt: -1 })
-    .limit(5)
-    .select("rating comment createdAt")
-    .populate("user", "name profile -_id");
+    .limit(remainingLimit)
+    .select("rating comment")
+    .populate("user", "name profilePicUrl -_id")
+    .lean();
+
+  // Combine reviews
+  const reviews = [...(userReview ? [userReview] : []), ...recentReviews].map(
+    (review) => ({
+      ...review,
+      isCurrentUser:
+        userId && review.user?._id?.toString() === userId.toString(),
+    })
+  );
 
   res.status(200).json({
     status: "success",
     results: reviews.length,
-    data: { reviews },
+    data: {
+      hasUserReviewed,
+      reviews,
+    },
   });
 });

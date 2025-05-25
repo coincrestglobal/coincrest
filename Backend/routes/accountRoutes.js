@@ -87,4 +87,11 @@ router.patch(
   accountController.redeemInvestment
 );
 
+router.get(
+  "/getReferredUsers",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
+  accountController.getReferredUsers
+);
+
 module.exports = router;

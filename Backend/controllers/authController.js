@@ -6,6 +6,9 @@ const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const path = require("path");
+const fs = require("fs");
+const sharp = require("sharp");
 
 // url variables
 const emailVerificationUrl = config.frontendUrl + "/auth/verify-email/";
@@ -259,6 +262,66 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Password updated successfully. You can now log in.",
+  });
+});
+
+exports.updateName = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+  const { name } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { name },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Name updated successfully",
+    data: { name: user.name },
+  });
+});
+
+exports.updateProfilePicture = catchAsync(async (req, res, next) => {
+  const { userId } = req.user;
+
+  // File name
+  const filename = `user-${userId}-${Date.now()}.webp`;
+
+  // Folder path
+  const uploadPath = path.join(__dirname, "../uploads/profilePics");
+
+  // Ensure directory exists
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+
+  // Convert and save file
+  const outputPath = path.join(uploadPath, filename);
+  await sharp(req.file.buffer)
+    .resize(150, 150)
+    .webp({ quality: 90 }) // lossy compression with good quality
+    .toFile(outputPath);
+
+  const user = await User.findById(userId);
+  if (user.profilePicUrl) {
+    const oldPath = path.join(uploadPath, user.profilePicUrl);
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath);
+    }
+  }
+
+  // Update user
+  user.profilePicUrl = filename;
+
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Profile picture updated successfully",
+    data: {
+      profilePic: filename,
+    },
   });
 });
 

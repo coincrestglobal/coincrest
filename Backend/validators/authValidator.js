@@ -1,5 +1,8 @@
 const { body } = require("express-validator");
+const multer = require("multer");
+
 const validate = require("../middlewares/handleValidation");
+const AppError = require("../utils/appError");
 
 exports.signupValidator = validate([
   // name validation
@@ -80,6 +83,76 @@ exports.resetPasswordValidator = validate([
       return true;
     }),
 ]);
+
+exports.updateNameValidator = validate([
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .customSanitizer((value) => value.replace(/\s+/g, " ")) // Collapse multiple spaces into one
+    .customSanitizer((value) => value.replace(/^\s+|\s+$/g, "")) // Trim again
+    .isLength({ min: 2, max: 20 })
+    .withMessage("Name must be between 2 and 20 characters")
+    .matches(/^[A-Za-z ]+$/)
+    .withMessage("Name must contain only letters and spaces")
+    .customSanitizer((value) =>
+      value
+        .split(" ")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ")
+    ),
+]);
+
+exports.profilePictureValidator = () => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  const storage = multer.memoryStorage();
+
+  const upload = multer({
+    storage,
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB
+    },
+  });
+
+  return (req, res, next) => {
+    const uploader = upload.single("profilePicture");
+
+    uploader(req, res, function (err) {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return next(new AppError("File size exceeds 5MB limit", 400));
+          }
+        }
+
+        return next(
+          new AppError(
+            err.message || "An error occurred during file upload",
+            400
+          )
+        );
+      }
+
+      if (!req.file) {
+        return next(new AppError("Profile picture is required", 400));
+      }
+
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return next(
+          new AppError(
+            `Invalid file type. Allowed types: ${allowedTypes.join(", ")}`,
+            400
+          )
+        );
+      }
+
+      next();
+    });
+  };
+};
 
 exports.updatePasswordValidator = validate([
   body("currentPassword")
