@@ -83,7 +83,7 @@ export const ownerAndAdminDashboardEndPoints = {
   // Admin Controls
   GET_ALL_ADMINS: BASE_URL + "/management/admins",
   ADD_NEW_ADMIN: BASE_URL + "/management/admins/add",
-  REMOVE_ADMIN: BASE_URL + "/management/admins/remove",
+  REMOVE_ADMIN: BASE_URL + "/management/deleteAdmin",
 
   // Announcements
   GET_ALL_ANNOUNCEMENTS: BASE_URL + "/management/announcements",
@@ -99,6 +99,7 @@ export const userDashboardEndPoints = {
   USER_DEPOSIT_HISTORY: BASE_URL + "/account/deposits",
   GET_BALANCE: BASE_URL + "/account/balance",
   INVEST_IN_PLAN: BASE_URL + "/account/invest",
+  INVEST_HISTORY: BASE_URL + "/account/getInvestments",
   WITHDRAW: BASE_URL + "/account/withdraw",
   USER_WITHDRAWS_HISTORY: BASE_URL + "/account/withdrawals",
   UPDATE_PERSONAL_DETAILS: BASE_URL + "/user/update-details",

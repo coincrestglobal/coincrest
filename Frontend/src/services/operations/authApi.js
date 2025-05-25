@@ -33,13 +33,12 @@ export const login = async (data, navigate, setUser) => {
 
     if (!response.data.success) {
     }
+    const { token, user } = response.data;
 
     if (response.status === "success") {
-      const { token, user } = response.data;
       const nameParts = user.name.trim().split(" ");
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(" ");
-
       const userData = {
         token,
         name: user.name,
@@ -55,7 +54,6 @@ export const login = async (data, navigate, setUser) => {
 
       setUser(userData);
     }
-
     if (user.role === "admin") {
       navigate("/dashboard/admin");
     } else if (user.role === "owner") {

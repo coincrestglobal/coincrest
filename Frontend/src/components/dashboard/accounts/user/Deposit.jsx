@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import {
+  getDepositAddresses,
   getUserDeposits,
   verifyDeposit,
 } from "../../../../services/operations/userDashboardApi";
@@ -41,6 +42,12 @@ const DepositPage = () => {
     };
     getHistory();
   }, []);
+
+  useEffect(() => {
+    const getAddressess = async () => {
+      const response = await getDepositAddresses(user.token);
+    };
+  });
 
   return (
     <div className="relative w-full max-w-4xl bg-primary-dark rounded-md p-4 sm:p-6 md:p-8 flex flex-col ">
