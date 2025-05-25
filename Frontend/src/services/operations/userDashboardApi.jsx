@@ -7,6 +7,7 @@ const {
   USER_DEPOSIT_HISTORY,
   GET_BALANCE,
   INVEST_IN_PLAN,
+  INVEST_HISTORY,
   WITHDRAW,
   USER_WITHDRAWS_HISTORY,
   UPDATE_PERSONAL_DETAILS,
@@ -42,11 +43,21 @@ export const getBalance = async (token) => {
   } catch (error) {}
 };
 
-export const investInPlan = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+//investments
+export const investInPlan = async (token, data) => {
   try {
     const response = await apiConnector("POST", INVEST_IN_PLAN, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    if (!response?.data?.success) {
+    }
+    return response;
+  } catch (error) {}
+};
+
+export const investingHistory = async (token) => {
+  try {
+    const response = await apiConnector("GET", INVEST_HISTORY, null, {
       Authorization: `Bearer ${token}`,
     });
     if (!response?.data?.success) {
@@ -62,6 +73,15 @@ export const verifyDeposit = async (data) => {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE0NmQ3YmVkODZhZWNkMGVhYzQ5MCIsImlhdCI6MTc0NzkwNjQyOCwiZXhwIjoxNzU1NjgyNDI4fQ.XW-2MYErz22krRs0TxxaMBBDKoxtuuq66d9eCDVdYuU";
   try {
     const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
+      Authorization: `Bearer ${token}`,
+    });
+    if (!response?.data?.success) {
+    }
+  } catch (error) {}
+};
+export const getDepositAddresses = async (token) => {
+  try {
+    const response = await apiConnector("POST", VERIFY_DEPOSIT, null, {
       Authorization: `Bearer ${token}`,
     });
     if (!response?.data?.success) {

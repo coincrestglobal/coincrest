@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LucideCoins } from "lucide-react";
 import ConfirmationModal from "../../../common/ConfirmationModal";
+import { useUser } from "../../../common/UserContext";
+import { investingHistory } from "../../../../services/operations/userDashboardApi";
 
 const levels = [
   { level: 1, stake: 100, title: "Star", weekly: "3%" },
@@ -78,8 +80,17 @@ const closedData = [
 const tabs = ["Active", "Closed"];
 
 function Investments() {
+  const { user } = useUser();
+  const [investHistory, setInvestHistory] = useState();
   const [activeTab, setActiveTab] = useState("Active");
   const [closeModal, setCloseModal] = useState(false);
+
+  useEffect(() => {
+    const getInvestingHistory = async () => {
+      const response = await investingHistory(user.token);
+    };
+    getInvestingHistory();
+  }, []);
 
   const calculateWeeklyReturn = (stake) => {
     const level = levels.find((lvl) => stake >= lvl.stake);

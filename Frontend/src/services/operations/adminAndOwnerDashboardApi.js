@@ -474,9 +474,11 @@ export const getAllAdmins = async () => {
 };
 
 // Add new admin
-export const addNewAdmin = async (adminData) => {
+export const addNewAdmin = async (adminData, token) => {
   try {
-    const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData);
+    const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
+      Authorization: `Bearer ${token}`,
+    });
     return response;
   } catch (error) {
     return null;
@@ -484,11 +486,16 @@ export const addNewAdmin = async (adminData) => {
 };
 
 // Remove (fire) an admin
-export const fireAdmin = async (adminIdentifier) => {
+export const fireAdmin = async (id, token, password) => {
   try {
-    const response = await apiConnector("DELETE", REMOVE_ADMIN, {
-      idOrEmail: adminIdentifier,
-    });
+    const response = await apiConnector(
+      "PATCH",
+      `${REMOVE_ADMIN}/${id}`,
+      { ownerPassword: password },
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
     return response;
   } catch (error) {
     return null;

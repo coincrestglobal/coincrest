@@ -1,18 +1,18 @@
 import StatBox from "./StatBox";
 import InvestCard from "./InvestCard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../../../common/UserContext";
 import { getBalance } from "../../../../services/operations/userDashboardApi";
 
 function UserPortfolio() {
   const { user } = useUser();
-  let investableBalance = 0;
-  let withdrawableBalance = 0;
+  const [userInvestableBalance, setUserInvestableBalance] = useState(0);
+  const [userWithdrawableBalance, setUserWithdrawableBalance] = useState(0);
   useEffect(() => {
     const fetchBalance = async () => {
       const response = await getBalance(user.token);
-      investableBalance = response.data.investableBalance;
-      withdrawableBalance = response.data.withdrawableBalance;
+      setUserInvestableBalance(response.data.investableBalance);
+      setUserWithdrawableBalance(response.data.withdrawableBalance);
     };
     fetchBalance();
   }, []);
@@ -21,12 +21,15 @@ function UserPortfolio() {
       <div className="flex flex-wrap justify-between gap-4">
         <div className="flex-1 basis-full sm:basis-[45%] md:basis-[220px]">
           <StatBox
-            heading={withdrawableBalance}
+            heading={userWithdrawableBalance}
             subHeading="Available Balance"
           />
         </div>
         <div className="flex-1 basis-full sm:basis-[45%] md:basis-[220px]">
-          <StatBox heading={investableBalance} subHeading="Unstaked Balance" />
+          <StatBox
+            heading={userInvestableBalance}
+            subHeading="Unstaked Balance"
+          />
         </div>
       </div>
 

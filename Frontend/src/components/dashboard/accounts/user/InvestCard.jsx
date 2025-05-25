@@ -2,8 +2,14 @@ import { useState, useEffect } from "react";
 import ConfirmationModal from "../../../common/ConfirmationModal";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
 import { X } from "lucide-react";
-import { getPlans } from "../../../../services/operations/userDashboardApi";
+import {
+  getPlans,
+  investInPlan,
+} from "../../../../services/operations/userDashboardApi";
+import { useUser } from "../../../common/UserContext";
+
 function InvestCard({ onClose }) {
+  const { user } = useUser();
   const navigate = useSafeNavigate();
   const [amount, setAmount] = useState("");
   const [levels, setLevels] = useState([]);
@@ -13,7 +19,6 @@ function InvestCard({ onClose }) {
   useEffect(() => {
     const fetchPlans = async () => {
       const res = await getPlans();
-
       if (res.status === "success") {
         const sorted = res.data.plans.sort((a, b) => a.level - b.level);
         setLevels(sorted);
@@ -55,29 +60,15 @@ function InvestCard({ onClose }) {
 
   const handleConfirm = async () => {
     if (selectedLevel && amount) {
-      try {
-        const res = await fetch("http://localhost:5000/api/v1/account/invest", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            planId: selectedLevel._id,
-            investedAmount: amount,
-          }),
-        });
+      const response = await investInPlan(user.token, {
+        planId: selectedLevel._id,
+        investedAmount: amount,
+      });
 
-        const response = await res.json();
-
-        if (response.status === "success") {
-          navigate("investments");
-        } else {
-          alert(response.message);
-        }
-      } catch (err) {
-        console.error("Investment error", err);
-        alert("Something went wrong. Try again.");
+      if (response.status === "success") {
+        console.log(response.message);
       }
+      setIsModalOpen(false);
     }
   };
 

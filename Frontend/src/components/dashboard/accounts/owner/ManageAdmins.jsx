@@ -10,34 +10,12 @@ import AdminsHeader from "../../../common/DashboardHeader";
 import { BiPlusCircle } from "react-icons/bi";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
 import ConfirmationModal from "../../../common/ConfirmationModal";
-import Loading from "../../../../pages/Loading";
-
-const demoAdmins = [
-  {
-    _id: "1",
-    name: "Aarav Mehta",
-    email: "aarav.mehta@coincrest.com",
-    role: "Admin",
-    status: "Active",
-    joinedAt: "2024-01-15T12:00:00Z",
-  },
-  {
-    _id: "2",
-    name: "Simran Kaur",
-    email: "simran.kaur@coincrest.com",
-    role: "Admin",
-    status: "Active",
-    joinedAt: "2023-11-22T09:30:00Z",
-  },
-  {
-    _id: "3",
-    name: "Ravi Sharma",
-    email: "ravi.sharma@coincrest.com",
-    role: "Admin",
-    status: "Active",
-    joinedAt: "2024-03-05T08:45:00Z",
-  },
-];
+import { useUser } from "../../../common/UserContext";
+import {
+  fireAdmin,
+  getAllUsers,
+} from "../../../../services/operations/adminAndOwnerDashboardApi";
+import FireAdminConfirmationModal from "./FireAdminConfirmationModal";
 
 const filterOptions = [
   {
@@ -56,53 +34,71 @@ function AllAdmins() {
     sortOrder: "asc",
     selectedFilters: {},
   });
-  const [admins, setAdmins] = useState([]);
   const [expandedAdmin, setExpandedAdmin] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const [fireAdminConfirmationModal, setFireAdminConfirmationModal] =
     useState(false);
 
+  const { user } = useUser();
+
+  const [admins, setAdmins] = useState([]);
+  const [password, setPassword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const numberOfEntries = 10;
+
   useEffect(() => {
-    function fetchAdmins(query) {
-      return demoAdmins.filter(
-        (admin) =>
-          !query ||
-          admin.name.toLowerCase().includes(query.toLowerCase()) ||
-          admin.email.toLowerCase().includes(query.toLowerCase())
-      );
-    }
+    const fetchUsers = async () => {
+      try {
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
+        const params = new URLSearchParams();
 
-    const filteredAdmins = fetchAdmins(filterState.searchQuery);
-    setAdmins(filteredAdmins);
-  }, [filterState.searchQuery, filterState.selectedFilters]);
+        if (searchQuery) {
+          params.append("search", searchQuery);
+        }
 
-  const sortedAdmins = [...admins].sort((a, b) => {
-    return filterState.sortOrder === "asc"
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
-  });
+        if (selectedFilters) {
+          if (selectedFilters["Date Interval"]) {
+            const { startDate, endDate } = selectedFilters["Date Interval"];
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+          }
+        }
 
+        if (sortOrder) {
+          params.append("sort", sortOrder);
+        }
+
+        params.append("page", currentPage);
+        params.append("role", "admin");
+        params.append("limit", numberOfEntries);
+
+        // getting all users
+        const response = await getAllUsers(user.token, params.toString());
+
+        const { data } = response;
+
+        setAdmins(data.users);
+        setTotalPages(response.totalPages);
+        setTotalUsers(response.total);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [currentPage, filterState]);
   // Handle "Fire Admin"
-  const handleFireAdmin = async (adminId) => {
-    setLoading(true);
-    // Simulate async operation
-    setTimeout(() => {
-      setAdmins((prevAdmins) =>
-        prevAdmins.filter((admin) => admin._id !== adminId)
-      );
-      setLoading(false);
-    }, 2000);
+  const handleFireAdmin = async (adminId, password) => {
+    const response = await fireAdmin(adminId, user.token, password);
     setFireAdminConfirmationModal(false);
   };
-  if (loading) {
-    return <Loading />;
-  }
   return (
     <div className="p-2 flex flex-col gap-4 h-full overscroll-y-scroll scrollbar-hide">
       <AdminsHeader
         title="All Admins"
-        totalCount={sortedAdmins.length}
+        totalCount={totalUsers}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={filterOptions}
@@ -121,7 +117,7 @@ function AllAdmins() {
       {admins.length === 0 ? (
         <p className="text-text-body">No admins found.</p>
       ) : (
-        sortedAdmins.map((admin) => (
+        admins.map((admin) => (
           <div
             key={admin._id}
             className="bg-primary-dark rounded-2xl mb-4 shadow-lg p-6 border-t-2 border-button"
@@ -160,16 +156,12 @@ function AllAdmins() {
             {expandedAdmin === admin._id && (
               <div className="grid grid-cols-2 gap-4 p-4 rounded-md shadow-sm bg-primary ">
                 <p className="text-text-subheading">
-                  <strong className="text-text-heading">Phone:</strong>{" "}
-                  {admin.phone || "Not Provided"}
-                </p>
-                <p className="text-text-subheading">
                   <strong className="text-text-heading">Role:</strong>{" "}
                   {admin.role}
                 </p>
                 <p className="text-text-subheading">
                   <strong className="text-text-heading">Joined:</strong>{" "}
-                  {new Date(admin.joinedAt).toLocaleDateString()}
+                  {new Date(admin.updatedAt).toLocaleDateString()}
                 </p>
               </div>
             )}
@@ -177,7 +169,6 @@ function AllAdmins() {
             <div className="mt-4">
               <button
                 onClick={() => setFireAdminConfirmationModal(true)}
-                disabled={loading}
                 className="flex items-center gap-2 px-4 py-2 bg-button text-text-heading rounded-lg cursor-pointer"
               >
                 <FaUserSlash />
@@ -185,10 +176,11 @@ function AllAdmins() {
               </button>
             </div>
             {fireAdminConfirmationModal && (
-              <ConfirmationModal
+              <FireAdminConfirmationModal
+                adminId={admin._id}
                 text={`Are you sure you want to fire the admin ${admin.name}? This action cannot be undone.`}
                 onCancel={() => setFireAdminConfirmationModal(false)}
-                onConfirm={() => handleFireAdmin(admin._id)}
+                onConfirm={handleFireAdmin} // no need to pass password here
               />
             )}
           </div>

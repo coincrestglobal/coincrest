@@ -55,6 +55,7 @@ function Users() {
         }
 
         params.append("page", currentPage);
+        params.append("role", "user");
         params.append("limit", numberOfEntries);
 
         // getting all users
