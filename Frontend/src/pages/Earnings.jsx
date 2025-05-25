@@ -98,7 +98,7 @@ const EarningsPlansPage = () => {
       <AboutSomething heading="How You Earn" subHeadings={earningDetails} />
 
       {/* Level Cards */}
-      <div className="flex flex-col py-10 relative px-4 sm:px-6 md:px-10">
+      <div className="flex flex-col py-10 relative px-4 md:px-0.5 lg:px-10">
         {/* Title */}
 
         <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
@@ -114,7 +114,7 @@ const EarningsPlansPage = () => {
         </h1>
 
         {/* Level Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 py-12 sm:py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-12 sm:py-14">
           {levels.map((plan) => {
             const getLevelIcon = (level) => {
               const found = levelIcons.find((item) => item.level === level);
@@ -135,7 +135,7 @@ const EarningsPlansPage = () => {
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-4">
+                <div className="flex flex-col lg:flex-row items-center lg:justify-center w-full gap-4">
                   {/* Icon */}
                   <p className="text-3xl sm:text-4xl md:text-5xl">
                     {getLevelIcon(plan.level)}

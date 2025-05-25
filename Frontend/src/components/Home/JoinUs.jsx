@@ -20,9 +20,9 @@ function JoinUs() {
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row justify-between items-center px-6 sm:px-8 md:px-44 py-12 sm:py-16 gap-10 sm:gap-8">
+    <div className="w-full flex flex-col md:flex-col lg:flex-row justify-between items-center px-6 sm:px-8 md:px-16 lg:px-44 py-12 sm:py-16 gap-10 sm:gap-8">
       {/* Text Section */}
-      <div className="flex flex-col gap-4 text-center md:text-left order-2 md:order-none w-full md:w-1/2">
+      <div className="flex flex-col gap-4 text-center items-center w-full lg:w-1/2 order-2 md:order-2 lg:order-none">
         <GradientBackground
           clor1="var(--grad2)"
           size="40%"
@@ -30,16 +30,17 @@ function JoinUs() {
           left="98%"
         />
         <GradientBackground size="35%" top="72%" left="2%" />
-        <h3 className="text-2xl sm:text-3xl font-semibold text-text-heading">
+        <h3 className="text-2xl sm:text-3xl font-semibold text-text-heading  ">
           Join CoinCrest Today!
         </h3>
-        <p className="text-text-body text-base sm:text-lg">
+
+        <p className="text-text-body text-base sm:text-lg md:max-w-md md:mx-auto lg:mx-0">
           Unlock the potential of your crypto assets with our seamless USDT
           staking platform
         </p>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:justify-center md:justify-start mt-2">
+        <div className="flex flex-col sm:flex-row gap-4 sm:justify-center lg:justify-start mt-2">
           <button
             onClick={handlePrimaryAction}
             className="w-full sm:w-fit cursor-pointer bg-button hover:bg-button-hover px-8 py-3 text-md font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
@@ -56,7 +57,7 @@ function JoinUs() {
       </div>
 
       {/* Image Section */}
-      <div className="w-full md:w-1/2 flex justify-center md:justify-end order-1 md:order-none">
+      <div className="w-full flex justify-center order-1 md:order-1 lg:order-none lg:w-1/2">
         <img
           src="/images/joinUs.png"
           alt="Join Us"
