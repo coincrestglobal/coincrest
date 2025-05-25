@@ -4,7 +4,7 @@ const announcementSchema = new mongoose.Schema({
   title: { type: String, required: true },
   message: { type: String, required: true },
   visibleTo: {
-    type: [String],
+    type: String,
     enum: ["user", "admin", "all"],
     required: true,
   },
@@ -14,9 +14,7 @@ const announcementSchema = new mongoose.Schema({
     required: true,
   },
   createdAt: { type: Date, default: Date.now },
-  expiresAt: { type: Date, required: true },
+  expiresAt: { type: Date, required: true, index: { expires: 0 } },
 });
-
-announcementSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model("Announcement", announcementSchema);

@@ -1,78 +1,104 @@
+const catchAsync = require("../utils/catchAsync");
 const Announcement = require("../models/announcementModel");
+const AppError = require("../utils/appError");
 
-exports.createAnnouncement = async (req, res) => {
-  const { userId } = req.user;
-  const { title, message, messageTo } = req.body;
+exports.createAnnouncement = catchAsync(async (req, res, next) => {
+  const { userId, role } = req.user;
+  const { title, message } = req.body;
+
+  let visibleTo;
+  if (role === "admin") {
+    visibleTo = "user";
+  } else {
+    visibleTo = req.body.visibleTo;
+  }
 
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   await Announcement.create({
     title,
     message,
-    messageTo,
+    visibleTo,
     createdBy: userId,
     expiresAt,
   });
 
-  // TODO: Send email to users based on roles in visibleTo
+  res.status(201).json({
+    status: "success",
+    message: "Your announcement has been published.",
+  });
+});
 
-  res.status(201).json({ status: "success", message: "Announcement created" });
-};
-
-exports.getAnnouncements = async (req, res) => {
-  const { userId } = req.user;
+exports.getAnnouncements = catchAsync(async (req, res) => {
+  const { userId, role } = req.user;
 
   let filter = {};
 
-  if (user.role === "owner") {
-    // owner sees all
+  if (role === "owner") {
+    // Owner sees all announcements
     filter = {};
-  } else if (user.role === "admin") {
+  } else if (role === "admin") {
+    // Admins see announcements visible to admins or created by themselves
     filter = {
-      $or: [{ visibmessageToleTo: "admin" }, { createdBy: user._id }],
+      $or: [{ visibleTo: "admin" }, { createdBy: userId }],
     };
-  } else {
+  } else if (role === "user") {
+    // Normal users see only those announcements meant for them
     filter = {
-      visibleTo: user.role,
+      visibleTo: role,
     };
   }
 
   const announcements = await Announcement.find(filter)
     .sort({ createdAt: -1 })
+    .populate("createdBy", "name")
     .lean();
 
   const result = announcements.map((a) => {
-    const createdBySelf = a.createdBy?.toString() === user._id.toString();
+    const createdBySelf = a.createdBy._id?.toString() === userId.toString();
+
     return {
       ...a,
       createdBy:
-        user.role === "owner"
+        role === "owner"
           ? createdBySelf
             ? "You"
-            : a.createdBy
+            : a.createdBy.name
           : undefined,
     };
   });
 
-  res.json(result);
-};
+  res.status(200).json({
+    status: "success",
+    message: "Announcements fetched successfully",
+    results: result.length,
+    data: { announcements: result },
+  });
+});
 
-// DELETE
-exports.deleteAnnouncement = async (req, res) => {
-  const user = req.user;
-  const { id } = req.params;
+exports.deleteAnnouncement = catchAsync(async (req, res, next) => {
+  const { userId, role } = req.user;
+  const { announcementId } = req.params;
 
-  const announcement = await Announcement.findById(id);
-
-  if (!announcement) return res.status(404).json({ message: "Not found" });
-
-  const isOwner = user.role === "owner";
-  const isCreator = announcement.createdBy.toString() === user._id.toString();
-
-  if (isOwner || (user.role === "admin" && isCreator)) {
-    await Announcement.findByIdAndDelete(id);
-    return res.json({ message: "Deleted successfully" });
+  // Check if announcement exists
+  const announcement = await Announcement.findById(announcementId);
+  if (!announcement) {
+    return next(new AppError("Announcement not found", 404));
   }
 
-  res.status(403).json({ message: "Not allowed" });
-};
+  // Check permissions
+  const isOwner = role === "owner";
+  const isCreator = announcement.createdBy?.toString() === userId.toString();
+
+  if (isOwner || isCreator) {
+    await Announcement.findByIdAndDelete(announcementId);
+    return res.status(200).json({
+      status: "success",
+      message: "Announcement deleted successfully",
+    });
+  }
+
+  return next(
+    new AppError("You are not authorized to delete this announcement", 403)
+  );
+});

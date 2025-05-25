@@ -195,24 +195,37 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
 exports.getDepositHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
+  let { page, limit, startDate, endDate, sort } = req.query;
+
+  page = parseInt(req.query.page) || 1;
+  limit = parseInt(req.query.limit) || 5;
+
   const skip = (page - 1) * limit;
 
-  const sortOrder = req.query.sort === "desc" ? -1 : 1;
+  const filter = {};
+
+  filter.depositedBy = userId;
+
+  if (startDate && endDate) {
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+
+    filter.createdAt = {
+      $gte: start,
+      $lte: end,
+    };
+  }
+
+  const sortOrder = sort === "desc" ? -1 : 1;
 
   const [deposits, total] = await Promise.all([
-    Deposit.find({ depositedBy: userId })
+    Deposit.find(filter)
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
       .select("amount createdAt tokenType -_id"),
-    Deposit.countDocuments({ depositedBy: userId }),
+    Deposit.countDocuments(filter),
   ]);
-
-  if (page > 1 && deposits.length === 0) {
-    return next(new AppError("No more deposit history found.", 404));
-  }
 
   res.status(200).json({
     status: "success",
@@ -369,19 +382,32 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
 exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
+  let { page, limit, status, startDate, endDate, sort } = req.query;
+
+  page = parseInt(req.query.page) || 1;
+  limit = parseInt(req.query.limit) || 5;
+
   const skip = (page - 1) * limit;
 
   const filter = {};
 
   filter.initiatedBy = userId;
 
-  if (req.query.status) {
+  if (status) {
     filter.status = req.query.status;
   }
 
-  const sortOrder = req.query.sort === "desc" ? -1 : 1;
+  if (startDate && endDate) {
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+
+    filter.createdAt = {
+      $gte: start,
+      $lte: end,
+    };
+  }
+
+  const sortOrder = sort === "desc" ? -1 : 1;
 
   const [withdrawals, total] = await Promise.all([
     Withdrawal.find(filter)
@@ -391,10 +417,6 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
       .select("amount createdAt status _id txId"),
     Withdrawal.countDocuments(filter),
   ]);
-
-  if (page > 1 && withdrawals.length === 0) {
-    return next(new AppError("No more withdrawal history found.", 404));
-  }
 
   res.status(200).json({
     status: "success",
@@ -478,10 +500,10 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
 exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
+  let { page, limit, status, startDate, endDate, sort } = req.query;
 
-  const { status, sort } = req.query;
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
 
   const user = await User.findById(userId).select("investments").lean();
 
@@ -495,6 +517,24 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
     investments = investments.filter(
       (investment) => investment.status === status
     );
+  }
+
+  if (startDate && endDate) {
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+
+    investments = investments.filter((inv) => {
+      const investTime = new Date(inv.investDate).getTime();
+      const redeemTime = inv.redeemDate
+        ? new Date(inv.redeemDate).getTime()
+        : null;
+
+      // include if either falls in range
+      return (
+        (investTime >= start && investTime <= end) ||
+        (redeemTime && redeemTime >= start && redeemTime <= end)
+      );
+    });
   }
 
   investments = investments.map(({ profit, ...rest }) => ({
@@ -513,8 +553,7 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
 
   const total = investments.length;
   const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-  investments = investments.slice(startIndex, endIndex);
+  investments = investments.slice(startIndex, startIndex + limit);
 
   res.status(200).json({
     status: "success",
