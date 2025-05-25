@@ -40,7 +40,7 @@ function NavItem({ to, children }) {
           className={({ isActive }) =>
             `${style} ${
               isActive
-                ? "text-white border-b-2 border-button md:border-b-0 md:border-l-4 md:border-l-button"
+                ? "text-white border-b-2 border-button lg:border-b-0 lg:border-l-4 lg:border-l-button"
                 : " hover:ml-1 border-l-0"
             }`
           }

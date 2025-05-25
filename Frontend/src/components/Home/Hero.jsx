@@ -51,31 +51,26 @@ const HeroSection = () => {
   };
 
   return (
-    <div className=" flex  py-10 md:py-0 justify-center text-text-heading ">
-      <div className="flex flex-col-reverse md:grid md:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 mt-10 gap-8">
+    <div className="flex pt-10 pb-10 sm:pt-0 sm:pb-0 lg:pt-10 lg:pb-10 justify-center text-text-heading">
+      <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 lg:mt-10 gap-8">
         {/* LEFT SECTION */}
-        <div className="w-full flex flex-col items-center md:items-start justify-center gap-3 md:gap-10  md:text-left">
+        <div className="w-full flex flex-col items-center md:items-start lg:justify-center gap-3 md:gap-10 md:text-left">
           {renderStyledText()}
-          <GradientBackground
-            clor1="var(--grad2)"
-            size="35%"
-            top="5%"
-            left="3%"
-          />
+          <GradientBackground clor1="var(--grad2)" size="35%" top="5%" left="3%" />
           <GradientBackground size="35%" top="11%" left="99%" />
 
-          <p className="text-sm sm:text-base  md:text-lg text-center text-text-subheading mt-2 max-w-2xl">
+          <p className="text-sm sm:text-base md:text-lg text-center text-text-subheading mt-2 max-w-2xl">
             Join{" "}
             <span className="text-text-highlighted font-semibold">
               CoinCrest
             </span>{" "}
             today and start earning rewards through USDT staking. <br />
-            Our platform supports TRC20 and BEP20 networks, making it easy{" "}
-            <br />
+            Our platform supports TRC20 and BEP20 networks, making it easy <br />
             and secure to grow your investments.
           </p>
 
-          <div className="flex flex-row gap-4 mt-4">
+          {/* Buttons container: horizontal, centered below text */}
+          <div className="flex justify-center gap-4 mt-4 w-full">
             <button
               className="bg-button hover:bg-button-hover px-8 py-3 text-sm font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
               onClick={() => {
@@ -109,7 +104,7 @@ const HeroSection = () => {
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="w-full flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-center lg:justify-center">
           <img
             src="/images/heroImage2.png"
             className="h-60 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"

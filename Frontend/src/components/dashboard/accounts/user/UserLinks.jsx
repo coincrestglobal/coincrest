@@ -13,8 +13,8 @@ import NavItem from "../NavItem";
 
 function UserLinks() {
   return (
-    <div className="w-full overflow-x-auto md:overflow-x-visible scrollbar-none">
-      <div className="flex md:flex-col  min-w-max md:min-w-0 px-2 md:px-0 ">
+    <div className="w-full overflow-x-auto lg:overflow-x-visible scrollbar-none">
+      <div className="flex lg:flex-col  min-w-max md:min-w-0 px-2 md:px-0 ">
         <NavItem to={"."}>
           <LayoutDashboard className="w-5 h-4" />
           <span>Dashboard</span>

@@ -106,7 +106,7 @@ export default function AboutUs() {
           </span>
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 md:justify-center items-center">
           {benefitsData.map((benefit, index) => (
             <div
               key={index}
@@ -121,7 +121,7 @@ export default function AboutUs() {
               </div>
 
               {/* Content */}
-              <div className="text-center space-y-2 p-2">
+              <div className="text-center space-y-2 py-2 px-4">
                 <div className="text-lg md:text-xl font-semibold">
                   {benefit.title}
                 </div>
@@ -146,7 +146,7 @@ export default function AboutUs() {
           {/* Section Heading */}
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading flex items-center justify-center gap-4">
-              <span className="text-text-highlighted text-2xl md:text-6xl">
+              <span className="text-text-highlighted text-4xl md:text-6xl">
                 ««
               </span>
               <span className="tracking-tight pt-1 md:pt-2 text-2xl sm:text-3xl md:text-4xl">
