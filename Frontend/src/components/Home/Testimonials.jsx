@@ -7,6 +7,7 @@ import { useUser } from "../common/UserContext";
 import { useSwipeable } from "react-swipeable";
 import { getHomeReviews } from "../../services/operations/homeApi";
 import Avatar from "../common/Avatar";
+import useSafeNavigate from "../../utils/useSafeNavigate";
 
 const reviewsInitial = [
   {
@@ -26,7 +27,12 @@ const reviewsInitial = [
 ];
 
 export default function reviewslider() {
+  const navigate = useSafeNavigate();
   const { user, setUser } = useUser();
+  // const { user } = useSelector((state) => state.user);
+  // const { token } = useSelector((state) => state.user);
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE4YTNiNTU4ZWViODdhYjU1ZjM2ZSIsImlhdCI6MTc0ODA4NjY5MywiZXhwIjoxNzU1ODYyNjkzfQ.24R0yF_DLYRqy-mEY1WZlwWY6p2aXwFh4xv8SMcjsZY";
   const [reviews, setReviews] = useState(reviewsInitial);
   const [index, setIndex] = useState(0);
   const [reviewModal, setReviewModal] = useState(false);
@@ -35,18 +41,9 @@ export default function reviewslider() {
   const prev = () =>
     setIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
 
-  const submitReview = (newReview) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      review: newReview.review,
-      rating: newReview.rating,
-    }));
-    setReviewModal(false);
-  };
-
   useEffect(() => {
     const getReviews = async () => {
-      const token = user.token;
+      // const token = user.token;
       const response = await getHomeReviews(token);
       setReviews(response.data.reviews);
     };
@@ -60,6 +57,13 @@ export default function reviewslider() {
     trackMouse: true, // Optional: also enable mouse drag for desktop testing
   });
 
+  const handleClick = () => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      setReviewModal(true);
+    }
+  };
   return (
     <div className="py-8 px-4 sm:px-12 md:px-32 relative">
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
@@ -155,9 +159,9 @@ export default function reviewslider() {
       <div className="py-4 flex justify-center">
         <button
           className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition w-full max-w-xs sm:max-w-none sm:w-auto"
-          onClick={() => setReviewModal(true)}
+          onClick={handleClick}
         >
-          {user.review.rating > 0 ? "Edit Review" : "Add Review"}
+          {user?.review?.rating > 0 ? "Edit Your Review" : "Add Your Review"}
         </button>
       </div>
 
@@ -166,7 +170,6 @@ export default function reviewslider() {
         <AddReview
           initialReview={user.review}
           setIsModalOpen={setReviewModal}
-          onSubmit={submitReview}
         />
       )}
     </div>

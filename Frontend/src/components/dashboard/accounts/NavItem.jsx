@@ -2,14 +2,18 @@ import { NavLink } from "react-router";
 import useSafeNavigate from "../../../utils/useSafeNavigate";
 import { useState } from "react";
 import ConfirmationModal from "../../common/ConfirmationModal";
+import { useUser } from "../../common/UserContext";
+import { toast } from "react-toastify";
 
 function NavItem({ to, children }) {
+  const { setUser } = useUser();
   const safeNavigate = useSafeNavigate();
   const [modal, setModal] = useState(false);
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    // Add logout logic here (clear tokens, redirect, etc.)
+    setUser(null);
+    localStorage.removeItem("user");
+    toast.success("Logged Out");
     safeNavigate("/login");
   };
 

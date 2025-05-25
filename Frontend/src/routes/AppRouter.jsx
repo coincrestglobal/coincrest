@@ -89,7 +89,6 @@ const router = createBrowserRouter([
             Component: ControlPanel,
           },
           {
-            // path: "control-pannel", // Consider fixing the typo to "control-panel"
             children: [
               {
                 path: "users",

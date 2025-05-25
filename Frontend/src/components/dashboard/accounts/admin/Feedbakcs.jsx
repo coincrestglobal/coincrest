@@ -4,6 +4,11 @@ import { FaChevronDown, FaChevronUp, FaPen, FaTimes } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
 import Pagination from "../../../common/Pagination";
 import { toast } from "react-toastify";
+import {
+  getAllFeedbacks,
+  respondToFeedback,
+} from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
 
 const feedbackList = [
   {
@@ -107,6 +112,7 @@ const feedbackList = [
 ];
 
 function Feedbacks() {
+  const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "asc",
@@ -116,87 +122,59 @@ function Feedbacks() {
   const [expandedFeedback, setExpandedFeedback] = useState(null);
   const [replyingFeedback, setReplyingFeedback] = useState(null);
   const [replyMessage, setReplyMessage] = useState("");
-  const [feedbacks, setFeedbacks] = useState(feedbackList);
-
+  const [feedbacks, setFeedbacks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Adjust as needed
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalFeedbacks, setTotalFeedbacks] = useState(0);
+  const numberOfEntries = 5;
 
   useEffect(() => {
-    function fetchFeedbacks(query, filters) {
-      let filtered = feedbackList;
+    const fetchFeedbacks = async () => {
+      try {
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
 
-      // Search filter
-      if (query) {
-        filtered = filtered.filter(
-          (user) =>
-            !query ||
-            user.name.toLowerCase().includes(query.toLowerCase()) ||
-            user.email.toLowerCase().includes(query.toLowerCase())
-        );
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("search", searchQuery);
+        if (selectedFilters) {
+          if (selectedFilters["Date Interval"]) {
+            const { startDate, endDate } = selectedFilters["Date Interval"];
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+          }
+          if (selectedFilters["Status"]) {
+            params.append("status", selectedFilters["Status"]);
+          }
+        }
+        if (sortOrder) params.append("sort", sortOrder);
+        params.append("page", currentPage);
+        params.append("limit", numberOfEntries);
+
+        const response = await getAllFeedbacks(user.token, params.toString());
+
+        const { data } = response;
+        setFeedbacks(data.feedbacks);
+        setTotalPages(response.totalPages);
+        setTotalFeedbacks(response.total);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setLoading(false);
       }
+    };
 
-      if (filters.status) {
-        filtered = filtered.filter(
-          (item) =>
-            (filters.status === "pendingReview" && item.status === "Pending") ||
-            (filters.status === "resolved" && item.status === "Resolved")
-        );
-      }
+    fetchFeedbacks();
+  }, [currentPage, filterState]);
 
-      // Date interval filters
-      if (filters.startDate) {
-        const start = new Date(filters.startDate);
-        filtered = filtered.filter((item) => new Date(item.date) >= start);
-      }
-
-      if (filters.endDate) {
-        const end = new Date(filters.endDate);
-        filtered = filtered.filter((item) => new Date(item.date) <= end);
-      }
-
-      return filtered;
-    }
-
-    const filteredFeedbacks = fetchFeedbacks(
-      filterState.searchQuery,
-      filterState.selectedFilters
-    );
-    setFeedbacks(filteredFeedbacks);
-  }, [filterState.searchQuery, filterState.selectedFilters]);
-
-  const sortedFeedbacks = [...feedbacks].sort((a, b) => {
-    return filterState.sortOrder === "asc"
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
-  });
-
-  const paginatedDeposits = sortedFeedbacks.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(sortedFeedbacks.length / itemsPerPage);
-
-  const handleReply = (id) => {
-    setFeedbacks((feedbacks) =>
-      feedbacks.map((feedback) =>
-        feedback.id === id ? { ...feedback, status: "Resolved" } : feedback
-      )
-    );
+  const handleReply = async (id) => {
+    const response = await respondToFeedback(id, replyMessage, user.token);
     setReplyingFeedback(null);
     setReplyMessage("");
-
-    toast.success("Operation Successful", {
-      className: "custom-toast",
-      progressClassName: "Toastify__progress-bar",
-    });
   };
 
   return (
     <div className=" p-2 bg-primary-light h-full overflow-y-auto scrollbar-hide">
       <FeedbackHeader
         title="Feedbacks"
-        totalCount={paginatedDeposits.length}
+        totalCount={totalFeedbacks}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={[
@@ -204,7 +182,7 @@ function Feedbacks() {
             label: "Status",
             id: "status",
             children: [
-              { label: "Pending", value: "pendingReview" },
+              { label: "Pending", value: "unresolved" },
               { label: "Resolved", value: "resolved" },
             ],
           },
@@ -218,11 +196,11 @@ function Feedbacks() {
           },
         ]}
       />
-      {paginatedDeposits.length > 0 ? (
+      {feedbacks.length > 0 ? (
         <>
-          {paginatedDeposits.map((feedback) => (
+          {feedbacks.map((feedback, index) => (
             <div
-              key={feedback.id}
+              key={index}
               className="bg-primary rounded-2xl mb-2 shadow-lg p-6 border-t-2 border-button"
             >
               <div className="flex justify-between items-center">
@@ -232,12 +210,12 @@ function Feedbacks() {
                 <button
                   onClick={() =>
                     setExpandedFeedback(
-                      expandedFeedback === feedback.id ? null : feedback.id
+                      expandedFeedback === feedback._id ? null : feedback._id
                     )
                   }
                   className="text-text-heading hover:text-button transition cursor-pointer"
                 >
-                  {expandedFeedback === feedback.id ? (
+                  {expandedFeedback === feedback._id ? (
                     <FaChevronUp size={20} />
                   ) : (
                     <FaChevronDown size={20} />
@@ -250,22 +228,28 @@ function Feedbacks() {
                   {feedback.subject}
                 </p>
                 <p>
-                  <strong>Status:</strong> {feedback.status}
+                  <strong>Status:</strong>{" "}
+                  {feedback.isResolved ? "Resolved" : "Pending"}
                 </p>
               </div>
 
-              {expandedFeedback === feedback.id && (
+              {expandedFeedback === feedback._id && (
                 <div className="flex flex-col p-4 rounded-md shadow-sm">
                   <p className="font-normal text-text-heading">
                     <strong>Message:</strong> {feedback.message}
                   </p>
                   <p className="font-normal text-text-heading">
-                    <strong>Date:</strong> {feedback.date}
+                    <strong>Date:</strong>{" "}
+                    {new Date(feedback.createdAt).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
               )}
 
-              {replyingFeedback === feedback.id ? (
+              {replyingFeedback === feedback._id ? (
                 <div className="relative p-4  bg-primary-dark border border-button rounded-md shadow space-y-4 mt-4">
                   <button
                     onClick={() => setReplyingFeedback(null)}
@@ -285,7 +269,7 @@ function Feedbacks() {
                       className="w-full bg-primary text-text-heading p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-button"
                     />
                     <button
-                      onClick={() => handleReply(feedback.id)}
+                      onClick={() => handleReply(feedback._id)}
                       className="px-4 py-2 bg-button text-white rounded-md hover:bg-button-hover cursor-pointer"
                     >
                       Send Reply
@@ -295,7 +279,7 @@ function Feedbacks() {
               ) : (
                 <div className="flex gap-4 mt-4">
                   <button
-                    onClick={() => setReplyingFeedback(feedback.id)}
+                    onClick={() => setReplyingFeedback(feedback._id)}
                     disabled={feedback.status === "Resolved"}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${
                       feedback.status === "Resolved"

@@ -107,14 +107,16 @@ export const fetchPayoutChartData = async (params) => {
 
 //users
 
-export const getAllUsers = async (params) => {
+export const getAllUsers = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_ALL_USERS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
@@ -126,14 +128,16 @@ export const getAllUsers = async (params) => {
   return result;
 };
 
-export const getUserDetails = async (params) => {
+export const getUserDetails = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_USER_DETAILS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
@@ -145,14 +149,16 @@ export const getUserDetails = async (params) => {
 
 //withdrawals
 
-export const getWithdrawRequests = async (params) => {
+export const getWithdrawRequests = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_WITHDRAW_REQUESTS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
@@ -165,13 +171,16 @@ export const getWithdrawRequests = async (params) => {
   return result;
 };
 
-export const approveWithdrawRequest = async (data) => {
+export const approveWithdrawRequest = async (token, withdrawal_id) => {
   let result = null;
   try {
     const response = await apiConnector(
-      "POST",
-      APPROVE_WITHDRAW_REQUEST_API,
-      data
+      "PATCH",
+      `${APPROVE_WITHDRAW_REQUEST_API}/${withdrawal_id}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     if (!response?.data?.success) {
       // Handle unsuccessful response if needed
@@ -185,18 +194,21 @@ export const approveWithdrawRequest = async (data) => {
 
 //deposits
 
-export const getAllUsersDepositHistory = async (params) => {
+export const getAllUsersDepositHistory = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_ALL_DEPOSITS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
     }
+
     result = response;
   } catch (error) {}
   return result;
@@ -204,14 +216,16 @@ export const getAllUsersDepositHistory = async (params) => {
 
 //reviews
 
-export const getAllReviews = async (params) => {
+export const getAllReviews = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_ALL_REVIEWS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
@@ -221,13 +235,15 @@ export const getAllReviews = async (params) => {
   return result;
 };
 
-export const acceptReview = async (reviewId) => {
+export const acceptReview = async (token, reviewId) => {
   try {
     const response = await apiConnector(
       "POST",
       `${APPROVE_REVIEW_API}/${reviewId}`,
       null,
-      {}
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     return response;
   } catch (error) {}
@@ -246,14 +262,16 @@ export const rejectReview = async (reviewId) => {
 
 //feedbacks
 
-export const getAllFeedbacks = async (params) => {
+export const getAllFeedbacks = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_ALL_FEEDBACKS_API,
       null,
-      {},
+      {
+        Authorization: `Bearer ${token}`,
+      },
       params
     );
     if (!response?.data?.success) {
@@ -263,13 +281,15 @@ export const getAllFeedbacks = async (params) => {
   return result;
 };
 
-export const respondToFeedback = async (feedbackId, responseMessage) => {
+export const respondToFeedback = async (feedbackId, responseMessage, token) => {
   try {
     const response = await apiConnector(
-      "POST",
+      "PATCH",
       `${RESPOND_FEEDBACK_API}/${feedbackId}`,
-      { response: responseMessage },
-      {}
+      { message: responseMessage },
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     return response;
   } catch (error) {}

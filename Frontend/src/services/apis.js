@@ -13,20 +13,20 @@ export const authEndpoints = {
 //home
 export const homeEndPoints = {
   GET_REVIEWS: BASE_URL + "/review/recentReviews",
-  ADD_REVIEW: BASE_URL + "/reviews/add",
-  EDIT_REVIEW: BASE_URL + "/reviews/edit",
+  ADD_REVIEW: BASE_URL + "/review/add",
+  EDIT_REVIEW: BASE_URL + "/review/edit",
   GET_FAQS: BASE_URL + "/faqs",
 };
 
 //earnings
 export const earningEndPoints = {
-  GET_REFERRAL_PLAN: BASE_URL + "/referral/plan",
-  GET_TEAM_REWARDS: BASE_URL + "/referral/team-rewards",
+  GET_REFERRAL_PLAN: BASE_URL + "/setting/getDepositBonus",
+  GET_TEAM_REWARDS: BASE_URL + "/setting/getTeamBonus",
 };
 
 //conatct us
 export const contactUsEndPoints = {
-  CONTACT_US: BASE_URL + "/conatactus",
+  CONTACT_US: BASE_URL + "/feedback/create",
 };
 
 // PROFILE ENDPOINTS
@@ -38,20 +38,20 @@ export const ownerAndAdminDashboardEndPoints = {
   GET_USER_DETAILS_API: BASE_URL + "/management/getUser",
 
   // Withdrawals
-  GET_WITHDRAW_REQUESTS_API: BASE_URL + "/management/withdraw/requests",
-  APPROVE_WITHDRAW_REQUEST_API: BASE_URL + "/management/withdraw/approve",
+  GET_WITHDRAW_REQUESTS_API: BASE_URL + "/management/getWithdrawals",
+  APPROVE_WITHDRAW_REQUEST_API: BASE_URL + "/management/approveWithdrawal",
 
   // Deposits
-  GET_ALL_DEPOSITS_API: BASE_URL + "/management/deposits",
+  GET_ALL_DEPOSITS_API: BASE_URL + "/management/getDeposits",
 
   // Reviews
-  GET_ALL_REVIEWS_API: BASE_URL + "/management/reviews",
+  GET_ALL_REVIEWS_API: BASE_URL + "/review",
   APPROVE_REVIEW_API: BASE_URL + "/management/reviews/approve",
   REJECT_REVIEW_API: BASE_URL + "/management/reviews/reject",
 
   // Feedback
-  GET_ALL_FEEDBACKS_API: BASE_URL + "/management/feedbacks",
-  RESPOND_FEEDBACK_API: BASE_URL + "/management/feedbacks/respond",
+  GET_ALL_FEEDBACKS_API: BASE_URL + "/feedback",
+  RESPOND_FEEDBACK_API: BASE_URL + "/feedback/reply",
 
   // FAQs
   GET_ALL_FAQS_API: BASE_URL + "/management/faqs",
