@@ -31,9 +31,7 @@ export const getPlans = async () => {
   return result;
 };
 
-export const getBalance = async () => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const getBalance = async (token) => {
   try {
     const response = await apiConnector("GET", GET_BALANCE, null, {
       Authorization: `Bearer ${token}`,

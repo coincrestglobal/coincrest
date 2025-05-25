@@ -1,4 +1,4 @@
-import { setLoading, setToken, setUser } from "../../slices/userSlice";
+// import { setLoading, setToken, setUser } from "../../slices/userSlice";
 import { authEndpoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
 import { toast } from "react-toastify";
@@ -27,34 +27,47 @@ export function signUp(data, navigate) {
   };
 }
 
-export const login = (data, navigate) => {
-  return async (dispatch) => {
-    try {
-      const response = await apiConnector("POST", LOGIN_API, data);
+export const login = async (data, navigate, setUser) => {
+  try {
+    const response = await apiConnector("POST", LOGIN_API, data);
 
-      if (!response.data.success) {
-      }
-      // dispatch(setUser(response.data));
-      // dispatch(setUser(response.data));
-
-      navigate("/dashboard/user");
-    } catch (error) {
-      console.log("LOGIN API ERROR............", error);
-      toast.error(error.response.data.message);
+    if (!response.data.success) {
     }
-  };
-};
 
-export function logout(navigate) {
-  return () => {
-    dispatch(setToken(null));
-    dispatch(setUser(null));
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    toast.success("Logged Out");
-    navigate("/");
-  };
-}
+    if (response.status === "success") {
+      const { token, user } = response.data;
+      const nameParts = user.name.trim().split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(" ");
+
+      const userData = {
+        token,
+        name: user.name,
+        firstName,
+        lastName,
+        email: user.email,
+        role: user.role,
+        profilePicUrl: user.profilePicUrl || null,
+        wallets: user.withdrawalAddresses || [],
+        review: user.review || null,
+        lastWithdrawalDate: user.lastWithdrawalDate || null,
+      };
+
+      setUser(userData);
+    }
+
+    if (user.role === "admin") {
+      navigate("/dashboard/admin");
+    } else if (user.role === "owner") {
+      navigate("/dashboard/owner");
+    } else {
+      navigate("/dashboard/user");
+    }
+  } catch (error) {
+    console.log("LOGIN API ERROR............", error);
+    toast.error(error.response.data.message);
+  }
+};
 
 export const emailVerification = async (token, navigate) => {
   try {

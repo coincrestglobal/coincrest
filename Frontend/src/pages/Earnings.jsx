@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AboutSomething from "../components/common/AboutSomething";
 import GradientBackground from "../components/common/Gradient";
 import InvestCard from "../components/dashboard/accounts/user/InvestCard";
 import { FaMedal } from "react-icons/fa";
+import {
+  getReferralPlan,
+  getTeamBasedRewards,
+} from "../services/operations/earningApi";
+import { toast } from "react-toastify";
+import { useUser } from "../components/common/UserContext";
 
 const levels = [
   { level: 1, min: 100, title: "Star", weekly: "2.0%" },
@@ -24,13 +30,6 @@ const levelIcons = [
   { level: 7, icon: "👑", name: "Satoshi" },
 ];
 
-const rewards = [
-  { members: 10, reward: "$10" },
-  { members: 50, reward: "$50" },
-  { members: 100, reward: "$100" },
-  { members: 500, reward: "$500" },
-];
-
 const earningDetails = [
   { text: "Stake USDT (TRC20) to start earning weekly." },
   { text: "Earn up to 7% Weekly ROI based on your level." },
@@ -40,7 +39,35 @@ const earningDetails = [
 ];
 
 const EarningsPlansPage = () => {
+  const { user } = useUser();
   const [isClickedOnInvestNow, setIsClickedOnInvestNow] = useState(false);
+  const [depositBonus, setDepositBonus] = useState(0);
+  const [teamBonus, setTeamBonus] = useState([]);
+
+  useEffect(() => {
+    const getDepositBonus = async () => {
+      const referralDepositBonus = await getReferralPlan();
+      setDepositBonus(referralDepositBonus.data.value);
+    };
+    getDepositBonus();
+  }, []);
+
+  useEffect(() => {
+    const getTeamBonus = async () => {
+      const referralTeamBonus = await getTeamBasedRewards();
+      const entriesArray = await Object.entries(referralTeamBonus.data.value);
+      setTeamBonus(entriesArray);
+    };
+    getTeamBonus();
+  }, []);
+
+  const handleInvestClick = () => {
+    if (!user || !user.token) {
+      toast.error("Please login first to start earning!");
+      return;
+    }
+    setIsClickedOnInvestNow(true);
+  };
 
   return (
     <div className="bg-primary mt-20 text-text-heading min-h-screen py-1 px-4 md:px-32">
@@ -144,7 +171,7 @@ const EarningsPlansPage = () => {
         {/* Button */}
         <button
           className="bg-button w-fit self-center px-6 py-2 text-sm sm:text-base rounded-md shadow-sm shadow-text-highlighted"
-          onClick={() => setIsClickedOnInvestNow(true)}
+          onClick={handleInvestClick}
         >
           Start Earning Now
         </button>
@@ -165,12 +192,17 @@ const EarningsPlansPage = () => {
         </h2>
 
         <p className="text-sm sm:text-base text-text-body mb-2">
-          Earn <span className="font-semibold text-text-highlighted">10%</span>{" "}
+          Earn{" "}
+          <span className="font-semibold text-text-highlighted">
+            {depositBonus}%
+          </span>{" "}
           from each direct referral's deposit.
         </p>
         <p className="text-sm sm:text-base text-text-body">
           For example, if your referral deposits $1,000, you get{" "}
-          <span className="font-semibold text-text-highlighted">$100</span>{" "}
+          <span className="font-semibold text-text-highlighted">
+            ${1000 * 0.1}{" "}
+          </span>
           instantly!
         </p>
       </section>
@@ -194,13 +226,13 @@ const EarningsPlansPage = () => {
               </tr>
             </thead>
             <tbody className="text-gray-300">
-              {rewards.map((r, i) => (
+              {teamBonus.map((r, i) => (
                 <tr key={i} className="border-t border-gray-700">
                   <td className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
-                    {r.members}
+                    {r[0]}
                   </td>
                   <td className="px-3 sm:px-4 py-2 sm:py-3 font-semibold text-text-link text-sm sm:text-base">
-                    {r.reward}
+                    {r[1]}
                   </td>
                 </tr>
               ))}

@@ -1,12 +1,16 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { FaTrash } from "react-icons/fa";
 import StarRatings from "react-star-ratings";
 import ConfirmationModal from "../../../common/ConfirmationModal";
+import { useUser } from "../../../common/UserContext";
+import useSafeNavigate from "../../../../utils/useSafeNavigate";
+import { getUserDetails } from "../../../../services/operations/adminAndOwnerDashboardApi";
 
 const ReviewDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { user } = useUser();
+  const navigate = useSafeNavigate();
   const [acceptModal, setAcceptModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState({
     show: false,
@@ -22,21 +26,51 @@ const ReviewDetails = () => {
       "I've updated the main review page to display the review's name, email, a truncated review (first three words followed by '...'), and the date. Clicking on a review now navigates to another page (/review/:id) where full details can be shown.",
   };
 
+  useEffect(() => {
+    const fetchReview = async () => {
+      const params = new URLSearchParams();
+      params.append("id", id);
+      const userDetails = await getUserDetails(user.token, params);
+      console.log(userDetails.data.user);
+      setShowableUser(userDetails.data.user);
+      setLoading(false);
+    };
+
+    fetchReview();
+  }, [id]);
+
+  const handleAccept = async (reviewId) => {
+    // try {
+    //   await axios.patch(`/api/v1/reviews/${reviewId}/approve`);
+    //   toast.success("Review approved!");
+    //   // Optionally: Refresh list
+    // } catch (error) {
+    //   toast.error("Failed to approve review.");
+    // } finally {
+    //   setAcceptModal(false);
+    // }
+  };
+
   const handleDelete = (id) => {
     setDeleteConfirm({ show: true, reviewId: id });
   };
 
-  const confirmDelete = () => {
-    setDeleteConfirm({ show: false, reviewId: null });
-    // deletion logic here
+  const confirmDelete = async () => {
+    if (!deleteConfirm.reviewId) return;
+
+    try {
+      await axios.delete(`/api/v1/reviews/${deleteConfirm.reviewId}`);
+      toast.success("Review deleted successfully!");
+      // Optionally: Refresh list
+    } catch (error) {
+      toast.error("Failed to delete review.");
+    } finally {
+      setDeleteConfirm({ show: false, reviewId: null });
+    }
   };
 
   const cancelDelete = () => {
     setDeleteConfirm({ show: false, reviewId: null });
-  };
-
-  const handleAccept = (review_id) => {
-    setAcceptModal(false);
   };
 
   return (
@@ -70,7 +104,7 @@ const ReviewDetails = () => {
             <span className="font-semibold text-button">Phone:</span>{" "}
             {review.phone}
           </p>
-          <p className="flex items-center gap-2 text-text-body">
+          <div className="flex items-center gap-2 text-text-body">
             <span className="font-semibold text-button">Rating:</span>{" "}
             <StarRatings
               rating={4}
@@ -80,7 +114,7 @@ const ReviewDetails = () => {
               starSpacing="2px"
               name="rating"
             />
-          </p>
+          </div>
         </div>
       </div>
 

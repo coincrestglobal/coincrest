@@ -21,7 +21,7 @@ export const apiConnector = async (
   if (bodyData && !["GET", "DELETE"].includes(method.toUpperCase())) {
     options.body = JSON.stringify(bodyData);
   }
-
+  // console.log(url + queryString);
   const response = await fetch(url + queryString, options);
   const result = await response.json();
 

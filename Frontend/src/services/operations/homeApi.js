@@ -5,6 +5,8 @@ const { GET_REVIEWS, ADD_REVIEW, EDIT_REVIEW, GET_FAQS } = homeEndPoints;
 
 // GET all reviews
 export const getHomeReviews = async (token) => {
+  const Url = token ? `${ADD_REVIEW}/${token}` : GET_REVIEWS;
+
   try {
     const response = await apiConnector("GET", GET_REVIEWS);
     return response;
@@ -31,11 +33,15 @@ export const addReview = async (reviewData, token) => {
 // EDIT an existing review
 export const editReview = async (reviewId, updatedData, token) => {
   try {
-    const response = await apiConnector("PUT", EDIT_REVIEW, updatedData, {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      reviewId, //in params
-    });
+    const response = await apiConnector(
+      "PATCH",
+      `${EDIT_REVIEW}/${reviewId}`,
+      updatedData,
+      {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }
+    );
     return response;
   } catch (error) {
     console.error("Error editing review:", error);

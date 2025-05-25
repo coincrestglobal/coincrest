@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import NoResult from "../../../../pages/NoResult";
 import Loading from "../../../../pages/Loading";
 import { getAllUsers } from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
 
 const headers = [
   { label: "S No.", width: "10%" },
@@ -17,6 +18,7 @@ const getKeyFromLabel = (label) =>
   label.toLowerCase().replace(/\s+/g, "").replace(/\./g, "");
 
 function Users() {
+  const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "asc",
@@ -29,20 +31,34 @@ function Users() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const numberOfEntries = 10;
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { searchQuery, selectedFilters } = filterState;
-
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
         const params = new URLSearchParams();
-        if (searchQuery) params.append("search", searchQuery);
-        if (selectedFilters.length > 0)
-          params.append("selectedFilters", selectedFilters.join(","));
+
+        if (searchQuery) {
+          params.append("search", searchQuery);
+        }
+
+        if (selectedFilters) {
+          if (selectedFilters["Date Interval"]) {
+            const { startDate, endDate } = selectedFilters["Date Interval"];
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+          }
+        }
+
+        if (sortOrder) {
+          params.append("sort", sortOrder);
+        }
+
         params.append("page", currentPage);
         params.append("limit", numberOfEntries);
 
         // getting all users
-        const response = await getAllUsers(params.toString());
+        const response = await getAllUsers(user.token, params.toString());
 
         const { data } = response;
 
@@ -58,15 +74,11 @@ function Users() {
 
     fetchUsers();
   }, [currentPage, filterState]);
+
   if (loading) return <Loading />;
+  console.log(users);
 
-  const sortedUsers = [...users].sort((a, b) => {
-    return filterState.sortOrder === "asc"
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
-  });
-
-  const transformedUsers = sortedUsers.map((user, idx) => {
+  const transformedUsers = users.map((user, idx) => {
     const row = {};
     headers.forEach((header, i) => {
       const key = getKeyFromLabel(header.label);

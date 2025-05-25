@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useUser } from "../../common/UserContext"; // adjust path as needed
 import Avatar from "../Avatar";
+import { UserRound } from "lucide-react";
 
 function TopNav() {
   const { user } = useUser();
@@ -28,17 +29,23 @@ function TopNav() {
 
       {/* Profile Icon */}
       <button onClick={handleProfileClick} className="text-white text-2xl">
-        {user?.photo ? (
-          <Avatar size={48} imageURL={user.photo} />
+        {user ? (
+          user.profilePicUrl ? (
+            <Avatar size={48} imageURL={user.profilePicUrl} />
+          ) : (
+            <Avatar
+              size={48}
+              bgColor="bg-"
+              textColor="text-text-heading"
+              textSize="text-xl"
+              fontWeight="font-semibold"
+              fullName={user.name}
+            />
+          )
         ) : (
-          <Avatar
-            size={48}
-            bgColor="bg-"
-            textColor="text-text-heading"
-            textSize="text-xl"
-            fontWeight="font-semibold"
-            fullName={user.name}
-          />
+          <div className="bg-primary text-nav-link p-2 rounded-full flex items-center justify-center shadow-sm shadow-nav-highlighted">
+            <UserRound className="text-white w-6 h-6" />
+          </div>
         )}
       </button>
     </div>

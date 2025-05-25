@@ -52,7 +52,7 @@ const HeroSection = () => {
 
   return (
     <div className=" flex  py-10 md:py-0 justify-center text-text-heading ">
-      <div className="flex flex-col-reverse md:grid md:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 mt-10 gap-8">
+      <div className="flex flex-col-reverse md:grid md:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 lg:mt-10 gap-8">
         {/* LEFT SECTION */}
         <div className="w-full flex flex-col items-center md:items-start justify-center gap-3 md:gap-10  md:text-left">
           {renderStyledText()}

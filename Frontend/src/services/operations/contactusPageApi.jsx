@@ -3,10 +3,10 @@ import { apiConnector } from "../apiConnecter";
 
 const { CONTACT_US } = contactUsEndPoints;
 
-export const submitContactForm = async (formData) => {
+export const submitContactForm = async (formData, token) => {
   try {
     const response = await apiConnector("POST", CONTACT_US, formData, {
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     });
 
     return response; // Optional: return to show a success message or status

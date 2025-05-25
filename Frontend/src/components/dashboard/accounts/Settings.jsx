@@ -10,11 +10,7 @@ const ProfileForm = () => {
   const [detailsModal, setDetailsModal] = useState(false);
   const [passwordModal, setPasswordModal] = useState(false);
 
-  const [wallets, setWallets] = useState(() => {
-    return user?.wallets?.length > 0
-      ? user.wallets
-      : [{ address: "", chain: "" }];
-  });
+  const [wallets, setWallets] = useState(user.wallets);
 
   // Track index of the editable wallet
   const [editableWalletIndex, setEditableWalletIndex] = useState(null);

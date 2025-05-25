@@ -4,11 +4,11 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router";
 import ForgotPasswordModal from "./ForgotPassword"; // ✅ Import it
 import { login } from "../../services/operations/authApi";
-import { useDispatch } from "react-redux";
 import useSafeNavigate from "../../utils/useSafeNavigate";
+import { useUser } from "../common/UserContext";
 
 function LoginForm() {
-  const dispatch = useDispatch();
+  const { user, setUser } = useUser();
   const navigate = useSafeNavigate();
 
   const {
@@ -21,7 +21,7 @@ function LoginForm() {
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   const onSubmit = async (data) => {
-    const response = await dispatch(login(data, navigate));
+    const response = await login(data, navigate, setUser);
   };
 
   return (

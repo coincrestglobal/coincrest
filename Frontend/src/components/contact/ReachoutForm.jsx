@@ -1,15 +1,23 @@
 import { useForm } from "react-hook-form";
+import { submitContactForm } from "../../services/operations/contactusPageApi";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useUser } from "../common/UserContext";
 
 function ReachoutForm() {
+  const { user } = useUser();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
-  const onSubmit = (data) => {
-    console.log("Form data submitted:", data);
-    // handle your submission logic (e.g., API call) here
+  const token = user.token;
+  const onSubmit = async (data) => {
+    if (!token) {
+      toast.error("You must be logged in to submit the form.");
+      return; // prevent form submission if not logged in
+    }
+    const response = await submitContactForm(data, token);
   };
 
   return (
