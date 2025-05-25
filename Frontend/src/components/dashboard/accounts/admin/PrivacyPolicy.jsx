@@ -4,6 +4,7 @@ import useSafeNavigate from "../../../../utils/useSafeNavigate";
 
 export default function PrivacyPolicy() {
   const navigate = useSafeNavigate();
+
   const [policyList, setPolicyList] = useState([
     "We collect only essential user data required for platform functionality.",
     "User data is stored securely and not shared with third parties.",

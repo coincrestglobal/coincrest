@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import AddReview from "../common/AddReview";
 import { useUser } from "../common/UserContext";
 import { useSwipeable } from "react-swipeable";
+import { getHomeReviews } from "../../services/operations/homeApi";
+import Avatar from "../common/Avatar";
+import useSafeNavigate from "../../utils/useSafeNavigate";
 
-const testimonialsInitial = [
+const reviewsInitial = [
   {
     quote:
       "CoinCrest has transformed my staking experience! The platform is user-friendly and incredibly rewarding.",
@@ -23,24 +26,29 @@ const testimonialsInitial = [
   },
 ];
 
-export default function TestimonialSlider() {
+export default function reviewslider() {
+  const navigate = useSafeNavigate();
   const { user, setUser } = useUser();
-  const [testimonials, setTestimonials] = useState(testimonialsInitial);
+  // const { user } = useSelector((state) => state.user);
+  // const { token } = useSelector((state) => state.user);
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE4YTNiNTU4ZWViODdhYjU1ZjM2ZSIsImlhdCI6MTc0ODA4NjY5MywiZXhwIjoxNzU1ODYyNjkzfQ.24R0yF_DLYRqy-mEY1WZlwWY6p2aXwFh4xv8SMcjsZY";
+  const [reviews, setReviews] = useState(reviewsInitial);
   const [index, setIndex] = useState(0);
   const [reviewModal, setReviewModal] = useState(false);
 
-  const next = () => setIndex((prev) => (prev + 1) % testimonials.length);
+  const next = () => setIndex((prev) => (prev + 1) % reviews.length);
   const prev = () =>
-    setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
 
-  const submitReview = (newReview) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      review: newReview.review,
-      rating: newReview.rating,
-    }));
-    setReviewModal(false);
-  };
+  useEffect(() => {
+    const getReviews = async () => {
+      // const token = user.token;
+      const response = await getHomeReviews(token);
+      setReviews(response.data.reviews);
+    };
+    getReviews();
+  }, []);
 
   // Inside your component:
   const handlers = useSwipeable({
@@ -49,6 +57,13 @@ export default function TestimonialSlider() {
     trackMouse: true, // Optional: also enable mouse drag for desktop testing
   });
 
+  const handleClick = () => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      setReviewModal(true);
+    }
+  };
   return (
     <div className="py-8 px-4 sm:px-12 md:px-32 relative">
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
@@ -73,32 +88,46 @@ export default function TestimonialSlider() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex justify-center mb-3">
-              <img
-                src={testimonials[index].image}
-                alt={testimonials[index].name}
-                className="w-12 h-12 rounded-full border-2 border-text-linkHover"
-              />
+              {reviews[index].user?.profilePicUrl ? (
+                <Avatar
+                  size={48}
+                  imageURL={reviews[index].user.profilePicUrl}
+                />
+              ) : (
+                <Avatar
+                  size={48}
+                  bgColor="bg-primary-dark"
+                  textColor="text-text-heading"
+                  textSize="text-xl"
+                  fontWeight="font-semibold"
+                  fullName={reviews[index].user?.name || "Anonymous"}
+                />
+              )}
             </div>
-            <p className="font-semibold text-lg">{testimonials[index].name}</p>
+
+            <p className="font-semibold text-lg">{reviews[index].user?.name}</p>
+
             <p className="text-lg sm:text-xl mb-3 text-text-body px-2 sm:px-0">
-              "{testimonials[index].quote}"
+              "{reviews[index].comment}"
             </p>
+
             <p className="text-sm text-text-highlighted font-semibold flex items-center justify-center gap-1">
               {Array.from({ length: 5 }, (_, i) =>
-                i < Math.floor(testimonials[index].rating) ? (
+                i < Math.floor(reviews[index].rating) ? (
                   <FaStar key={i} className="text-yellow-500" />
-                ) : i < testimonials[index].rating ? (
+                ) : i < reviews[index].rating ? (
                   <FaStarHalfAlt key={i} className="text-yellow-500" />
                 ) : (
                   <FaRegStar key={i} className="text-yellow-500" />
                 )
               )}
-              ({testimonials[index].rating}/5)
+              ({reviews[index].rating}/5)
             </p>
           </motion.blockquote>
 
+          {/* Dots */}
           <div className="flex justify-center gap-3 items-center mt-8">
-            {testimonials.map((_, i) => (
+            {reviews.map((_, i) => (
               <span
                 key={i}
                 className={`w-3 h-3 rounded-full transition-colors ${
@@ -108,7 +137,7 @@ export default function TestimonialSlider() {
             ))}
           </div>
 
-          {/* Navigation Arrows - visible only on desktop */}
+          {/* Navigation arrows */}
           <button
             onClick={prev}
             className="hidden md:block md:absolute md:-left-44 md:top-1/2 md:-translate-y-1/2 md:p-3 md:border md:border-white md:rounded-full md:hover:bg-white md:hover:text-black md:transition-all"
@@ -130,9 +159,9 @@ export default function TestimonialSlider() {
       <div className="py-4 flex justify-center">
         <button
           className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition w-full max-w-xs sm:max-w-none sm:w-auto"
-          onClick={() => setReviewModal(true)}
+          onClick={handleClick}
         >
-          {user.review.rating > 0 ? "Edit Review" : "Add Review"}
+          {user?.review?.rating > 0 ? "Edit Your Review" : "Add Your Review"}
         </button>
       </div>
 
@@ -141,7 +170,6 @@ export default function TestimonialSlider() {
         <AddReview
           initialReview={user.review}
           setIsModalOpen={setReviewModal}
-          onSubmit={submitReview}
         />
       )}
     </div>

@@ -21,7 +21,7 @@ function BottomNav() {
             onClick={() => navigate(item.path)}
             className={`flex flex-col items-center text-sm ${
               location.pathname === item.path
-                ? "text-text-linkHover"
+                ? "text-nav-highlighted"
                 : "text-text-link"
             }`}
           >

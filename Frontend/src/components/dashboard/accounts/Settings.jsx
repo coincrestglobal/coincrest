@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useUser } from "../../common/UserContext.jsx";
+import ConfirmationModal from "../../common/ConfirmationModal.jsx";
 
 const ProfileForm = () => {
   const { user, setUser } = useUser();
   const [activeTab, setActiveTab] = useState("Profile");
   const tabs = ["Profile", "Wallets", "Password"];
 
-  const [wallets, setWallets] = useState(() => {
-    return user?.wallets?.length > 0
-      ? user.wallets
-      : [{ address: "", chain: "" }];
-  });
+  const [detailsModal, setDetailsModal] = useState(false);
+  const [passwordModal, setPasswordModal] = useState(false);
+
+  const [wallets, setWallets] = useState(user.wallets);
 
   // Track index of the editable wallet
   const [editableWalletIndex, setEditableWalletIndex] = useState(null);
@@ -48,6 +48,18 @@ const ProfileForm = () => {
     updatedWallets[index] = wallets[index];
     setWallets(updatedWallets);
     setEditableWalletIndex(null);
+  };
+
+  const handleUpdateDetails = () => {
+    // Your logic to update personal details (API call, toast, etc.)
+    console.log("Personal details updated");
+    setDetailsModal(false);
+  };
+
+  const handleUpdatePassword = () => {
+    // Your logic to update password (API call, toast, etc.)
+    console.log("Password updated");
+    setPasswordModal(false);
   };
 
   return (
@@ -96,9 +108,22 @@ const ProfileForm = () => {
                 />
               </div>
             </form>
-            <button className="bg-button hover:bg-button-hover text-text-heading font-semibold px-10 py-3 rounded-xl border-2 shadow-inner hover:opacity-90 transition-all duration-200">
+            <button
+              className="bg-button hover:bg-button-hover text-text-heading font-semibold px-10 py-3 rounded-xl border-2 shadow-inner hover:opacity-90 transition-all duration-200"
+              onClick={() => setDetailsModal(true)}
+            >
               SAVE
             </button>
+
+            {detailsModal && (
+              <ConfirmationModal
+                text={
+                  "Are you sure you want to update your personal details? Your profile information will be changed."
+                }
+                onConfirm={handleUpdateDetails}
+                onCancel={() => setDetailsModal(false)}
+              />
+            )}
           </>
         )}
 
@@ -221,9 +246,21 @@ const ProfileForm = () => {
                 />
               </div>
             </form>
-            <button className="bg-button hover:bg-button-hover text-text-heading font-semibold px-10 py-3 rounded-xl border-2 shadow-inner hover:opacity-90 transition-all duration-200">
+            <button
+              className="bg-button hover:bg-button-hover text-text-heading font-semibold px-10 py-3 rounded-xl border-2 shadow-inner hover:opacity-90 transition-all duration-200"
+              onClick={() => setPasswordModal(true)}
+            >
               UPDATE PASSWORD
             </button>
+            {passwordModal && (
+              <ConfirmationModal
+                text={
+                  "Are you sure you want to change your password? Make sure to remember your new password."
+                }
+                onConfirm={handleUpdatePassword}
+                onCancel={() => setPasswordModal(false)}
+              />
+            )}
           </>
         )}
       </div>

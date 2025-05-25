@@ -2,14 +2,18 @@ import { NavLink } from "react-router";
 import useSafeNavigate from "../../../utils/useSafeNavigate";
 import { useState } from "react";
 import ConfirmationModal from "../../common/ConfirmationModal";
+import { useUser } from "../../common/UserContext";
+import { toast } from "react-toastify";
 
 function NavItem({ to, children }) {
+  const { setUser } = useUser();
   const safeNavigate = useSafeNavigate();
   const [modal, setModal] = useState(false);
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    // Add logout logic here (clear tokens, redirect, etc.)
+    setUser(null);
+    localStorage.removeItem("user");
+    toast.success("Logged Out");
     safeNavigate("/login");
   };
 
@@ -40,7 +44,7 @@ function NavItem({ to, children }) {
           className={({ isActive }) =>
             `${style} ${
               isActive
-                ? "text-white border-b-2 border-button md:border-b-0 md:border-l-4 md:border-l-button"
+                ? "text-white border-b-2 border-button lg:border-b-0 lg:border-l-4 lg:border-l-button"
                 : " hover:ml-1 border-l-0"
             }`
           }

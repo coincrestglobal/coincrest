@@ -44,6 +44,11 @@ module.exports = {
           link: "var(--text-link)",
           linkHover: "var(--text-link-hover)",
           highlighted: "var(--text-highlighted)",
+          error: "var(--text-error)",
+        },
+
+        nav: {
+          highlighted: "var(--nav-highlighted)",
         },
       },
       animation: {

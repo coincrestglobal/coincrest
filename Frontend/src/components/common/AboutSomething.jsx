@@ -2,51 +2,56 @@ import { CirclePlus, Gem } from "lucide-react";
 
 function AboutCard({ heading, subHeadings }) {
   return (
-    <div className="relative w-full h-full sm:h-[360px] lg:h-[320px] bg-opacity-70 rounded-xl border-2 border-button text-text-heading px-4 sm:px-6 py-6 sm:py-8 overflow-hidden flex flex-col sm:flex-row items-center justify-center transition-all duration-300">
-      {/* Shield Circle */}
-      <div className="absolute top-2 left-2.5 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-button flex items-center justify-center bg-[#15152b]">
-        <Gem className="w-4 h-4 sm:w-5 sm:h-5" />
+    <div className="relative w-full h-full lg:h-[320px]  rounded-2xl border border-button text-text-heading px-6 py-8 overflow-hidden flex flex-col sm:flex-row items-center shadow-md transition-all duration-300">
+      {/* Icon Circle */}
+      <div className="absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-button bg-[#15152b] flex items-center justify-center z-10">
+        <Gem className="w-5 h-5 sm:w-6 sm:h-6 text-button" />
       </div>
 
-      {/* Decorative Dots */}
-      <div className="absolute top-6 left-16 flex gap-2">
-        <div className="w-1.5 h-1.5 bg-orange-300 rounded-full" />
-        <div className="w-1.5 h-1.5 bg-orange-200 rounded-full" />
-        <div className="w-1.5 h-1.5 bg-orange-100 rounded-full" />
+      {/* Decorative Dots - Top Left */}
+      <div className="absolute top-8 left-20 flex gap-1.5">
+        <div className="w-2 h-2 bg-orange-300 rounded-full" />
+        <div className="w-2 h-2 bg-orange-200 rounded-full" />
+        <div className="w-2 h-2 bg-orange-100 rounded-full" />
       </div>
-      <div className="absolute left-6 top-16 flex flex-col gap-2">
-        <div className="w-1.5 h-1.5 bg-orange-300 rounded-full" />
-        <div className="w-1.5 h-1.5 bg-orange-200 rounded-full" />
-        <div className="w-1.5 h-1.5 bg-orange-100 rounded-full" />
+
+      {/* Decorative Dots - Left Vertical */}
+      <div className="absolute left-8 top-20 flex flex-col gap-1.5">
+        <div className="w-2 h-2 bg-orange-300 rounded-full" />
+        <div className="w-2 h-2 bg-orange-200 rounded-full" />
+        <div className="w-2 h-2 bg-orange-100 rounded-full" />
       </div>
-      <div className="absolute right-6 bottom-14 flex flex-col gap-2">
-        <div className="w-1.5 h-1.5 bg-[#39394f] rounded-full" />
-        <div className="w-1.5 h-1.5 bg-[#44445b] rounded-full" />
-        <div className="w-1.5 h-1.5 bg-[#51516b] rounded-full" />
+
+      {/* Decorative Dots - Bottom Right Vertical */}
+      <div className="absolute right-7   bottom-16 flex flex-col gap-1.5">
+        <div className="w-2 h-2 bg-[#39394f] rounded-full" />
+        <div className="w-2 h-2 bg-[#44445b] rounded-full" />
+        <div className="w-2 h-2 bg-[#51516b] rounded-full" />
       </div>
-      <div className="absolute bottom-6 right-14 flex gap-2">
-        <div className="w-1.5 h-1.5 bg-[#39394f] rounded-full" />
-        <div className="w-1.5 h-1.5 bg-[#44445b] rounded-full" />
-        <div className="w-1.5 h-1.5 bg-[#51516b] rounded-full" />
+
+      {/* Decorative Dots - Bottom Right Horizontal */}
+      <div className="absolute bottom-7 right-16 flex gap-1.5">
+        <div className="w-2 h-2 bg-[#39394f] rounded-full" />
+        <div className="w-2 h-2 bg-[#44445b] rounded-full" />
+        <div className="w-2 h-2 bg-[#51516b] rounded-full" />
       </div>
 
       {/* Plus Icons */}
-      <CirclePlus className="absolute top-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
-      <CirclePlus className="absolute bottom-5 left-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
-      <CirclePlus className="absolute bottom-5 right-5 text-[#44445c] w-4 h-4 sm:w-5 sm:h-5" />
+      <CirclePlus className="absolute top-6 right-6 text-[#44445c] w-5 h-5" />
+      <CirclePlus className="absolute bottom-6 left-6 text-[#44445c] w-5 h-5" />
+      <CirclePlus className="absolute bottom-6 right-6 text-[#44445c] w-5 h-5" />
 
-      {/* Content */}
-      <div className="relative z-10 px-4 sm:px-16 py-6 md:py-3 text-center sm:text-left w-full sm:w-fit h-[250px] overflow-y-scroll scrollbar-none">
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-text-heading">
+      {/* Main Content */}
+      <div className="relative z-10 px-6 md:px-10 py-4 w-full sm:w-fit max-h-[250px] overflow-y-auto scrollbar-none ">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center text-text-heading">
           {heading}
         </h2>
+
         <div className="text-sm sm:text-base text-text-heading/80 space-y-2">
           {subHeadings.map((item, index) => (
-            <p key={index} className="flex items-start">
-              <span className="text-text-heading text-base sm:text-lg  ">
-                •
-              </span>
-              {Object.values(item)[0]}
+            <p key={index} className="flex items-start leading-relaxed">
+              <span className="text-text-heading text-lg mr-2 mt-1">•</span>
+              <span>{Object.values(item)[0]}</span>
             </p>
           ))}
         </div>
@@ -59,7 +64,7 @@ function AboutSomething({ heading, subHeadings }) {
   return (
     <div className="relative flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-4 sm:px-6 lg:px-32 py-10 sm:py-16">
       {/* Background overlay */}
-      <div className="absolute w-[100%] md:w-[70%] lg:w-[70%] max-w-5xl h-[230px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
+      <div className="absolute w-[100%] md:w-[70%] lg:w-[70%] max-w-5xl h-[280px] md:h-[350px] lg:h-[250px] rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10" />
         <video
           src="/images/video1.mp4"

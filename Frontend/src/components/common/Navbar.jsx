@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { CircleUserRound } from "lucide-react";
+import { CircleUserRound, UserRound } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import { useUser } from "../common/UserContext.jsx";
@@ -30,7 +29,7 @@ function Navbar() {
       {/* Navbar */}
       <div className="  flex justify-between items-center px-8 sm:px-12 lg:px-28 py-4 z-10 relative">
         <NavLink to="/">
-          <img className="h-26 w-40" src="/images/logo.png" alt="logo" />
+          <img className="h-26 w-40" src="/images/logo4.png" alt="logo" />
         </NavLink>
 
         {/* Navigation Links (desktop version) */}
@@ -40,8 +39,8 @@ function Navbar() {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -52,8 +51,8 @@ function Navbar() {
               <NavLink
                 to="/earnings"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -64,8 +63,8 @@ function Navbar() {
               <NavLink
                 to="/contactus"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -76,8 +75,8 @@ function Navbar() {
               <NavLink
                 to="/aboutus"
                 className={({ isActive }) =>
-                  `transition-all duration-300 hover:text-text-linkHover ${
-                    isActive ? "text-text-linkHover" : "text-text-link"
+                  `transition-all duration-300 hover:text-nav-highlighted ${
+                    isActive ? "text-nav-highlighted" : "text-text-link"
                   }`
                 }
               >
@@ -91,17 +90,23 @@ function Navbar() {
             onClick={handleProfileClick}
             className="cursor-pointer ml-auto lg:ml-0"
           >
-            {user?.photo ? (
-              <Avatar size={48} imageURL={user.photo} />
+            {user ? (
+              user.profilePicUrl ? (
+                <Avatar size={48} imageURL={user.profilePicUrl} />
+              ) : (
+                <Avatar
+                  size={48}
+                  bgColor="bg-"
+                  textColor="text-text-heading"
+                  textSize="text-xl"
+                  fontWeight="font-semibold"
+                  fullName={user.name}
+                />
+              )
             ) : (
-              <Avatar
-                size={48}
-                bgColor="bg-"
-                textColor="text-text-heading"
-                textSize="text-xl"
-                fontWeight="font-semibold"
-                fullName={user.name}
-              />
+              <div className="bg-primary text-nav-link p-2 rounded-full flex items-center justify-center shadow-sm shadow-nav-highlighted">
+                <UserRound className="text-white w-6 h-6" />
+              </div>
             )}
           </button>
         </nav>

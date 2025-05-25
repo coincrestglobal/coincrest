@@ -13,7 +13,6 @@ function InvestCard({ onClose }) {
   useEffect(() => {
     const fetchPlans = async () => {
       const res = await getPlans();
-      console.log(res);
 
       if (res.status === "success") {
         const sorted = res.data.plans.sort((a, b) => a.level - b.level);

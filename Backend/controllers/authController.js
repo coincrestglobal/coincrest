@@ -11,8 +11,8 @@ const fs = require("fs");
 const sharp = require("sharp");
 
 // url variables
-const emailVerificationUrl = config.frontendUrl + "/auth/verify-email/";
-const passwordResetUrl = config.frontendUrl + "/auth/reset-password/";
+const emailVerificationUrl = config.frontendUrl + "/verify-email/";
+const passwordResetUrl = config.frontendUrl + "/reset-password/";
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -205,7 +205,7 @@ exports.login = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Logged in successfully",
-    data: { token },
+    data: { user, token },
   });
 });
 

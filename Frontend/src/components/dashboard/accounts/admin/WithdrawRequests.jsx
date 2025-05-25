@@ -4,48 +4,15 @@ import { FaChevronDown, FaChevronUp, FaCheck } from "react-icons/fa";
 import NoResult from "../../../../pages/NoResult";
 import Pagination from "../../../common/Pagination";
 import ConfirmationModal from "../../../common/ConfirmationModal";
-
-const withdrawalList = [
-  {
-    id: "wd001",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    amount: "100",
-    currency: "USDT",
-    walletAddress: "TX7hjG6yQnDhSP1j7NnJ9kEgExXXXfC2tr",
-    date: new Date().toLocaleDateString(),
-    status: "Pending",
-    chain: "TRC20",
-    approvedBy: [],
-  },
-  {
-    id: "wd002",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    amount: "250",
-    currency: "USDT",
-    walletAddress: "TX9vGh8yMnEiSf2LpPQxL2hTtYYYuQ3Vok",
-    date: new Date().toLocaleDateString(),
-    status: "Pending",
-    chain: "TRC20",
-    approvedBy: ["Admin A"],
-  },
-  {
-    id: "wd003",
-    name: "Michael Johnson",
-    email: "michael.johnson@example.com",
-    amount: "75",
-    currency: "USDT",
-    walletAddress: "TX4kYf3uNbPiTq9QkNwJ6gRtZZZxV5WuHf",
-    date: new Date().toLocaleDateString(),
-    status: "Pending",
-    chain: "BEP20",
-    approvedBy: ["Admin A", "Admin B"],
-  },
-  // Add more dummy data if needed to test pagination
-];
+import {
+  approveWithdrawRequest,
+  getWithdrawRequests,
+} from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
+import Feedbacks from "./Feedbakcs";
 
 function Withdrawals() {
+  const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "desc",
@@ -55,67 +22,71 @@ function Withdrawals() {
   const [withdrawals, setWithdrawals] = useState([]);
   const [expandedWithdrawal, setExpandedWithdrawal] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalWithdraws, setTotalWithdraws] = useState(0);
   const [modal, setModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const numberOfEntries = 5;
 
-  const itemsPerPage = 2;
-
-  const currentAdmin = "Admin A";
+  const currentAdmin = user.name; //need to change
 
   // Calculate filtered and paginated data
   useEffect(() => {
-    function fetchWithdrawals(query, page) {
-      const filtered = withdrawalList.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-      );
+    const fetchWithdrawals = async () => {
+      try {
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
 
-      const sorted = [...filtered].sort((a, b) =>
-        filterState.sortOrder === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name)
-      );
-
-      const start = (page - 1) * itemsPerPage;
-      const end = start + itemsPerPage;
-
-      return sorted.slice(start, end);
-    }
-
-    const paginated = fetchWithdrawals(filterState.searchQuery, currentPage);
-    setWithdrawals(paginated);
-  }, [filterState.searchQuery, filterState.sortOrder, currentPage]);
-
-  const totalFilteredCount = withdrawalList.filter((item) =>
-    item.name.toLowerCase().includes(filterState.searchQuery.toLowerCase())
-  ).length;
-
-  const totalPages = Math.ceil(totalFilteredCount / itemsPerPage);
-
-  const handleApprove = (id) => {
-    setWithdrawals((prev) =>
-      prev.map((w) => {
-        if (w.id === id && !w.approvedBy.includes(currentAdmin)) {
-          const updatedApprovedBy = [...w.approvedBy, currentAdmin];
-          const newStatus =
-            updatedApprovedBy.length >= 3 ? "Approved" : w.status;
-
-          return {
-            ...w,
-            approvedBy: updatedApprovedBy,
-            status: newStatus,
-          };
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("search", searchQuery);
+        if (selectedFilters) {
+          if (selectedFilters["Date Interval"]) {
+            const { startDate, endDate } = selectedFilters["Date Interval"];
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+          }
+          if (selectedFilters["Status"]) {
+            params.append("status", selectedFilters["Status"]);
+          }
         }
-        return w;
-      })
+        if (sortOrder) params.append("sort", sortOrder);
+        params.append("page", currentPage);
+        params.append("limit", numberOfEntries);
+
+        const response = await getWithdrawRequests(
+          user.token,
+          params.toString()
+        );
+
+        const { data } = response;
+        setWithdrawals(data.withdrawals);
+        setTotalPages(response.totalPages);
+        setTotalWithdraws(response.total);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setLoading(false);
+      }
+    };
+    fetchWithdrawals();
+  }, [filterState, currentPage]);
+
+  const handleApprove = async (id) => {
+    const response = await approveWithdrawRequest(user.token, id);
+    console.log(response);
+    const updatedWithdrawal = response.data.withdrawal;
+
+    setWithdrawals((prev) =>
+      prev.map((w) => (w._id === id ? updatedWithdrawal : w))
     );
+
     setModal(false);
   };
 
+  console.log(Feedbacks);
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <WithdrawHeader
         title="Withdrawals"
-        totalCount={totalFilteredCount}
+        totalCount={totalWithdraws}
         filterState={filterState}
         setFilterState={setFilterState}
         filterOptions={[
@@ -124,6 +95,7 @@ function Withdrawals() {
             children: [
               { label: "Pending", value: "pending" },
               { label: "Approved", value: "approved" },
+              { label: "Processing", value: "processing" },
             ],
           },
           {
@@ -137,24 +109,26 @@ function Withdrawals() {
       />
 
       {withdrawals.length > 0 ? (
-        withdrawals.map((withdrawal) => (
+        withdrawals.map((withdrawal, index) => (
           <div
-            key={withdrawal.id}
+            key={index}
             className="bg-primary-light text-text-body rounded-2xl mb-4 p-6 border-t-2 border-button"
           >
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-text-heading mb-2">
-                {withdrawal.name}
+                {withdrawal.initiatedBy.name}
               </h2>
               <button
-                onClick={() =>
+                onClick={() => {
                   setExpandedWithdrawal(
-                    expandedWithdrawal === withdrawal.id ? null : withdrawal.id
-                  )
-                }
+                    expandedWithdrawal === withdrawal._id
+                      ? null
+                      : withdrawal._id
+                  );
+                }}
                 className="text-text-link hover:text-button"
               >
-                {expandedWithdrawal === withdrawal.id ? (
+                {expandedWithdrawal === withdrawal._id ? (
                   <FaChevronUp size={20} />
                 ) : (
                   <FaChevronDown size={20} />
@@ -172,19 +146,24 @@ function Withdrawals() {
               </p>
             </div>
 
-            {expandedWithdrawal === withdrawal.id && (
+            {expandedWithdrawal === withdrawal._id && (
               <div className="p-4 bg-primary rounded-md text-sm md:text-lg text-text-body space-y-1 overflow-y-auto">
                 <p className="break-words whitespace-normal">
-                  <strong>Email:</strong> {withdrawal.email}
+                  <strong>Email:</strong> {withdrawal.initiatedBy.email}
                 </p>
                 <p className="break-words whitespace-normal">
-                  <strong>Wallet Address:</strong> {withdrawal.walletAddress}
+                  <strong>Wallet Address:</strong> {withdrawal.toAddress}
                 </p>
                 <p>
-                  <strong>Requested On:</strong> {withdrawal.date}
+                  <strong>Requested On:</strong>{" "}
+                  {new Date(withdrawal.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 </p>
                 <p>
-                  <strong>Chain:</strong> {withdrawal.chain}
+                  <strong>Chain:</strong> {withdrawal.tokenType}
                 </p>
               </div>
             )}
@@ -193,7 +172,7 @@ function Withdrawals() {
               <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
                   onClick={() => {
-                    setSelectedId(withdrawal.id);
+                    setSelectedId(withdrawal._id);
                     setModal(true);
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-button text-text-heading rounded-lg hover:bg-button-hover"
@@ -204,7 +183,9 @@ function Withdrawals() {
                 <div className="text-sm text-text-body">
                   <strong>Approved by:</strong>{" "}
                   {withdrawal.approvedBy.length > 0
-                    ? withdrawal.approvedBy.join(", ")
+                    ? withdrawal.approvedBy
+                        .map((approver) => approver.name)
+                        .join(", ")
                     : "No one yet"}
                 </div>
                 {modal && (

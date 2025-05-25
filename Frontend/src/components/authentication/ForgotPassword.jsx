@@ -1,23 +1,16 @@
 import { useState } from "react";
+import { getPasswordResetToken } from "../../services/operations/authApi";
 
 function ForgotPasswordModal({ isOpen, onClose }) {
   const [email, setEmail] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) return;
 
-    // Simulate sending a reset link
-    console.log("Reset link sent to:", email);
-
-    setSuccessMsg("Password reset link sent to your email.");
-    setTimeout(() => {
-      setSuccessMsg("");
-      setEmail("");
-      onClose();
-    }, 2000);
+    const response = await getPasswordResetToken(email);
   };
 
   if (!isOpen) return null;
@@ -43,7 +36,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
                 placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-[var(--primary)] rounded-lg p-2 focus:outline-none focus:border-2 text-[var(--text-body)]"
+                className="w-full border-[var(--primary)] rounded-lg p-2 focus:outline-none focus:border-2 "
                 required
               />
             </label>

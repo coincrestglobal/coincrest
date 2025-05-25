@@ -14,7 +14,11 @@ function Footer() {
         {/* Company Info */}
         <div>
           <Link to="/">
-            <img className="h-26 w-40 mb-4" src="/images/logo.png" alt="logo" />
+            <img
+              className="h-26 w-40 mb-4"
+              src="/images/logo4.png"
+              alt="logo"
+            />
           </Link>
           <p className="text-sm leading-relaxed">
             CoinCrest is your trusted platform to stake USDT and earn passive

@@ -86,11 +86,18 @@ body,
   --text-body: #babdc0;
 
   --text-link: #51626b;
-  --text-link-hover: #10f284;
-  --text-highlighted: #12a05b;
+  --text-link-hover: #5EEAD4;
+  /* --text-highlighted: #12a05b; */
+  --text-highlighted: #5EEAD4;
+  --text-error: #e63946;
+
+  /* --nav-highlighted: #8929cd; */
+  /* --nav-highlighted: #e8d78b; */
+  --nav-highlighted: #5EEAD4;
 
   --grad1: rgba(9, 25, 70, 1);
-  --grad2: rgba(14, 102, 64, 0.7);
+  /* --grad2: rgba(14, 102, 64, 0.7); */
+  --grad2: rgba(94, 234, 212, 0.5)
 }
 
 /* :root {
@@ -120,3 +127,5 @@ body,
   --grad1: rgba(9, 25, 70, 1);
   --grad2: rgba(108, 11, 169, 0.5);
 } */
+
+

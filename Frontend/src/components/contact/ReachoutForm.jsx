@@ -1,6 +1,30 @@
+import { useForm } from "react-hook-form";
+import { submitContactForm } from "../../services/operations/contactusPageApi";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { useUser } from "../common/UserContext";
+
 function ReachoutForm() {
+  const { user } = useUser();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const token = user.token;
+  const onSubmit = async (data) => {
+    if (!token) {
+      toast.error("You must be logged in to submit the form.");
+      return; // prevent form submission if not logged in
+    }
+    const response = await submitContactForm(data, token);
+  };
+
   return (
-    <form className="space-y-6 text-text-heading">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 text-text-heading"
+    >
       {/* Name Field */}
       <div>
         <label
@@ -13,8 +37,12 @@ function ReachoutForm() {
           id="name"
           type="text"
           placeholder="Enter your name"
-          className="w-full  py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
+          {...register("name", { required: "Name is required" })}
+          className="w-full py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
         />
+        {errors.name && (
+          <p className="text-text-error text-xs mt-1">{errors.name.message}</p>
+        )}
       </div>
 
       {/* Email Field */}
@@ -29,8 +57,18 @@ function ReachoutForm() {
           id="email"
           type="email"
           placeholder="Enter a valid email address"
-          className="w-full  py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
+          {...register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Invalid email address",
+            },
+          })}
+          className="w-full py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
         />
+        {errors.email && (
+          <p className="text-text-error text-xs mt-1">{errors.email.message}</p>
+        )}
       </div>
 
       {/* Subject Field */}
@@ -45,8 +83,14 @@ function ReachoutForm() {
           id="subject"
           type="text"
           placeholder="Enter subject"
-          className="w-full  py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
+          {...register("subject", { required: "Subject is required" })}
+          className="w-full py-2 bg-transparent border-b-2 border-[var(--text-body)] outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
         />
+        {errors.subject && (
+          <p className="text-text-error text-xs mt-1">
+            {errors.subject.message}
+          </p>
+        )}
       </div>
 
       {/* Message Field */}
@@ -60,10 +104,34 @@ function ReachoutForm() {
         <textarea
           id="message"
           placeholder="Enter your message"
+          {...register("message", { required: "Message is required" })}
           className="w-full px-1 py-2 bg-transparent border-2 border-[var(--text-body)] rounded-md outline-none placeholder-[var(--text-body)] focus:border-[var(--text-highlighted)] transition duration-300 text-sm sm:text-base"
           rows="4"
         ></textarea>
+        {errors.message && (
+          <p className="text-text-error text-xs mt-1">
+            {errors.message.message}
+          </p>
+        )}
       </div>
+
+      {/* Certification Checkbox */}
+      <label className="flex items-start gap-2 text-sm text-text-heading">
+        <input
+          type="checkbox"
+          {...register("certifyInfo", {
+            required: "You must confirm the accuracy of the information",
+          })}
+          className="mt-1 accent-primary"
+        />
+        <span>
+          I hereby confirm that the information provided in this form is true
+          and accurate .
+        </span>
+      </label>
+      {errors.certifyInfo && (
+        <p className="text-text-error text-xs">{errors.certifyInfo.message}</p>
+      )}
 
       {/* Submit Button */}
       <button

@@ -3,8 +3,14 @@ import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router";
 import ForgotPasswordModal from "./ForgotPassword"; // ✅ Import it
+import { login } from "../../services/operations/authApi";
+import useSafeNavigate from "../../utils/useSafeNavigate";
+import { useUser } from "../common/UserContext";
 
 function LoginForm() {
+  const { user, setUser } = useUser();
+  const navigate = useSafeNavigate();
+
   const {
     register,
     handleSubmit,
@@ -14,9 +20,8 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
 
-  const onSubmit = (data) => {
-    console.log("Form submitted with data:", data);
-    // Authentication logic
+  const onSubmit = async (data) => {
+    const response = await login(data, navigate, setUser);
   };
 
   return (
@@ -31,7 +36,7 @@ function LoginForm() {
         >
           {/* Email Field */}
           <label className="w-full">
-            <p className="mb-1 text-lg text-[var(--text-body)]">Email</p>
+            <p className="mb-1 text-lg text-text-heading">Email</p>
             <input
               type="email"
               placeholder="Enter your email"
@@ -42,7 +47,7 @@ function LoginForm() {
                   message: "Invalid email format",
                 },
               })}
-              className="w-full focus:border-2 border-[var(--primary)] rounded-lg p-2 text-[var(--text-body)] focus:outline-none"
+              className="w-full focus:border-2 border-[var(--primary)] rounded-lg p-2  focus:outline-none"
             />
             {errors.email && (
               <p className="text-[var(--statusColor.error)] text-xs">
@@ -53,7 +58,7 @@ function LoginForm() {
 
           {/* Password Field */}
           <label className="relative">
-            <p className="mb-1 text-lg text-[var(--text-body)]">Password</p>
+            <p className="mb-1 text-lg text-text-heading">Password</p>
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
@@ -64,11 +69,11 @@ function LoginForm() {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className="w-full focus:border-2 border-[var(--primary)] rounded-lg  p-2 text-[var(--text-body)] focus:outline-none"
+              className="w-full focus:border-2 border-[var(--primary)] rounded-lg  p-2  focus:outline-none"
             />
             <span
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-[38px] cursor-pointer text-[var(--text-body)]"
+              className="absolute right-3 top-[38px] cursor-pointer text-[var(--primary)]"
             >
               {showPassword ? (
                 <AiOutlineEyeInvisible fontSize={24} />
@@ -77,7 +82,7 @@ function LoginForm() {
               )}
             </span>
             <p
-              className="mt-1 text-md text-[var(--text-link)] hover:underline cursor-pointer"
+              className="mt-1 text-md text-[var(--text-link)] hover:text-text-linkHover hover:underline cursor-pointer"
               onClick={() => setShowForgotModal(true)}
             >
               Forgot Password?
@@ -97,7 +102,7 @@ function LoginForm() {
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-[var(--text-link)] font-semibold"
+              className="text-[var(--text-link)] hover:text-text-linkHover font-semibold"
             >
               Sign Up
             </Link>
