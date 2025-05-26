@@ -1,25 +1,25 @@
 const { body } = require("express-validator");
+const validate = require("../middlewares/handleValidation");
 
-exports.createAnnouncementValidator = [
-  body("title").notEmpty().withMessage("Title is required"),
-  body("message").notEmpty().withMessage("Message is required"),
+exports.createAnnouncementValidator = validate([
+  body("title")
+    .customSanitizer((value) => value.replace(/\s+/g, " ").trim())
+    .notEmpty()
+    .withMessage("Title is required"),
+
+  body("message")
+    .customSanitizer((value) => value.replace(/\s+/g, " ").trim())
+    .notEmpty()
+    .withMessage("Message is required"),
+
   body("visibleTo")
-    .isArray({ min: 1 })
-    .withMessage("visibleTo must be a non-empty array")
-    .custom((roles, { req }) => {
-      const userRole = req.user.role;
-      const allowed = ["user", "admin", "all"];
-
-      if (!roles.every((r) => allowed.includes(r))) {
-        throw new Error("Invalid role in visibleTo");
+    .isString()
+    .withMessage("Please select whom to send the announcement to")
+    .custom((visibleTo, { req }) => {
+      const allowedValues = ["user", "admin", "all"];
+      if (!allowedValues.includes(visibleTo)) {
+        throw new Error("Please select a valid recipient for the announcement");
       }
-
-      if (userRole === "admin") {
-        if (roles.length > 1 || roles[0] !== "user") {
-          throw new Error("Admins can only send to users");
-        }
-      }
-
       return true;
     }),
-];
+]);

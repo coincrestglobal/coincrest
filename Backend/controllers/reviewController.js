@@ -18,9 +18,8 @@ exports.getReviews = catchAsync(async (req, res) => {
   }
 
   if (startDate && endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
 
     filter.createdAt = {
       $gte: start,

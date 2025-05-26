@@ -1,26 +1,31 @@
 const express = require("express");
 
-const {
-  createAnnouncement,
-  getAnnouncements,
-  deleteAnnouncement,
-} = require("../controllers/announcement.controller");
-
-const {
-  createAnnouncementValidator,
-} = require("../validations/announcement.validation");
+const authMiddleware = require("../middlewares/authMiddleware");
+const announcementValidator = require("../validators/announcementValidator");
+const announcementController = require("../controllers/announcementController");
 
 const router = express.Router();
 
 router.post(
-  "/",
-  restrictTo("owner", "admin"),
-  createAnnouncementValidator,
-  createAnnouncement
+  "/create",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  announcementValidator.createAnnouncementValidator,
+  announcementController.createAnnouncement
 );
 
-router.get("/", getAnnouncements);
+router.get(
+  "/",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user", "admin", "owner"),
+  announcementController.getAnnouncements
+);
 
-router.delete("/:id", restrictTo("owner", "admin"), deleteAnnouncement);
+router.delete(
+  "/:announcementId",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  announcementController.deleteAnnouncement
+);
 
 module.exports = router;
