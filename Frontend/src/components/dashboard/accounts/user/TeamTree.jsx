@@ -1,53 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCopy, FaShareAlt } from "react-icons/fa";
-
-const currentUser = {
-  id: 1,
-  name: "Alice",
-  email: "alice@gmail.com",
-  level: "Platinum",
-  referrals: [
-    {
-      id: 2,
-      name: "Bob",
-      email: "bob123@gmail.com",
-      level: "Gold",
-      referrals: [],
-    },
-    {
-      id: 3,
-      name: "Charlie",
-      email: "charlie@gmail.com",
-      level: "Bronze",
-      referrals: [],
-    },
-  ],
-};
+import { useUser } from "../../../common/UserContext";
+import { getReferredUsers } from "../../../../services/operations/userDashboardApi";
 
 const UserNode = ({ user }) => {
+  const [referrals, setReferrals] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getReferrals = async () => {
+      if (!user?.token) return;
+      try {
+        const response = await getReferredUsers(user.token);
+        setReferrals(response?.data?.referredUsers || []);
+      } catch (err) {
+        console.error("Error fetching referrals:", err);
+        setError("Failed to load referrals");
+      } finally {
+      }
+    };
+    getReferrals();
+  }, [user.token]);
+
   return (
     <div className="mb-4">
       <div className="p-3 bg-primary-light border border-button rounded shadow w-fit max-w-full">
-        <p className="font-semibold text-text-heading">{user.name}</p>
+        <p className="font-semibold text-text-heading">
+          {user?.name || "Unknown User"}
+        </p>
         <p className="text-sm text-text-body truncate max-w-xs">
-          Email: {`${user.email.slice(0, 4)}***${user.email.split("@")[1]}`}
+          Email:{" "}
+          {user?.email
+            ? `${user.email.slice(0, 4)}***${user.email.split("@")[1]}`
+            : "N/A"}
         </p>
       </div>
-      {user.referrals && user.referrals.length > 0 && (
+
+      {referrals.length > 0 ? (
         <div className="ml-6 border-l-2 border-button pl-4 mt-2 space-y-2">
-          {user.referrals.map((child) => (
-            <UserNode key={child.id} user={child} />
+          {referrals.map((child) => (
+            <UserNode key={child.id || child.email} user={child} />
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
 
 const TeamTree = () => {
+  const { user } = useUser();
   const [copied, setCopied] = useState(false);
-  const referralCode = "123456";
-  const referralLink = "https://userabc.com";
+
+  const referralCode = user?.referralCode || "N/A";
+  const referralLink = `https://yourdomain.com/signup?ref=${referralCode}`;
 
   const copyToClipboard = async () => {
     try {
@@ -74,6 +79,14 @@ const TeamTree = () => {
       alert("Share not supported in this browser.");
     }
   };
+
+  if (!user) {
+    return (
+      <div className="p-4 text-center text-text-body bg-primary-dark rounded">
+        Loading user info...
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 bg-primary-dark max-w-4xl mx-auto rounded-md">
@@ -104,7 +117,7 @@ const TeamTree = () => {
         Team Tree
       </h2>
 
-      <UserNode user={currentUser} />
+      <UserNode user={user} />
     </div>
   );
 };

@@ -1,44 +1,57 @@
-import React, { useState, useEffect } from "react";
-import dayjs from "dayjs"; // Make sure dayjs is installed
+import { useState, useEffect } from "react";
 import { useUser } from "../../../common/UserContext";
+import { getUserWithdrawals } from "../../../../services/operations/userDashboardApi";
+import DashboardHeader from "../../../common/DashboardHeader";
+import Pagination from "../../../common/Pagination";
 
 const WithdrawPage = () => {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
+  const [filterState, setFilterState] = useState({
+    searchQuery: "",
+    sortOrder: "asc",
+    selectedFilters: [],
+  });
   const [activeTab, setActiveTab] = useState("New Withdrawal");
   const [isCooldown, setIsCooldown] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
+  const [withdrawHistory, setWithdrawHistory] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalWithdraws, setTotalWithdraws] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const numberOfEntries = 1;
 
   useEffect(() => {
-    if (!user || !user.lastWithdrawalDate) return;
+    const getWithdrawalHistroy = async () => {
+      try {
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
+        const params = new URLSearchParams();
 
-    const lastDate = dayjs(user.lastWithdrawalDate);
-    console.log(user.lastWithdrawalDate);
-    const nextAllowed = lastDate.add(7, "day");
+        if (searchQuery) {
+          params.append("search", searchQuery);
+        }
+        if (selectedFilters["Date Interval"]) {
+          const { startDate, endDate } = selectedFilters["Date Interval"];
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
+        }
 
-    const updateTimer = () => {
-      const now = dayjs();
-      const diff = nextAllowed.diff(now, "second");
+        if (sortOrder) {
+          params.append("sort", sortOrder);
+        }
 
-      if (diff <= 0) {
-        setIsCooldown(false);
-        setTimeLeft("");
-        return;
+        params.append("page", currentPage);
+        params.append("role", "user");
+        params.append("limit", numberOfEntries);
+        const response = await getUserWithdrawals(user.token);
+        setWithdrawHistory(response.data.withdrawals);
+        setTotalPages(response.totalPages || 1);
+        setTotalWithdraws(response.total || 0);
+      } catch (error) {
+        console.error("Error fetching investment history:", error);
       }
-
-      const days = Math.floor(diff / (60 * 60 * 24));
-      const hours = Math.floor((diff % (60 * 60 * 24)) / 3600);
-      const minutes = Math.floor((diff % 3600) / 60);
-      const seconds = diff % 60;
-
-      const formatted = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-      setIsCooldown(true);
-      setTimeLeft(formatted);
     };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [user]);
+    getWithdrawalHistroy();
+  }, [currentPage, filterState]);
 
   return (
     <div className="relative max-w-4xl mx-auto bg-primary-dark rounded-md p-6 sm:p-8">
@@ -94,7 +107,7 @@ const WithdrawPage = () => {
                     value={wallet.address}
                     className="text-text-heading bg-primary-light"
                   >
-                    {wallet.type.toUpperCase()} - {wallet.chain}
+                    {wallet.tokenType} - {wallet.address}
                   </option>
                 ))
               ) : (
@@ -124,23 +137,61 @@ const WithdrawPage = () => {
             activeTab === "History" ? "" : "hidden"
           } text-gray-300 space-y-4`}
         >
-          <div className="bg-primary-light p-4 rounded-lg border border-[#383658]">
-            <div className="flex justify-between">
-              <span>Amount:</span>
-              <span>$300</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <span className="text-text-link">Pending</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Date:</span>
-              <span>2025-04-20</span>
-            </div>
+          <div>
+            <DashboardHeader
+              title={"Deposit History"}
+              totalCount={totalWithdraws}
+              filterState={filterState}
+              setFilterState={setFilterState}
+              filterOptions={[
+                {
+                  label: "Date Interval",
+                  children: [
+                    {
+                      label: "Start Date",
+                      value: "startDate",
+                      type: "date",
+                    },
+                    { label: "End Date", value: "endDate", type: "date" },
+                  ],
+                },
+              ]}
+            />
+            {withdrawHistory.map((item, index) => (
+              <div
+                key={index}
+                className="bg-primary-light p-4 rounded-lg border border-[#383658]"
+              >
+                <div className="flex justify-between">
+                  <span>Amount:</span>
+                  <span>${item.amount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status:</span>
+                  <span
+                    className={`${
+                      item.status === "Pending"
+                        ? "text-text-link"
+                        : "text-green-400"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Date:</span>
+                  <span>{item.date}</span>
+                </div>
+              </div>
+            ))}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </div>
-          <p className="text-center text-sm text-gray-500">
-            No more withdrawals found.
-          </p>
         </div>
 
         {/* Guidelines */}

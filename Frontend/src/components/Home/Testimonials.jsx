@@ -31,8 +31,7 @@ export default function reviewslider() {
   const { user, setUser } = useUser();
   // const { user } = useSelector((state) => state.user);
   // const { token } = useSelector((state) => state.user);
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzE4YTNiNTU4ZWViODdhYjU1ZjM2ZSIsImlhdCI6MTc0ODA4NjY5MywiZXhwIjoxNzU1ODYyNjkzfQ.24R0yF_DLYRqy-mEY1WZlwWY6p2aXwFh4xv8SMcjsZY";
+
   const [reviews, setReviews] = useState(reviewsInitial);
   const [index, setIndex] = useState(0);
   const [reviewModal, setReviewModal] = useState(false);
@@ -44,7 +43,7 @@ export default function reviewslider() {
   useEffect(() => {
     const getReviews = async () => {
       // const token = user.token;
-      const response = await getHomeReviews(token);
+      const response = await getHomeReviews(user.token);
       setReviews(response.data.reviews);
     };
     getReviews();

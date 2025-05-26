@@ -82,8 +82,8 @@ router.get(
 
 router.patch(
   "/redeem/:investmentId",
-  authMiddleware.authorizeRoles("user"),
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
   accountController.redeemInvestment
 );
 

@@ -2,6 +2,7 @@ import { CameraIcon, UserCircle } from "lucide-react";
 import { useRef } from "react";
 import { useUser } from "../../common/UserContext";
 import Avatar from "../../common/Avatar";
+import { updateProfilePhoto } from "../../../services/operations/userDashboardApi";
 
 function Profile() {
   const { user, setUser } = useUser();
@@ -10,7 +11,15 @@ function Profile() {
 
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    const response = await updateProfilePhoto(user.token, formData);
+    const updatedProfile = response.data.profilePic;
+    setUser((prev) => ({
+      ...prev,
+      profilePicUrl: updatedProfile,
+    }));
   };
 
   return (

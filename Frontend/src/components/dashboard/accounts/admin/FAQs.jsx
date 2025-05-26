@@ -81,7 +81,7 @@ const FAQ_Data = {
 export default function FAQs() {
   const navigate = useSafeNavigate();
   const [faqData, setFaqData] = useState(FAQ_Data);
-  const [selectedSection, setSelectedSection] = useState("General"); // Active section
+  const [selectedSection, setSelectedSection] = useState("General");
   const [viewMode, setViewMode] = useState("view"); // 'view' or 'add'
   const [newFAQ, setNewFAQ] = useState({ question: "", answer: "" });
 
