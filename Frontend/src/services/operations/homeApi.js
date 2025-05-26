@@ -5,10 +5,10 @@ const { GET_REVIEWS, ADD_REVIEW, EDIT_REVIEW, GET_FAQS } = homeEndPoints;
 
 // GET all reviews
 export const getHomeReviews = async (token) => {
-  const Url = token ? `${ADD_REVIEW}/${token}` : GET_REVIEWS;
-
   try {
-    const response = await apiConnector("GET", GET_REVIEWS);
+    const response = await apiConnector("GET", GET_REVIEWS, null, {
+      Authorization: `Bearer ${token}`,
+    });
     return response;
   } catch (error) {
     console.error("Error fetching reviews:", error);

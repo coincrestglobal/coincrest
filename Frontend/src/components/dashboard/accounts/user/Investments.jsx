@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { LucideCoins } from "lucide-react";
 import ConfirmationModal from "../../../common/ConfirmationModal";
 import { useUser } from "../../../common/UserContext";
-import { investingHistory } from "../../../../services/operations/userDashboardApi";
+import {
+  investingHistory,
+  redeemInvestPlan,
+} from "../../../../services/operations/userDashboardApi";
+import DashboardHeader from "../../../common/DashboardHeader";
+import Pagination from "../../../common/Pagination";
 
 const levels = [
   { level: 1, stake: 100, title: "Star", weekly: "3%" },
@@ -14,106 +19,76 @@ const levels = [
   { level: 7, stake: 10000, title: "Satoshi", weekly: "7%" },
 ];
 
-const activeData = [
-  {
-    id: "abcdek",
-    name: "Satoshi",
-    stake: 10000,
-    openedAt: "07.10.2023 12:22:44 PM",
-    deposit: "$10000",
-  },
-  {
-    id: "abcdej",
-    name: "Platinum",
-    stake: 5000,
-    openedAt: "08.10.2023 10:15:30 AM",
-    deposit: "$5000",
-  },
-  {
-    id: "abcdei",
-    name: "Satoshi",
-    stake: 10000,
-    openedAt: "07.10.2023 12:22:44 PM",
-    deposit: "$10000",
-  },
-  {
-    id: "abcdefg",
-    name: "Platinum",
-    stake: 5000,
-    openedAt: "08.10.2023 10:15:30 AM",
-    deposit: "$5000",
-  },
-  {
-    id: "abcdef",
-
-    name: "Satoshi",
-    stake: 10000,
-    openedAt: "07.10.2023 12:22:44 PM",
-    deposit: "$10000",
-  },
-  {
-    id: "abcde",
-    name: "Platinum",
-    stake: 5000,
-    openedAt: "08.10.2023 10:15:30 AM",
-    deposit: "$5000",
-  },
-];
-
-const closedData = [
-  {
-    name: "Gold",
-    stake: 1000,
-    openedAt: "01.01.2023 10:00:00 AM",
-    closedAt: "03.01.2023 02:30:00 PM",
-    deposit: "$1000",
-  },
-  {
-    name: "Bronze",
-    stake: 300,
-    openedAt: "05.05.2022 01:00:00 PM",
-    closedAt: "05.08.2022 11:00:00 AM",
-    deposit: "$300",
-  },
-];
-
 const tabs = ["Active", "Closed"];
 
 function Investments() {
   const { user } = useUser();
-  const [investHistory, setInvestHistory] = useState();
+  const [filterState, setFilterState] = useState({
+    searchQuery: "",
+    sortOrder: "asc",
+    selectedFilters: [],
+  });
+  const [investHistory, setInvestHistory] = useState([]);
   const [activeTab, setActiveTab] = useState("Active");
-  const [closeModal, setCloseModal] = useState(false);
+  const [modalMap, setModalMap] = useState({});
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalInvestments, setTotalInvestments] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const numberOfEntries = 1;
 
   useEffect(() => {
     const getInvestingHistory = async () => {
-      const response = await investingHistory(user.token);
+      try {
+        setLoading(true);
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
+        const params = new URLSearchParams();
+
+        if (searchQuery) {
+          params.append("search", searchQuery);
+        }
+        if (selectedFilters["Date Interval"]) {
+          const { startDate, endDate } = selectedFilters["Date Interval"];
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
+        }
+
+        if (sortOrder) {
+          params.append("sort", sortOrder);
+        }
+
+        params.append("page", currentPage);
+        params.append("role", "user");
+        params.append("limit", numberOfEntries);
+        const response = await investingHistory(user.token, params);
+        const { data } = response;
+
+        setInvestHistory(data.investments || []);
+        setTotalPages(response.totalPages || 1);
+        setTotalInvestments(response.total || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching investment history:", error);
+        setLoading(false);
+      }
     };
+
     getInvestingHistory();
-  }, []);
+  }, [currentPage, filterState]);
 
-  const calculateWeeklyReturn = (stake) => {
-    const level = levels.find((lvl) => stake >= lvl.stake);
-    return level ? level.weekly : "0%";
+  const cancelPlan = async (id) => {
+    const response = await redeemInvestPlan(user.token, id);
+    console.log(response);
   };
 
-  const extractNumericDeposit = (deposit) => {
-    return parseFloat(deposit.replace(/[^0-9.-]+/g, ""));
-  };
-
-  const calculateProfit = (deposit, weeklyRate) => {
-    const numericDeposit = extractNumericDeposit(deposit);
-    const rate = parseFloat(weeklyRate) / 100;
-    return numericDeposit * rate;
-  };
-
-  function cancelPlan(id) {
-    setCloseModal(false);
-  } //to be implemented
+  const filteredData =
+    activeTab === "Active"
+      ? investHistory.filter((item) => item.status === "active")
+      : investHistory.filter((item) => item.status === "closed");
 
   return (
     <div className="relative bg-primary-dark max-w-6xl mx-auto rounded-md p-6 sm:p-8 max-h-[87vh] flex flex-col">
-      {/* Tabs: fixed height, static */}
+      {/* Tabs */}
       <div className="flex space-x-8 mb-6 flex-shrink-0 bg-primary-light justify-center rounded-md p-2">
         {tabs.map((tab) => (
           <button
@@ -132,24 +107,40 @@ function Investments() {
 
       {/* Scrollable Tab Content */}
       <div className="overflow-y-auto flex-1 scrollbar-none">
-        {/* Active Tab Content */}
-        {activeTab === "Active" && (
-          <div>
-            {activeData.map((data, index) => {
-              const weeklyRate = calculateWeeklyReturn(data.stake);
-              const profit = calculateProfit(data.deposit, weeklyRate);
-              const numericDeposit = extractNumericDeposit(data.deposit);
-              const total = profit + numericDeposit;
+        <DashboardHeader
+          title={`${activeTab} Investments`}
+          totalCount={filteredData.length}
+          filterState={filterState}
+          setFilterState={setFilterState}
+          filterOptions={[
+            {
+              label: "Date Interval",
+              children: [
+                { label: "Start Date", value: "startDate", type: "date" },
+                { label: "End Date", value: "endDate", type: "date" },
+              ],
+            },
+          ]}
+        />
 
+        {loading ? (
+          <p className="text-center text-gray-400 mt-10">Loading...</p>
+        ) : filteredData.length === 0 ? (
+          <p className="text-center text-gray-400 mt-10">
+            No {activeTab.toLowerCase()} investments found.
+          </p>
+        ) : (
+          <>
+            {filteredData.map((data, index) => {
               return (
                 <div
-                  key={index}
-                  className="mb-8 pb-4 border-b border-gray-700 space-y-4 text-text-heading "
+                  key={data._id || index}
+                  className=" py-5 border-b border-gray-700 space-y-4 md:space-y-0 text-text-heading"
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     {/* Left Info */}
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
+                      <div className="flex items-center gap-3 mb-2">
                         <div className="w-10 h-10 border border-button rounded-full flex items-center justify-center">
                           <LucideCoins size={20} className="text-text-link" />
                         </div>
@@ -161,131 +152,87 @@ function Investments() {
                       <div className="text-sm space-y-2 text-gray-300">
                         <p>
                           <span className="text-text-heading">Opened at:</span>{" "}
-                          {data.openedAt}
+                          {new Date(data.investDate).toLocaleDateString()}
                         </p>
                         <p>
-                          <span className="text-text-heading">Deposit:</span>{" "}
-                          {data.deposit}
+                          <span className="text-text-heading">Deposit:</span> $
+                          {data.investedAmount}
                         </p>
                         <p>
                           <span className="text-text-heading">
-                            Weekly return:
+                            Weekly return:{data.interestRate}%
                           </span>{" "}
-                          {weeklyRate}
                         </p>
                       </div>
                     </div>
 
                     {/* Right Profit */}
-                    <div className="flex md:flex-col gap-2 w-full md:w-auto">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                        <p className="text-text-highlighted text-base sm:text-lg  sm:mb-0">
+                    <div className="flex md:flex-col md:gap-6 w-full md:w-auto md:py-5 justify-between">
+                      <div className="flex flex-col md:flex-row items-center gap-4">
+                        <p className="text-text-highlighted text-base sm:text-lg">
                           Total Amount:
                         </p>
-                        <p className="text-2xl sm:text-3xl font-semibold">
-                          {total.toFixed(2)}
+                        <p className="text-2xl font-semibold">
+                          $
+                          {(
+                            (data.profit ?? 0) + (data.investedAmount ?? 0)
+                          ).toFixed(2)}
                         </p>
                       </div>
 
-                      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                        <p className="text-text-highlighted text-base sm:text-lg md:mb-6 self-end">
+                      <div className="flex flex-col md:flex-row items-center gap-4">
+                        <p className="text-text-highlighted text-base sm:text-lg md:mb-1 self-end">
                           Total Profit:
                         </p>
-                        <div className="text-right">
-                          <p className="text-2xl sm:text-3xl  font-semibold">
-                            {profit.toFixed(2)}
-                          </p>
-                          <p className="text-green-400 text-sm ">
-                            +{profit.toFixed(2)}
+                        <div className="md:text-right">
+                          <p className="text-2xl font-semibold">
+                            ${data.profit}
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <button
-                    className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
-                    onClick={() => setCloseModal(true)}
-                  >
-                    Close
-                  </button>
-
-                  {closeModal && (
-                    <ConfirmationModal
-                      text={
-                        "Are you sure you want to cancel this plan? This action cannot be undone."
-                      }
-                      onConfirm={() => cancelPlan(data.id)}
-                      onCancel={() => setCloseModal(false)}
-                    />
+                  {activeTab === "Active" && (
+                    <>
+                      <button
+                        className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
+                        onClick={() =>
+                          setModalMap((prev) => ({
+                            ...prev,
+                            [data._id]: true,
+                          }))
+                        }
+                      >
+                        Close
+                      </button>
+                      {modalMap[data._id] && (
+                        <ConfirmationModal
+                          text="Are you sure you want to cancel this plan? This action cannot be undone."
+                          onConfirm={() => cancelPlan(data._id)}
+                          onCancel={() =>
+                            setModalMap((prev) => ({
+                              ...prev,
+                              [data._id]: false,
+                            }))
+                          }
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               );
             })}
-          </div>
-        )}
 
-        {/* Closed Tab Content */}
-        {activeTab === "Closed" && (
-          <div>
-            {closedData.map((data, index) => {
-              const weeklyRate = calculateWeeklyReturn(data.stake);
-              const profit = calculateProfit(data.deposit, weeklyRate);
-
-              return (
-                <div
-                  key={index}
-                  className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8 pb-4 border-b border-gray-700"
-                >
-                  {/* Left Info */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 border border-button rounded-full flex items-center justify-center">
-                        <LucideCoins size={20} className="text-text-link" />
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-semibold">
-                        {data.name}
-                      </h3>
-                    </div>
-
-                    <div className="text-sm space-y-2 text-gray-300">
-                      <p>
-                        <span className="text-text-heading">Opened at:</span>{" "}
-                        {data.openedAt}
-                      </p>
-                      <p>
-                        <span className="text-text-heading">Closed at:</span>{" "}
-                        {data.closedAt}
-                      </p>
-                      <p>
-                        <span className="text-text-heading">Deposit:</span>{" "}
-                        {data.deposit}
-                      </p>
-                      <p>
-                        <span className="text-text-heading">
-                          Weekly return:
-                        </span>{" "}
-                        {weeklyRate}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Right Profit */}
-                  <div className="text-right w-full md:w-auto">
-                    <p className="text-text-highlighted text-base mb-1">
-                      Total Profit
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-semibold">
-                      {profit.toFixed(2)}
-                    </p>
-                    <p className="text-green-400 text-sm mt-1">
-                      +{profit.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

@@ -1,3 +1,35 @@
+// export const apiConnector = async (
+//   method,
+//   url,
+//   bodyData = null,
+//   headers = {},
+//   params = null
+// ) => {
+//   const queryString = params
+//     ? "?" + new URLSearchParams(params).toString()
+//     : "";
+
+//   const options = {
+//     method: method.toUpperCase(),
+//     headers: {
+//       ...headers,
+//     },
+//   };
+
+//   if (bodyData && !["GET", "DELETE"].includes(method.toUpperCase())) {
+//     options.body = JSON.stringify(bodyData);
+//   }
+//   const response = await fetch(url + queryString, options);
+//   const result = await response.json();
+
+//   if (!response.ok) {
+//     console.error("API Error", result);
+//     throw new Error(result.message || "API call failed");
+//   }
+
+//   return result;
+// };
+
 export const apiConnector = async (
   method,
   url,
@@ -5,23 +37,28 @@ export const apiConnector = async (
   headers = {},
   params = null
 ) => {
-  // console.log(bodyData);
   const queryString = params
     ? "?" + new URLSearchParams(params).toString()
     : "";
 
+  const isFormData = bodyData instanceof FormData;
+
   const options = {
     method: method.toUpperCase(),
     headers: {
-      "Content-Type": "application/json",
       ...headers,
     },
   };
 
   if (bodyData && !["GET", "DELETE"].includes(method.toUpperCase())) {
-    options.body = JSON.stringify(bodyData);
+    options.body = isFormData ? bodyData : JSON.stringify(bodyData);
+
+    // Don't set Content-Type manually if sending FormData
+    if (!isFormData) {
+      options.headers["Content-Type"] = "application/json";
+    }
   }
-  // console.log(url + queryString);
+
   const response = await fetch(url + queryString, options);
   const result = await response.json();
 

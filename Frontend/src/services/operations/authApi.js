@@ -48,8 +48,7 @@ export const login = async (data, navigate, setUser) => {
         role: user.role,
         profilePicUrl: user.profilePicUrl || null,
         wallets: user.withdrawalAddresses || [],
-        review: user.review || null,
-        lastWithdrawalDate: user.lastWithdrawalDate || null,
+        referralCode: user.referralCode || "",
       };
 
       setUser(userData);

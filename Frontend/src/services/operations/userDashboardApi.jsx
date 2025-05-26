@@ -5,16 +5,16 @@ const {
   GET_PLANS,
   VERIFY_DEPOSIT,
   USER_DEPOSIT_HISTORY,
+  GET_DEPOSIT_ADDRESS_API,
   GET_BALANCE,
   INVEST_IN_PLAN,
+  REDEEM_INVESTED_PLAN,
   INVEST_HISTORY,
   WITHDRAW,
   USER_WITHDRAWS_HISTORY,
   UPDATE_PERSONAL_DETAILS,
   UPDATE_PROFILE_PHOTO,
   UPDATE_PASSWORD,
-  ADD_WALLET,
-  REMOVE_WALLET,
   UPDATE_WALLET,
   GET_REFERRAL_CODE,
   GET_REFERRAL_LINK,
@@ -55,11 +55,35 @@ export const investInPlan = async (token, data) => {
   } catch (error) {}
 };
 
-export const investingHistory = async (token) => {
+export const investingHistory = async (token, params) => {
   try {
-    const response = await apiConnector("GET", INVEST_HISTORY, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      INVEST_HISTORY,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      params
+    );
+
+    if (!response?.data?.success) {
+    }
+    return response;
+  } catch (error) {}
+};
+
+export const redeemInvestPlan = async (token, id) => {
+  try {
+    const response = await apiConnector(
+      "PATCH",
+      `${REDEEM_INVESTED_PLAN}/${id}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
+
     if (!response?.data?.success) {
     }
     return response;
@@ -81,17 +105,16 @@ export const verifyDeposit = async (data) => {
 };
 export const getDepositAddresses = async (token) => {
   try {
-    const response = await apiConnector("POST", VERIFY_DEPOSIT, null, {
+    const response = await apiConnector("GET", GET_DEPOSIT_ADDRESS_API, null, {
       Authorization: `Bearer ${token}`,
     });
     if (!response?.data?.success) {
     }
+    return response;
   } catch (error) {}
 };
 
-export const getUserDeposits = async (params) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const getUserDeposits = async (token, params) => {
   try {
     const response = await apiConnector(
       "GET",
@@ -123,9 +146,7 @@ export const withdraw = async (data) => {
   } catch (error) {}
 };
 
-export const getUserWithdrawss = async () => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const getUserWithdrawals = async (token) => {
   try {
     const response = await apiConnector("GET", USER_WITHDRAWS_HISTORY, null, {
       Authorization: `Bearer ${token}`,
@@ -137,79 +158,46 @@ export const getUserWithdrawss = async () => {
 };
 
 //personal
-export const updatePersonalDetails = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const updatePersonalDetails = async (token, data) => {
   try {
-    const response = await apiConnector("POST", UPDATE_PERSONAL_DETAILS, data, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "PATCH",
+      UPDATE_PERSONAL_DETAILS,
+      data,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
+    return response;
   } catch (error) {}
 };
 
-export const updateProfilePhoto = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const updateProfilePhoto = async (token, data) => {
   try {
-    const response = await apiConnector("POST", UPDATE_PROFILE_PHOTO, data, {
+    const response = await apiConnector("PATCH", UPDATE_PROFILE_PHOTO, data, {
       Authorization: `Bearer ${token}`,
     });
+    return response;
   } catch (error) {}
 };
 
 //pass update
 
-export const updatePassword = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
+export const updatePassword = async (token, data) => {
   try {
-    const response = await apiConnector("POST", UPDATE_PASSWORD, data, {
+    const response = await apiConnector("PATCH", UPDATE_PASSWORD, data, {
       Authorization: `Bearer ${token}`,
     });
   } catch (error) {}
 };
 
-// Add Wallet
-export const addWallet = async (data) => {
-  try {
-    const response = await apiConnector("POST", ADD_WALLET, data, {
-      Authorization: `Bearer ${token}`,
-    });
-    return response;
-  } catch (error) {
-    console.error("Add Wallet Error:", error);
-    throw error;
-  }
-};
-
-// Remove Wallet
-export const removeWallet = async (params) => {
-  //in params wallet ID
-  try {
-    const response = await apiConnector("DELETE", REMOVE_WALLET, null, {
-      Authorization: `Bearer ${token}`,
-      params,
-    });
-    return response;
-  } catch (error) {
-    console.error("Remove Wallet Error:", error);
-    throw error;
-  }
-};
-
 // Update Wallet
-export const updateWallet = async (params, updatedData) => {
+export const addOrUpdateWallet = async (token, updatedData) => {
   //in params wallet ID
   try {
-    const response = await apiConnector(
-      "PUT",
-      UPDATE_WALLET,
-      updatedData,
-      {
-        Authorization: `Bearer ${token}`,
-      },
-      params
-    );
+    const response = await apiConnector("POST", UPDATE_WALLET, updatedData, {
+      Authorization: `Bearer ${token}`,
+    });
     return response;
   } catch (error) {
     console.error("Update Wallet Error:", error);
@@ -244,7 +232,8 @@ export const updateWallet = async (params, updatedData) => {
 // };
 
 //get both referral code and link
-export const getReferralInfo = async () => {
+
+export const getReferredUsers = async (token) => {
   try {
     const response = await apiConnector(
       "GET",
