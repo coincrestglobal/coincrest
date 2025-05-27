@@ -77,7 +77,6 @@ function Users() {
   }, [currentPage, filterState]);
 
   if (loading) return <Loading />;
-  console.log(users);
 
   const transformedUsers = users.map((user, idx) => {
     const row = {};

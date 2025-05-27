@@ -505,9 +505,17 @@ export const fireAdmin = async (id, token, password) => {
 //announcements
 
 // Get all announcements
-export const getAllAnnouncements = async () => {
+export const getAllAnnouncements = async (token, params) => {
   try {
-    const response = await apiConnector("GET", GET_ALL_ANNOUNCEMENTS);
+    const response = await apiConnector(
+      "GET",
+      GET_ALL_ANNOUNCEMENTS,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+      // params
+    );
     return response;
   } catch (error) {
     return null;
@@ -515,9 +523,11 @@ export const getAllAnnouncements = async () => {
 };
 
 // Add a new announcement
-export const addAnnouncement = async (data) => {
+export const addAnnouncement = async (token, data) => {
   try {
-    const response = await apiConnector("POST", ADD_ANNOUNCEMENT, data);
+    const response = await apiConnector("POST", ADD_ANNOUNCEMENT, data, {
+      Authorization: `Bearer ${token}`,
+    });
     return response;
   } catch (error) {
     return null;
@@ -525,11 +535,16 @@ export const addAnnouncement = async (data) => {
 };
 
 // Delete an announcement by ID
-export const deleteAnnouncement = async (announcementId) => {
+export const deleteAnnouncements = async (token, announcementId) => {
   try {
-    const response = await apiConnector("DELETE", DELETE_ANNOUNCEMENT, {
-      id: announcementId,
-    });
+    const response = await apiConnector(
+      "DELETE",
+      `${DELETE_ANNOUNCEMENT}/${announcementId}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
     return response;
   } catch (error) {
     return null;

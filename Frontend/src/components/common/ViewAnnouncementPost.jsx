@@ -19,11 +19,11 @@ function ViewAnnouncementPost({ isOpen, onClose, announcement }) {
         <div className="mt-4 text-sm text-text-muted">
           Posted by:{" "}
           <span className="font-semibold text-text-body">
-            {announcement.postedBy}
+            {announcement.createdBy}
           </span>
         </div>
         <div className="mt-1 text-sm text-text-muted">
-          Date: {announcement.date}
+          Date: {new Date(announcement.createdAt).toLocaleDateString()}
         </div>
       </div>
     </div>
