@@ -11,7 +11,8 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const settingRoutes = require("./routes/settingRoutes");
 const walletRoutes = require("./routes/walletRoutes");
-const announcementRoutes = require("./routes//announcementRoutes");
+const announcementRoutes = require("./routes/announcementRoutes");
+const statRoutes = require("./routes/statRoutes");
 const errorHandler = require("./middlewares/errorMiddleware");
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/v1/feedback", feedbackRoutes);
 app.use("/api/v1/setting", settingRoutes);
 app.use("/api/v1/wallet", walletRoutes);
 app.use("/api/v1/announcement", announcementRoutes);
+app.use("/api/v1/stat", statRoutes);
 
 app.use(errorHandler);
 
