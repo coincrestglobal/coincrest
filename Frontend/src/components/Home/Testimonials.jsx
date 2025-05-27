@@ -90,7 +90,9 @@ export default function reviewslider() {
               {reviews[index].user?.profilePicUrl ? (
                 <Avatar
                   size={48}
-                  imageURL={reviews[index].user.profilePicUrl}
+                  imageURL={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/uploads/profilePics/${reviews[index].user.profilePicUrl}`}
                 />
               ) : (
                 <Avatar

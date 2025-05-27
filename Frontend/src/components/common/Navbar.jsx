@@ -6,6 +6,7 @@ import Avatar from "./Avatar.jsx";
 
 function Navbar() {
   const { user, setUser } = useUser();
+  console.log(user);
 
   const navigate = useSafeNavigate();
 
@@ -92,7 +93,12 @@ function Navbar() {
           >
             {user ? (
               user.profilePicUrl ? (
-                <Avatar size={48} imageURL={user.profilePicUrl} />
+                <Avatar
+                  size={48}
+                  imageURL={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/uploads/profilePics/${user.profilePicUrl}`}
+                />
               ) : (
                 <Avatar
                   size={48}

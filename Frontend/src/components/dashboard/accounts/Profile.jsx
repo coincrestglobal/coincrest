@@ -31,7 +31,7 @@ function Profile() {
               size={80}
               imageURL={`${
                 import.meta.env.VITE_BACKEND_URL
-              }/uploads/profilePic/${user.profilePicUrl}`}
+              }/uploads/profilePics/${user.profilePicUrl}`}
             />
           ) : (
             <Avatar

@@ -41,7 +41,7 @@ router.get(
 );
 
 router.get(
-  "/:reviewId",
+  "/getReviewById/:reviewId",
   authMiddleware.protect,
   authMiddleware.authorizeRoles("admin", "owner"),
   reviewController.getReviewById
