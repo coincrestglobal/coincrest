@@ -134,10 +134,7 @@ export const getUserDeposits = async (token, params) => {
 
 //withdraws
 
-export const withdraw = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE2MjU5NGYwMjI5N2UzMzIzY2EyNSIsImlhdCI6MTc0NzkxMzc1NiwiZXhwIjoxNzU1Njg5NzU2fQ.Cbi6Cii4VoDKXNGQBLfQGQuTBuCM3ZtCT2ITsxg_x2c";
-
+export const withdraw = async (token, data) => {
   try {
     const response = await apiConnector("POST", WITHDRAW, data, {
       Authorization: `Bearer ${token}`,
