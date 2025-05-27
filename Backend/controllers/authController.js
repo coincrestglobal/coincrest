@@ -320,7 +320,7 @@ exports.updateProfilePicture = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Profile picture updated successfully",
     data: {
-      profilePic: filename,
+      profilePicUrl: user.profilePicUrl,
     },
   });
 });
