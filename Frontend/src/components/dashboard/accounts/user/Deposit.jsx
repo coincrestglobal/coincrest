@@ -83,7 +83,7 @@ const DepositPage = () => {
       password: password,
     };
 
-    await verifyDeposit(data);
+    await verifyDeposit(user.token, data);
 
     //get admin's wallet addresess
 

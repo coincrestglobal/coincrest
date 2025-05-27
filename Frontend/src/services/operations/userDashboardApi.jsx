@@ -1,5 +1,6 @@
 import { userDashboardEndPoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
+import { toast } from "react-toastify";
 
 const {
   GET_PLANS,
@@ -92,16 +93,15 @@ export const redeemInvestPlan = async (token, id) => {
 
 //deposits
 
-export const verifyDeposit = async (data) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWE0NmQ3YmVkODZhZWNkMGVhYzQ5MCIsImlhdCI6MTc0NzkwNjQyOCwiZXhwIjoxNzU1NjgyNDI4fQ.XW-2MYErz22krRs0TxxaMBBDKoxtuuq66d9eCDVdYuU";
+export const verifyDeposit = async (token, data) => {
   try {
     const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
       Authorization: `Bearer ${token}`,
     });
-    if (!response?.data?.success) {
-    }
-  } catch (error) {}
+    toast.success(response.message);
+  } catch (error) {
+    toast.error(error.message);
+  }
 };
 export const getDepositAddresses = async (token) => {
   try {
