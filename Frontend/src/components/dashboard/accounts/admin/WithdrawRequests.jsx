@@ -81,7 +81,6 @@ function Withdrawals() {
     setModal(false);
   };
 
-  console.log(Feedbacks);
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <WithdrawHeader

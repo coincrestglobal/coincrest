@@ -1,5 +1,6 @@
 import { ownerAndAdminDashboardEndPoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
+import { toast } from "react-toastify";
 
 const {
   GET_ALL_USERS_API,
@@ -8,6 +9,7 @@ const {
   APPROVE_WITHDRAW_REQUEST_API,
   GET_ALL_DEPOSITS_API,
   GET_ALL_REVIEWS_API,
+  GET_REVIEWS_API,
   APPROVE_REVIEW_API,
   REJECT_REVIEW_API,
   GET_ALL_FEEDBACKS_API,
@@ -44,14 +46,14 @@ const {
 
 //Fetch overall dashboard statistics for a given range.
 
-export const fetchDashboardStats = async (params) => {
+export const fetchDashboardStats = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_DASHBOARD_STATS_API,
       null,
-      {},
+      { Authorization: `Bearer ${token}` },
       params
     );
     if (response?.data?.success) {
@@ -65,14 +67,14 @@ export const fetchDashboardStats = async (params) => {
 
 //Fetch staked amount chart data for a given range.
 
-export const fetchStakedChartData = async (params) => {
+export const fetchStakedChartData = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_DASHBOARD_STAKED_API,
       null,
-      {},
+      { Authorization: `Bearer ${token}` },
       params
     );
     if (response?.data?.success) {
@@ -86,14 +88,14 @@ export const fetchStakedChartData = async (params) => {
 
 //Fetch payout chart data for a given range.
 
-export const fetchPayoutChartData = async (params) => {
+export const fetchPayoutChartData = async (token, params) => {
   let result = [];
   try {
     const response = await apiConnector(
       "GET",
       GET_DASHBOARD_PAYOUT_API,
       null,
-      {},
+      { Authorization: `Bearer ${token}` },
       params
     );
     if (response?.data?.success) {
@@ -230,6 +232,22 @@ export const getAllReviews = async (token, params) => {
     );
     if (!response?.data?.success) {
     }
+    result = response;
+  } catch (error) {}
+  return result;
+};
+export const getReviewById = async (token, id) => {
+  let result = [];
+
+  try {
+    const response = await apiConnector(
+      "GET",
+      `${GET_REVIEWS_API}/${id}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
     result = response;
   } catch (error) {}
   return result;
@@ -474,7 +492,7 @@ export const getAllAdmins = async () => {
 };
 
 // Add new admin
-export const addNewAdmin = async (adminData, token) => {
+export const addNewAdmin = async (token, adminData) => {
   try {
     const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
       Authorization: `Bearer ${token}`,

@@ -1,4 +1,3 @@
-// import { setLoading, setToken, setUser } from "../../slices/userSlice";
 import { authEndpoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
 import { toast } from "react-toastify";
@@ -21,6 +20,7 @@ export function signUp(data, navigate) {
         toast.success(response.message);
       }
     } catch (error) {
+      toast.error("Something went wrong while signing up. Please try again.");
       navigate("/signup");
     }
     dispatch(setLoading(false));
@@ -31,28 +31,26 @@ export const login = async (data, navigate, setUser) => {
   try {
     const response = await apiConnector("POST", LOGIN_API, data);
 
-    if (!response.data.success) {
-    }
     const { token, user } = response.data;
 
-    if (response.status === "success") {
-      const nameParts = user.name.trim().split(" ");
-      const firstName = nameParts[0];
-      const lastName = nameParts.slice(1).join(" ");
-      const userData = {
-        token,
-        name: user.name,
-        firstName,
-        lastName,
-        email: user.email,
-        role: user.role,
-        profilePicUrl: user.profilePicUrl || null,
-        wallets: user.withdrawalAddresses || [],
-        referralCode: user.referralCode || "",
-      };
+    const nameParts = user.name.trim().split(" ");
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ");
+    const userData = {
+      token,
+      name: user.name,
+      firstName,
+      lastName,
+      email: user.email,
+      role: user.role,
+      profilePicUrl: user.profilePicUrl || null,
+      wallets: user.withdrawalAddresses || [],
+      referralCode: user.referralCode || "",
+    };
 
-      setUser(userData);
-    }
+    setUser(userData);
+    toast.success(response.message);
+
     if (user.role === "admin") {
       navigate("/dashboard/admin");
     } else if (user.role === "owner") {
@@ -62,35 +60,36 @@ export const login = async (data, navigate, setUser) => {
     }
   } catch (error) {
     console.log("LOGIN API ERROR............", error);
-    toast.error(error.response.data.message);
+    toast.error("Unable to login. Please try again later.");
   }
 };
 
 export const emailVerification = async (token, navigate) => {
   try {
     const response = await apiConnector("GET", `${VERIFY_EMAIL}/${token}`);
-    console.log(response);
     if (response.status === "success") {
       toast.success(response.message);
     }
     navigate("/login");
-  } catch {}
+  } catch (error) {
+    toast.error("Verification link is invalid or expired.");
+    navigate("/login");
+  }
 };
 
 export const getPasswordResetToken = async (email) => {
   try {
-    const response = await apiConnector("POST", RESETPASSTOKEN_API, {
-      email,
-    });
-    console.log(response);
-    if (!response.status) {
-      toast.error(response.data.message);
-      throw new Error(response.data.message);
+    const response = await apiConnector("POST", RESETPASSTOKEN_API, { email });
+
+    if (response.status !== "success") {
+      toast.error("Failed to send reset email. Try again.");
+      return;
     }
 
-    toast.success("Reset Email Sent");
+    toast.success(response.message);
   } catch (error) {
     console.log("FORGOTPASSWORD ERROR............", error);
+    toast.error("Unable to send reset email. Please try later.");
   }
 };
 
@@ -102,13 +101,15 @@ export const resetPassword = async (data, token, navigate) => {
       data
     );
 
-    if (!response.status) {
-      throw new Error(response.data.message);
+    if (response.status !== "success") {
+      toast.error("Reset failed. Please try again.");
+      return;
     }
-    toast.success("Password Reset Successfully");
+
+    toast.success(response.message);
     navigate("/login");
   } catch (error) {
     console.log("RESETPASSWORD ERROR............", error);
-    toast.error("Failed To Reset Password");
+    toast.error("Something went wrong. Please try again.");
   }
 };

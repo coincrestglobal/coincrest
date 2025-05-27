@@ -1,8 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
+import { addNewAdmin } from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
 
-function AddNewAdmin({ onSubmitAdmin }) {
+function AddNewAdmin() {
+  const { user } = useUser();
   const navigate = useSafeNavigate();
   const {
     register,
@@ -11,9 +14,18 @@ function AddNewAdmin({ onSubmitAdmin }) {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    onSubmitAdmin(data); // Pass form data to parent or handle here
-    reset(); // Clear form after submission
+  const onSubmit = async (data) => {
+    const newData = {
+      name: data.name,
+      email: data.email,
+      ownerPassword: data.password,
+    };
+
+    const response = await addNewAdmin(user.token, newData);
+    if (response.status === "success") {
+      navigate(-1);
+    }
+    reset();
   };
 
   return (
@@ -46,6 +58,21 @@ function AddNewAdmin({ onSubmitAdmin }) {
               <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
           </div>
+
+          <div>
+            <label className="block text-text-heading mb-1">
+              Enter your Password to Confirm Operation
+            </label>
+            <input
+              type="password"
+              {...register("password", { required: "Password is required" })}
+              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-button"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
+          </div>
+
           <div className="flex justify-end gap-2 mt-4">
             <button
               onClick={() => navigate(-1)}

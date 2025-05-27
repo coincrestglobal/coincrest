@@ -28,7 +28,7 @@ const reviewsInitial = [
 
 export default function reviewslider() {
   const navigate = useSafeNavigate();
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   // const { user } = useSelector((state) => state.user);
   // const { token } = useSelector((state) => state.user);
 

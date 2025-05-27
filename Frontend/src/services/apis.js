@@ -46,8 +46,9 @@ export const ownerAndAdminDashboardEndPoints = {
 
   // Reviews
   GET_ALL_REVIEWS_API: BASE_URL + "/review",
-  APPROVE_REVIEW_API: BASE_URL + "/management/reviews/approve",
-  REJECT_REVIEW_API: BASE_URL + "/management/reviews/reject",
+  GET_REVIEWS_API: BASE_URL + "/review/getReviewById",
+  APPROVE_REVIEW_API: BASE_URL + "/reviews/approve",
+  REJECT_REVIEW_API: BASE_URL + "/reviews/delete",
 
   // Feedback
   GET_ALL_FEEDBACKS_API: BASE_URL + "/feedback",
@@ -82,7 +83,7 @@ export const ownerAndAdminDashboardEndPoints = {
 
   // Admin Controls
   GET_ALL_ADMINS: BASE_URL + "/management/admins",
-  ADD_NEW_ADMIN: BASE_URL + "/management/admins/add",
+  ADD_NEW_ADMIN: BASE_URL + "/management/createAdmin",
   REMOVE_ADMIN: BASE_URL + "/management/deleteAdmin",
 
   // Announcements

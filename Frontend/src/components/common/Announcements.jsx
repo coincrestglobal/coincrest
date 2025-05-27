@@ -195,9 +195,7 @@ function Announcement() {
             ]}
           />
 
-          {announcements.length === 0 ? (
-            <NoResult />
-          ) : (
+          {
             <div className="mt-3 space-y-3 max-h-[420px] overflow-y-auto scrollbar-hide">
               {announcements.map((announcement) => (
                 <div
@@ -243,7 +241,7 @@ function Announcement() {
                 </div>
               ))}
             </div>
-          )}
+          }
         </>
       )}
 

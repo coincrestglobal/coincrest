@@ -5,7 +5,7 @@ import StarRatings from "react-star-ratings";
 import ConfirmationModal from "../../../common/ConfirmationModal";
 import { useUser } from "../../../common/UserContext";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
-import { getUserDetails } from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { getReviewById } from "../../../../services/operations/adminAndOwnerDashboardApi";
 
 const ReviewDetails = () => {
   const { id } = useParams();
@@ -16,28 +16,16 @@ const ReviewDetails = () => {
     show: false,
     reviewId: null,
   });
-
-  const review = {
-    id,
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1234567890",
-    message:
-      "I've updated the main review page to display the review's name, email, a truncated review (first three words followed by '...'), and the date. Clicking on a review now navigates to another page (/review/:id) where full details can be shown.",
-  };
+  const [review, setReview] = useState([]);
 
   useEffect(() => {
     const fetchReview = async () => {
-      const params = new URLSearchParams();
-      params.append("id", id);
-      const userDetails = await getUserDetails(user.token, params);
-      console.log(userDetails.data.user);
-      setShowableUser(userDetails.data.user);
-      setLoading(false);
+      const response = await getReviewById(user.token, id);
+      setReview(response.data.review);
     };
-
     fetchReview();
-  }, [id]);
+    clg("Fetching review with ID:");
+  }, []);
 
   const handleAccept = async (reviewId) => {
     // try {
@@ -55,24 +43,12 @@ const ReviewDetails = () => {
     setDeleteConfirm({ show: true, reviewId: id });
   };
 
-  const confirmDelete = async () => {
-    if (!deleteConfirm.reviewId) return;
-
-    try {
-      await axios.delete(`/api/v1/reviews/${deleteConfirm.reviewId}`);
-      toast.success("Review deleted successfully!");
-      // Optionally: Refresh list
-    } catch (error) {
-      toast.error("Failed to delete review.");
-    } finally {
-      setDeleteConfirm({ show: false, reviewId: null });
-    }
-  };
+  const confirmDelete = async () => {};
 
   const cancelDelete = () => {
     setDeleteConfirm({ show: false, reviewId: null });
   };
-
+  console.log(review);
   return (
     <div className="p-6 space-y-6 bg-primary-dark text-text-heading rounded-md shadow h-full overflow-y-auto">
       <div className="flex justify-between items-center">
@@ -89,21 +65,14 @@ const ReviewDetails = () => {
       <div className="grid md:grid-cols-2 gap-4 p-4 bg-primary border border-button rounded-md shadow">
         <div className="space-y-2">
           <p className="text-text-body">
-            <span className="font-semibold text-button">Review ID:</span>{" "}
-            {review.id}
-          </p>
-          <p className="text-text-body">
             <span className="font-semibold text-button">Name:</span>{" "}
-            {review.name}
+            {review.user.name}
           </p>
           <p className="text-text-body">
             <span className="font-semibold text-button">Email:</span>{" "}
-            {review.email}
+            {review.user.email}
           </p>
-          <p className="text-text-body">
-            <span className="font-semibold text-button">Phone:</span>{" "}
-            {review.phone}
-          </p>
+
           <div className="flex items-center gap-2 text-text-body">
             <span className="font-semibold text-button">Rating:</span>{" "}
             <StarRatings
@@ -121,7 +90,7 @@ const ReviewDetails = () => {
       {/* Review Message */}
       <div className="p-4 bg-primary border border-button rounded-md shadow">
         <h3 className="text-button font-semibold mb-2">Review Message</h3>
-        <p className="text-gray-300">{review.message}</p>
+        <p className="text-gray-300">{review.comment}</p>
       </div>
 
       {/* Buttons */}
