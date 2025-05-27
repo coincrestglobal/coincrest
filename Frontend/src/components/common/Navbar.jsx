@@ -6,7 +6,6 @@ import Avatar from "./Avatar.jsx";
 
 function Navbar() {
   const { user, setUser } = useUser();
-  console.log(user);
 
   const navigate = useSafeNavigate();
 

@@ -14,7 +14,6 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
   const [reviewText, setReviewText] = useState(initialReview?.reviewText || "");
   const [hasReviewed, setHasReviewed] = useState(!!initialReview);
   const [loading, setLoading] = useState(false);
-  console.log(user);
 
   const handleSubmit = async () => {
     if (!reviewText.trim()) {
