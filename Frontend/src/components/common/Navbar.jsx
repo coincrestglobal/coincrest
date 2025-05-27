@@ -92,7 +92,12 @@ function Navbar() {
           >
             {user ? (
               user.profilePicUrl ? (
-                <Avatar size={48} imageURL={user.profilePicUrl} />
+                <Avatar
+                  size={48}
+                  imageURL={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/uploads/profilePics/${user.profilePicUrl}`}
+                />
               ) : (
                 <Avatar
                   size={48}
