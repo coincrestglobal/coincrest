@@ -1,5 +1,5 @@
 // const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
-const BASE_URL = "http://192.168.61.172:5000/api/v1"; // for mobile only
+const BASE_URL = "http://192.168.207.246:5000/api/v1"; // for mobile only
 
 // AUTH ENDPOINTS
 export const authEndpoints = {

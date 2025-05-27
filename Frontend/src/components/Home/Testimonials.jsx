@@ -42,8 +42,8 @@ export default function reviewslider() {
 
   useEffect(() => {
     const getReviews = async () => {
-      // const token = user.token;
-      const response = await getHomeReviews(user.token);
+      const token = user?.token;
+      const response = await getHomeReviews(token);
       setReviews(response.data.reviews);
     };
     getReviews();
