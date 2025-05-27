@@ -1,5 +1,5 @@
 // const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
-const BASE_URL = "http://192.168.207.246:5000/api/v1"; // for mobile only
+const BASE_URL = "http://192.168.61.172:5000/api/v1"; // for mobile only
 
 // AUTH ENDPOINTS
 export const authEndpoints = {
@@ -47,8 +47,8 @@ export const ownerAndAdminDashboardEndPoints = {
   // Reviews
   GET_ALL_REVIEWS_API: BASE_URL + "/review",
   GET_REVIEWS_API: BASE_URL + "/review/getReviewById",
-  APPROVE_REVIEW_API: BASE_URL + "/reviews/approve",
-  REJECT_REVIEW_API: BASE_URL + "/reviews/delete",
+  APPROVE_REVIEW_API: BASE_URL + "/review/approve",
+  REJECT_REVIEW_API: BASE_URL + "/review/delete",
 
   // Feedback
   GET_ALL_FEEDBACKS_API: BASE_URL + "/feedback",

@@ -237,8 +237,6 @@ export const getAllReviews = async (token, params) => {
   return result;
 };
 export const getReviewById = async (token, id) => {
-  let result = [];
-
   try {
     const response = await apiConnector(
       "GET",
@@ -248,15 +246,14 @@ export const getReviewById = async (token, id) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };
 
 export const acceptReview = async (token, reviewId) => {
   try {
     const response = await apiConnector(
-      "POST",
+      "PATCH",
       `${APPROVE_REVIEW_API}/${reviewId}`,
       null,
       {
@@ -266,13 +263,15 @@ export const acceptReview = async (token, reviewId) => {
     return response;
   } catch (error) {}
 };
-export const rejectReview = async (reviewId) => {
+export const rejectReview = async (token, reviewId) => {
   try {
     const response = await apiConnector(
-      "POST",
+      "DELETE",
       `${REJECT_REVIEW_API}/${reviewId}`,
       null,
-      {}
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     return response;
   } catch (error) {}
