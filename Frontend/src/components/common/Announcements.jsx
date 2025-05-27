@@ -5,66 +5,26 @@ import Header from "./DashboardHeader";
 import NoResult from "../../pages/NoResult";
 import { FaTrash } from "react-icons/fa";
 import ConfirmationModal from "../common/ConfirmationModal";
-
-const announcementsData = [
-  {
-    id: 1,
-    title: "USDT Staking Update",
-    message: "New staking pool with 20% APY launched! Stake now to earn more.",
-    postedBy: "Admin",
-    audience: "All Users",
-    date: "2025-04-24",
-  },
-  {
-    id: 2,
-    title: "Withdrawal Maintenance",
-    message:
-      "Manual withdrawal approval will be delayed on April 25 due to system maintenance.",
-    postedBy: "Support Team",
-    audience: "Stakers",
-    date: "2025-04-23",
-  },
-  {
-    id: 3,
-    title: "Security Notice",
-    message:
-      "Please enable 2FA in your account settings for enhanced security.",
-    postedBy: "Admin",
-    audience: "All Users",
-    date: "2025-04-22",
-  },
-];
+import { useUser } from "../common/UserContext";
+import {
+  addAnnouncement,
+  deleteAnnouncements,
+  getAllAnnouncements,
+} from "../../services/operations/adminAndOwnerDashboardApi";
 
 function Announcement() {
+  const { user } = useUser(); // { name, role, ... }
+  const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [selectedAudience, setSelectedAudience] = useState("All Users");
-  const [announcements, setAnnouncements] = useState(announcementsData);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-
-  const handlePost = () => {
-    if (!title.trim() || !message.trim()) {
-      alert("Title and message cannot be empty.");
-      return;
-    }
-
-    const newAnnouncement = {
-      id: Date.now(),
-      title,
-      message,
-      postedBy: "Admin",
-      audience: selectedAudience,
-      date: new Date().toLocaleString(),
-    };
-
-    setAnnouncements([newAnnouncement, ...announcements]);
-    setShowForm(false);
-    setTitle("");
-    setMessage("");
-    setSelectedAudience("All Users");
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalAnnouncements, setTotalAnnouncements] = useState(0);
+  const numberOfEntries = 10;
 
   const [filterState, setFilterState] = useState({
     searchQuery: "",
@@ -72,36 +32,88 @@ function Announcement() {
     selectedFilters: [],
   });
 
-  const [filteredAnnouncements, setFilteredAnnouncements] =
-    useState(announcements);
-
   useEffect(() => {
-    let filtered = announcements.filter((a) =>
-      a.title.toLowerCase().includes(filterState.searchQuery.toLowerCase())
-    );
+    const fetchAnnouncements = async () => {
+      try {
+        const { searchQuery, selectedFilters, sortOrder } = filterState;
+        const params = new URLSearchParams();
 
-    if (filterState.selectedFilters.length > 0) {
-      filtered = filtered.filter((a) =>
-        filterState.selectedFilters.includes(a.audience)
-      );
+        if (searchQuery) {
+          params.append("search", searchQuery);
+        }
+
+        if (selectedFilters) {
+          if (selectedFilters["Date Interval"]) {
+            const { startDate, endDate } = selectedFilters["Date Interval"];
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+          }
+        }
+
+        if (sortOrder) {
+          params.append("sort", sortOrder);
+        }
+
+        params.append("page", currentPage);
+        params.append("role", "user");
+        params.append("limit", numberOfEntries);
+
+        const response = await getAllAnnouncements(
+          user.token,
+          params.toString()
+        );
+
+        const { data } = response;
+        setAnnouncements(data.announcements);
+        setTotalPages(response.totalPages);
+        setTotalAnnouncements(response.total);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchAnnouncements();
+  }, [currentPage, filterState]);
+
+  const handlePost = async () => {
+    if (!title.trim() || !message.trim()) {
+      alert("Title and Message are required.");
+      return;
     }
+    const getFormattedAudience = (audience) => {
+      if (audience === "All Users") return "all";
+      if (audience === "Stakers") return "user";
+      if (audience === "Admins") return "admin";
+      return audience.toLowerCase(); // fallback
+    };
+    const formattedAudience = getFormattedAudience(selectedAudience);
+    const response = await addAnnouncement(user.token, {
+      title,
+      message,
+      visibleTo: formattedAudience,
+    });
 
-    const sorted = [...filtered].sort((a, b) =>
-      filterState.sortOrder === "asc"
-        ? new Date(a.date) - new Date(b.date)
-        : new Date(b.date) - new Date(a.date)
-    );
+    // Reset form and refresh announcements
+    setTitle("");
+    setMessage("");
+    setSelectedAudience("All Users");
+    setShowForm(false);
+    setCurrentPage(1); // go to first page
+    setFilterState((prev) => ({ ...prev })); // trigger re-fetch
+  };
 
-    setFilteredAnnouncements(sorted);
-  }, [filterState, announcements]);
+  const deleteAnnouncement = async (announcementId) => {
+    const response = await deleteAnnouncements(user.token, announcementId);
+    if (response.status === "success") {
+      setDeleteModal(false);
+    }
+  };
 
-  function deleteAnnouncement(announcement) {
-    setDeleteModal(false);
-  }
+  const canPost = user?.role === "admin" || user?.role === "owner";
 
   return (
-    <div className="p-4 bg-primary shadow-lg h-full space-y-4 rounded-xl  overflow-hidden text-text-body">
-      {!showForm && (
+    <div className="p-4 bg-primary shadow-lg h-full space-y-4 rounded-xl overflow-hidden text-text-body">
+      {canPost && !showForm && (
         <button
           onClick={() => setShowForm(true)}
           className="w-full flex items-center justify-center gap-2 py-2 bg-button text-white font-semibold rounded-lg hover:bg-button-hover transition cursor-pointer"
@@ -124,7 +136,10 @@ function Announcement() {
             onChange={(e) => setSelectedAudience(e.target.value)}
             className="w-full p-2 border border-secondary bg-primary-light rounded text-text-body outline-none"
           >
-            {["All Users", "Stakers", "Admins"].map((audience, index) => (
+            {(user.role === "owner"
+              ? ["All Users", "Admins", "Stakers"]
+              : ["Stakers"]
+            ).map((audience, index) => (
               <option key={index} value={audience}>
                 {audience}
               </option>
@@ -166,7 +181,7 @@ function Announcement() {
         <>
           <Header
             title="Recent Platform Updates"
-            totalCount={filteredAnnouncements.length}
+            totalCount={totalAnnouncements}
             filterState={filterState}
             setFilterState={setFilterState}
             filterOptions={[
@@ -180,13 +195,13 @@ function Announcement() {
             ]}
           />
 
-          {filteredAnnouncements.length === 0 ? (
+          {announcements.length === 0 ? (
             <NoResult />
           ) : (
-            <div className="mt-3 space-y-3 h-fith-[420px] overflow-y-auto scrollbar-hide">
-              {filteredAnnouncements.map((announcement) => (
+            <div className="mt-3 space-y-3 max-h-[420px] overflow-y-auto scrollbar-hide">
+              {announcements.map((announcement) => (
                 <div
-                  key={announcement.id}
+                  key={announcement._id}
                   className="p-3 bg-primary-light border border-secondary rounded-lg shadow flex justify-between items-center relative"
                 >
                   <div>
@@ -194,29 +209,34 @@ function Announcement() {
                       {announcement.title}
                     </h3>
                     <p className="text-xs text-text-muted">
-                      📌 {announcement.audience || "All"} | 📅{" "}
-                      {announcement.date}
+                      📌 {announcement.visibleTo || "All"} | 📅{" "}
+                      {new Date(announcement.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="space-x-3">
+                  <div className="space-x-3 flex items-center">
                     <button
                       onClick={() => setSelectedAnnouncement(announcement)}
                       className="text-secondary hover:text-secondary-light transition"
                     >
                       <Eye size={18} />
                     </button>
-                    <button
-                      onClick={() => setDeleteModal(true)}
-                      className="text-red-500 hover:text-red-700 ml-4"
-                      title="Delete"
-                    >
-                      <FaTrash />
-                    </button>
+                    {user.role === "owner" && (
+                      <button
+                        onClick={() => setDeleteModal(true)}
+                        className="text-red-500 hover:text-red-700 ml-4"
+                        title="Delete"
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </div>
+
                   {deleteModal && (
                     <ConfirmationModal
-                      text={"Are you sure you want to delete the announcement:"}
-                      onConfirm={() => deleteAnnouncement(announcement)}
+                      text={
+                        "Are you sure you want to delete this announcement?"
+                      }
+                      onConfirm={() => deleteAnnouncement(announcement._id)}
                       onCancel={() => setDeleteModal(false)}
                     />
                   )}

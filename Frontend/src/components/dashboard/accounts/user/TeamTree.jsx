@@ -5,23 +5,21 @@ import { getReferredUsers } from "../../../../services/operations/userDashboardA
 
 const UserNode = ({ user }) => {
   const [referrals, setReferrals] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getReferrals = async () => {
       if (!user?.token) return;
       try {
         const response = await getReferredUsers(user.token);
-        setReferrals(response?.data?.referredUsers || []);
+        setReferrals(response.data.referredUsers);
       } catch (err) {
         console.error("Error fetching referrals:", err);
-        setError("Failed to load referrals");
       } finally {
       }
     };
     getReferrals();
-  }, [user.token]);
-
+  }, []);
+  console.log(referrals);
   return (
     <div className="mb-4">
       <div className="p-3 bg-primary-light border border-button rounded shadow w-fit max-w-full">

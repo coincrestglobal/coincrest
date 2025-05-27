@@ -86,9 +86,9 @@ export const ownerAndAdminDashboardEndPoints = {
   REMOVE_ADMIN: BASE_URL + "/management/deleteAdmin",
 
   // Announcements
-  GET_ALL_ANNOUNCEMENTS: BASE_URL + "/management/announcements",
-  ADD_ANNOUNCEMENT: BASE_URL + "/management/announcements/add",
-  DELETE_ANNOUNCEMENT: BASE_URL + "/management/announcements/delete",
+  GET_ALL_ANNOUNCEMENTS: BASE_URL + "/announcement",
+  ADD_ANNOUNCEMENT: BASE_URL + "/announcement/create",
+  DELETE_ANNOUNCEMENT: BASE_URL + "/announcement",
 };
 
 //user dashboard

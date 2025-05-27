@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { IndianRupee, CheckCircle, Clock } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
 import StakedAmountChart from "./StakeChart";
 
 // Dummy data representing different time periods
@@ -55,7 +64,7 @@ const dummyData = {
     incPayouts: 2000000,
   },
 };
-const stakedAmount = {
+const users = {
   "24h": [
     { name: "00:00", value: 2000 },
     { name: "02:00", value: 2500 },
@@ -108,57 +117,52 @@ const stakedAmount = {
     { name: "2025", value: 8000 },
   ],
 };
-const payoutAmmount = {
+
+const dummyDepositWithdrawData = {
   "24h": [
-    { name: "00:00", value: 2000 },
-    { name: "02:00", value: 2500 },
-    { name: "04:00", value: 1500 },
-    { name: "06:00", value: 2200 },
-    { name: "08:00", value: 1700 },
-    { name: "10:00", value: 1800 },
-    { name: "12:00", value: 2500 },
-    { name: "14:00", value: 2400 },
-    { name: "16:00", value: 2700 },
-    { name: "18:00", value: 2200 },
-    { name: "20:00", value: 2400 },
-    { name: "22:00", value: 2000 },
+    { name: "00:00", deposit: 2000, withdraw: 1800 },
+    { name: "04:00", deposit: 2500, withdraw: 2700 },
+    { name: "08:00", deposit: 1500, withdraw: 1300 },
+    { name: "12:00", deposit: 2200, withdraw: 2100 },
+    { name: "16:00", deposit: 1700, withdraw: 2000 },
+    { name: "20:00", deposit: 1800, withdraw: 2200 },
   ],
   "1 week": [
-    { name: "Mon", value: 30000 },
-    { name: "Tue", value: 32000 },
-    { name: "Wed", value: 29000 },
-    { name: "Thu", value: 31000 },
-    { name: "Fri", value: 35000 },
-    { name: "Sat", value: 40000 },
-    { name: "Sun", value: 42000 },
+    { name: "Mon", deposit: 30000, withdraw: 25000 },
+    { name: "Tue", deposit: 32000, withdraw: 29000 },
+    { name: "Wed", deposit: 29000, withdraw: 31000 },
+    { name: "Thu", deposit: 31000, withdraw: 30000 },
+    { name: "Fri", deposit: 35000, withdraw: 36000 },
+    { name: "Sat", deposit: 40000, withdraw: 42000 },
+    { name: "Sun", deposit: 42000, withdraw: 41000 },
   ],
   "1 month": [
-    { name: "Week 1", value: 20000 },
-    { name: "Week 2", value: 25000 },
-    { name: "Week 3", value: 22000 },
-    { name: "Week 4", value: 27000 },
+    { name: "Week 1", deposit: 20000, withdraw: 19000 },
+    { name: "Week 2", deposit: 25000, withdraw: 24000 },
+    { name: "Week 3", deposit: 22000, withdraw: 23000 },
+    { name: "Week 4", deposit: 27000, withdraw: 26000 },
   ],
   "1 year": [
-    { name: "Jan", value: 20000 },
-    { name: "Feb", value: 25000 },
-    { name: "Mar", value: 22000 },
-    { name: "Apr", value: 27000 },
-    { name: "May", value: 30000 },
-    { name: "Jun", value: 35000 },
-    { name: "Jul", value: 33000 },
-    { name: "Aug", value: 36000 },
-    { name: "Sep", value: 40000 },
-    { name: "Oct", value: 45000 },
-    { name: "Nov", value: 47000 },
-    { name: "Dec", value: 48000 },
+    { name: "Jan", deposit: 20000, withdraw: 18000 },
+    { name: "Feb", deposit: 25000, withdraw: 24000 },
+    { name: "Mar", deposit: 22000, withdraw: 21000 },
+    { name: "Apr", deposit: 27000, withdraw: 28000 },
+    { name: "May", deposit: 30000, withdraw: 29000 },
+    { name: "Jun", deposit: 35000, withdraw: 36000 },
+    { name: "Jul", deposit: 33000, withdraw: 31000 },
+    { name: "Aug", deposit: 36000, withdraw: 37000 },
+    { name: "Sep", deposit: 40000, withdraw: 42000 },
+    { name: "Oct", deposit: 45000, withdraw: 43000 },
+    { name: "Nov", deposit: 47000, withdraw: 48000 },
+    { name: "Dec", deposit: 48000, withdraw: 46000 },
   ],
   "all time": [
-    { name: "2020", value: 20000 },
-    { name: "2021", value: 30000 },
-    { name: "2022", value: 10000 },
-    { name: "2023", value: 12000 },
-    { name: "2024", value: 14000 },
-    { name: "2025", value: 8000 },
+    { name: "2020", deposit: 20000, withdraw: 18000 },
+    { name: "2021", deposit: 30000, withdraw: 32000 },
+    { name: "2022", deposit: 10000, withdraw: 9000 },
+    { name: "2023", deposit: 12000, withdraw: 13000 },
+    { name: "2024", deposit: 14000, withdraw: 15000 },
+    { name: "2025", deposit: 8000, withdraw: 7000 },
   ],
 };
 
@@ -187,9 +191,54 @@ function SummaryCard({ title, value, inc = null, filter }) {
   );
 }
 
+function DepositWithdrawAreaChart({ data }) {
+  return (
+    <div className="bg-primary-dark p-3 sm:p-4 md:p-6 rounded-xl shadow-md w-full h-full flex flex-col">
+      <h3 className="text-text-heading font-bold text-center text-base sm:text-lg md:text-xl mb-3 sm:mb-4">
+        Deposit vs Withdrawal Amount
+      </h3>
+
+      <div className="w-full h-[200px] sm:h-[250px] md:h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <XAxis
+              dataKey="name"
+              stroke="#fff"
+              tick={{ fill: "#ccc", fontSize: 10 }}
+            />
+            <YAxis stroke="#fff" tick={{ fill: "#ccc", fontSize: 10 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: "#222", borderColor: "#555" }}
+              itemStyle={{ color: "#fff" }}
+            />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="deposit"
+              stackId="1"
+              stroke="#22c55e"
+              fill="#4ade80"
+              name="Deposit"
+            />
+            <Area
+              type="monotone"
+              dataKey="withdraw"
+              stackId="1"
+              stroke="#ef4444"
+              fill="#f87171"
+              name="Withdrawal"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 function Stats() {
   const [timeFilter, setTimeFilter] = useState("24h");
   const [data, setData] = useState(null);
+  const depositWithdrawData = dummyDepositWithdrawData[timeFilter] || [];
 
   useEffect(() => {
     setData(dummyData);
@@ -249,15 +298,11 @@ function Stats() {
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StakedAmountChart
-          title={"Total Staked Amount of Users"}
+          title={"Total Number of Users"}
           timeFilter={timeFilter}
-          statsData={stakedAmount}
+          statsData={users}
         />
-        <StakedAmountChart
-          title={"Total Payout Amount to Users"}
-          timeFilter={timeFilter}
-          statsData={payoutAmmount}
-        />
+        <DepositWithdrawAreaChart data={depositWithdrawData} />
       </div>
     </div>
   );
