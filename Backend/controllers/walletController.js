@@ -11,7 +11,6 @@ exports.getDepositAddress = (req, res) => {
       walletAddress: config.bscWalletAddress,
     },
   };
-
   res.json({
     status: "success",
     message: "Deposit addresses fetched successfully",

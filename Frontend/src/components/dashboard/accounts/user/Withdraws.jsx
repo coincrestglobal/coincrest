@@ -87,7 +87,7 @@ const WithdrawPage = () => {
             <input
               type="number"
               placeholder="Enter amount"
-              className="w-full bg-transparent border border-[#2d2b42] rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-text-link"
+              className="w-full bg-transparent border border-[#2d2b42]  text-white rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-text-link"
               disabled={isCooldown}
             />
           </div>

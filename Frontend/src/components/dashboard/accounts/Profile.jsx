@@ -15,7 +15,7 @@ function Profile() {
     formData.append("profilePicture", file);
 
     const response = await updateProfilePhoto(user.token, formData);
-    const updatedProfile = response.data.profilePic;
+    const updatedProfile = response.data.profilePicUrl;
     setUser((prev) => ({
       ...prev,
       profilePicUrl: updatedProfile,
