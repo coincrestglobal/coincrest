@@ -31,7 +31,7 @@ export default function reviewslider() {
         const token = user?.token;
         const response = await getHomeReviews(token);
         setHasUserReviewed(response?.data?.hasUserReviewed);
-        setReviews(response.data.reviews);
+        setReviews(response?.data?.reviews);
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {
