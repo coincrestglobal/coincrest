@@ -12,4 +12,11 @@ router.get(
   statsController.getStats
 );
 
+router.get(
+  "/statCount",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  statsController.getTotalCounts
+);
+
 module.exports = router;

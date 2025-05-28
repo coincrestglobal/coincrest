@@ -3,6 +3,8 @@ const AppError = require("../utils/appError");
 const User = require("../models/userModel");
 const Deposit = require("../models/depositModel");
 const Withdrawal = require("../models/withdrawalModel");
+const Review = require("../models/reviewModel");
+const Feedback = require("../models/feedbackModel");
 
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const monthNames = [
@@ -264,5 +266,32 @@ exports.getStats = catchAsync(async (req, res, next) => {
     incPayouts: withdrawalAmount,
     usersChartData,
     depositWithdrawChartData,
+  });
+});
+
+exports.getTotalCounts = catchAsync(async (req, res, next) => {
+  const [
+    totalDeposits,
+    totalWithdrawals,
+    totalUsers,
+    totalReviews,
+    totalFeedbacks,
+  ] = await Promise.all([
+    Deposit.countDocuments(),
+    Withdrawal.countDocuments(),
+    User.countDocuments(),
+    Review.countDocuments(),
+    Feedback.countDocuments(),
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      totalDeposits,
+      totalWithdrawals,
+      totalUsers,
+      totalReviews,
+      totalFeedbacks,
+    },
   });
 });
