@@ -180,7 +180,7 @@ function Withdrawals() {
               </div>
             )}
 
-            {withdrawal.status !== "Approved" && (
+            {withdrawal.status !== "completed" && (
               <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
                   onClick={() => {
