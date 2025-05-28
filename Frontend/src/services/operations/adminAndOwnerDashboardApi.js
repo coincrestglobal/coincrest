@@ -30,6 +30,7 @@ const {
   ADD_ANNOUNCEMENT,
   DELETE_ANNOUNCEMENT,
   GET_STATS,
+  GET_CONTROL_STATS,
 } = ownerAndAdminDashboardEndPoints;
 
 //stats
@@ -47,6 +48,15 @@ export const statsData = async (token, params) => {
       },
       params
     );
+    return response;
+  } catch {}
+};
+
+export const controlPannelStats = async (token) => {
+  try {
+    const response = await apiConnector("GET", GET_CONTROL_STATS, null, {
+      Authorization: `Bearer ${token}`,
+    });
     return response;
   } catch {}
 };
@@ -430,8 +440,8 @@ export const getAllAnnouncements = async (token, params) => {
       null,
       {
         Authorization: `Bearer ${token}`,
-      }
-      // params
+      },
+      params
     );
     return response;
   } catch (error) {

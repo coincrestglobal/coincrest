@@ -93,6 +93,7 @@ export const ownerAndAdminDashboardEndPoints = {
 
   //stats
   GET_STATS: BASE_URL + "/stat",
+  GET_CONTROL_STATS: BASE_URL + "/stat/statCount",
 };
 
 //user dashboard

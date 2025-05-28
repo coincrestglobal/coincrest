@@ -11,6 +11,7 @@ import {
   deleteAnnouncements,
   getAllAnnouncements,
 } from "../../services/operations/adminAndOwnerDashboardApi";
+import Pagination from "./Pagination";
 
 function Announcement() {
   const { user } = useUser(); // { name, role, ... }
@@ -24,7 +25,7 @@ function Announcement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalAnnouncements, setTotalAnnouncements] = useState(0);
-  const numberOfEntries = 10;
+  const numberOfEntries = 2;
 
   const [filterState, setFilterState] = useState({
     searchQuery: "",
@@ -249,6 +250,12 @@ function Announcement() {
         isOpen={selectedAnnouncement}
         onClose={() => setSelectedAnnouncement(null)}
         announcement={selectedAnnouncement}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );
