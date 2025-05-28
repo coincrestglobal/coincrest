@@ -18,6 +18,7 @@ const {
   UPDATE_PASSWORD,
   UPDATE_WALLET,
   GET_REFERRAL_CODE_AND_LINK,
+  GET_BONUS_HISTORY,
 } = userDashboardEndPoints;
 
 export const getPlans = async () => {
@@ -144,11 +145,17 @@ export const withdraw = async (token, data) => {
   }
 };
 
-export const getUserWithdrawals = async (token) => {
+export const getUserWithdrawals = async (token, params) => {
   try {
-    const response = await apiConnector("GET", USER_WITHDRAWS_HISTORY, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      USER_WITHDRAWS_HISTORY,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      params
+    );
     if (!response?.data?.success) {
     }
     return response;
@@ -246,7 +253,6 @@ export const getBonustHistory = async (token, params) => {
     if (!response?.data?.success) {
     }
 
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };

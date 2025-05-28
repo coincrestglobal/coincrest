@@ -49,7 +49,10 @@ const WithdrawPage = () => {
         params.append("role", "user");
         params.append("limit", numberOfEntries);
 
-        const response = await getUserWithdrawals(user.token);
+        const response = await getUserWithdrawals(
+          user.token,
+          params.toString()
+        );
         const withdrawals = response.data.withdrawals;
 
         setWithdrawHistory(withdrawals);
