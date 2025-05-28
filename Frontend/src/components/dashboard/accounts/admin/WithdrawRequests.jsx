@@ -107,8 +107,7 @@ function Withdrawals() {
             label: "Status",
             children: [
               { label: "Pending", value: "pending" },
-              { label: "Approved", value: "approved" },
-              { label: "Processing", value: "processing" },
+              { label: "Completed", value: "completed" },
             ],
           },
           {

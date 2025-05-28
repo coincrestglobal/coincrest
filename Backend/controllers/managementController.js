@@ -86,7 +86,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.getWithdrawals = catchAsync(async (req, res, next) => {
-  const { status, tokenType, startDate, endDate } = req.query;
+  const { status, tokenType, startDate, endDate, sort = "desc" } = req.query;
 
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -112,9 +112,11 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
     };
   }
 
+  const sortOrder = sort === "desc" ? -1 : 1;
+
   const [withdrawals, total] = await Promise.all([
     Withdrawal.find(filter)
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
       .select("amount tokenType status toAddress txId createdAt")
@@ -136,7 +138,7 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
 });
 
 exports.getDeposits = catchAsync(async (req, res, next) => {
-  const { tokenType, startDate, endDate } = req.query;
+  const { tokenType, startDate, endDate, sort = "desc" } = req.query;
 
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -157,10 +159,11 @@ exports.getDeposits = catchAsync(async (req, res, next) => {
       $lte: end,
     };
   }
+  const sortOrder = sort === "desc" ? -1 : 1;
 
   const [deposits, total] = await Promise.all([
     Deposit.find(filter)
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
       .select("amount tokenType status fromAddress createdAt -_id")
@@ -201,7 +204,6 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
 
   // 3. Password check
   const isPasswordCorrect = await ownerUser.verifyPassword(ownerPassword);
-  console.log("meow", isPasswordCorrect);
 
   if (!isPasswordCorrect) {
     return next(new AppError("The password you entered is incorrect.", 401));
@@ -251,56 +253,56 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.toggleAdminPriority = catchAsync(async (req, res, next) => {
-  const { adminId } = req.params;
+// exports.toggleAdminPriority = catchAsync(async (req, res, next) => {
+//   const { adminId } = req.params;
 
-  const admin = await User.findById(adminId);
-  if (!admin || admin.role !== "admin") {
-    return next(new AppError("Admin not found or invalid role", 404));
-  }
+//   const admin = await User.findById(adminId);
+//   if (!admin || admin.role !== "admin") {
+//     return next(new AppError("Admin not found or invalid role", 404));
+//   }
 
-  if (!admin.priority) {
-    // Case: Assigning priority to this admin
-    // Remove priority from any other admin
-    await User.updateMany(
-      { role: "admin", priority: true, _id: { $ne: adminId } },
-      { $set: { priority: false } }
-    );
+//   if (!admin.priority) {
+//     // Case: Assigning priority to this admin
+//     // Remove priority from any other admin
+//     await User.updateMany(
+//       { role: "admin", priority: true, _id: { $ne: adminId } },
+//       { $set: { priority: false } }
+//     );
 
-    admin.priority = true;
-    await admin.save();
+//     admin.priority = true;
+//     await admin.save();
 
-    return res.status(200).json({
-      status: "success",
-      message: `Priority has been assigned to admin ${admin.name}.`,
-    });
-  } else {
-    // Case: Trying to remove priority from this admin
-    // Check if there's any other admin with priority
-    const otherPriorityAdmin = await User.findOne({
-      role: "admin",
-      priority: true,
-      _id: { $ne: adminId },
-    });
+//     return res.status(200).json({
+//       status: "success",
+//       message: `Priority has been assigned to admin ${admin.name}.`,
+//     });
+//   } else {
+//     // Case: Trying to remove priority from this admin
+//     // Check if there's any other admin with priority
+//     const otherPriorityAdmin = await User.findOne({
+//       role: "admin",
+//       priority: true,
+//       _id: { $ne: adminId },
+//     });
 
-    if (!otherPriorityAdmin) {
-      return next(
-        new AppError(
-          "Cannot remove priority as no other admin has priority.",
-          400
-        )
-      );
-    }
+//     if (!otherPriorityAdmin) {
+//       return next(
+//         new AppError(
+//           "Cannot remove priority as no other admin has priority.",
+//           400
+//         )
+//       );
+//     }
 
-    admin.priority = false;
-    await admin.save();
+//     admin.priority = false;
+//     await admin.save();
 
-    return res.status(200).json({
-      status: "success",
-      message: `Priority has been removed from admin ${admin.name}.`,
-    });
-  }
-});
+//     return res.status(200).json({
+//       status: "success",
+//       message: `Priority has been removed from admin ${admin.name}.`,
+//     });
+//   }
+// });
 
 exports.deleteAdmin = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
@@ -354,76 +356,78 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
     return next(new AppError("User not found", 401));
   }
 
-  if (
-    user.role !== "owner" &&
-    !(user.role === "admin" && user.priority === true)
-  ) {
+  // ✅ Only owners can approve
+  if (user.role !== "owner") {
     return next(
-      new AppError("You are not authorized to approve this withdrawal", 403)
+      new AppError("Only owners are allowed to approve this withdrawal", 403)
     );
   }
 
+  // ✅ Prevent duplicate approvals
   if (withdrawal.approvedBy.includes(user._id)) {
     return next(new AppError("You have already approved this request", 400));
   }
 
+  // ✅ Add owner to approvedBy
   withdrawal.approvedBy.push(user._id);
 
+  // ✅ Get all approvers
   const approvers = await User.find({ _id: { $in: withdrawal.approvedBy } });
 
-  const ownerApproved = approvers.some((u) => u.role === "owner");
-  const priorityAdminApproved = approvers.some(
-    (u) => u.role === "admin" && u.priority === true
-  );
+  // ✅ Count only owners
+  const ownerApprovers = approvers.filter((u) => u.role === "owner");
 
-  if (ownerApproved && priorityAdminApproved) {
+  // ✅ If at least 2 owners approved, process the transfer
+  if (ownerApprovers.length >= 2) {
     withdrawal.isApproved = true;
 
-    if (withdrawal.isApproved) {
-      if (withdrawal.tokenType === "TRC-20") {
-        const { success, txId, senderAddress, error } = await transferTRC20(
-          withdrawal.toAddress,
-          withdrawal.amount
-        );
+    if (withdrawal.tokenType === "TRC-20") {
+      const { success, txId, senderAddress, error } = await transferTRC20(
+        withdrawal.toAddress,
+        withdrawal.amount
+      );
 
-        if (success) {
-          withdrawal.status = "completed";
-          withdrawal.txId = txId;
-          withdrawal.fromAddress = senderAddress;
-          await withdrawal.save();
+      if (success) {
+        withdrawal.status = "completed";
+        withdrawal.txId = txId;
+        withdrawal.fromAddress = senderAddress;
+        await withdrawal.save();
 
-          return res.status(200).json({
-            message: "Withdrawal approved and transfered successfully",
-          });
-        } else {
-          return res.status(error.statusCode).json({
-            message: error.message,
-          });
-        }
+        return res.status(200).json({
+          message: "Withdrawal approved and transferred successfully",
+        });
       } else {
-        const { success, txId, senderAddress, error } = await transferBEP20();
+        return res.status(error.statusCode || 500).json({
+          message: error.message || "TRC20 transfer failed",
+        });
+      }
+    } else {
+      const { success, txId, senderAddress, error } = await transferBEP20(
+        withdrawal.toAddress,
+        withdrawal.amount
+      );
 
-        if (success) {
-          withdrawal.status = "completed";
-          withdrawal.txId = txId;
-          withdrawal.fromAddress = senderAddress;
-          await withdrawal.save();
+      if (success) {
+        withdrawal.status = "completed";
+        withdrawal.txId = txId;
+        withdrawal.fromAddress = senderAddress;
+        await withdrawal.save();
 
-          return res.status(200).json({
-            message: "Withdrawal approved and transfered successfully",
-          });
-        } else {
-          return res.status(error.statusCode).json({
-            message: error.message,
-          });
-        }
+        return res.status(200).json({
+          message: "Withdrawal approved and transferred successfully",
+        });
+      } else {
+        return res.status(error.statusCode || 500).json({
+          message: error.message || "BEP20 transfer failed",
+        });
       }
     }
   }
 
+  // ✅ Save partial approval if less than 2 owners
   await withdrawal.save();
 
   res.status(200).json({
-    message: "Withdrawal approved successfully",
+    message: "Withdrawal approved by owner. Awaiting more approvals.",
   });
 });
