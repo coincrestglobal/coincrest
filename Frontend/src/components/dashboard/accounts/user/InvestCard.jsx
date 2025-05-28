@@ -7,6 +7,7 @@ import {
   investInPlan,
 } from "../../../../services/operations/userDashboardApi";
 import { useUser } from "../../../common/UserContext";
+import Loading from "../../../../pages/Loading";
 
 function InvestCard({ onClose }) {
   const { user } = useUser();
@@ -15,19 +16,25 @@ function InvestCard({ onClose }) {
   const [levels, setLevels] = useState([]);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchPlans = async () => {
-      const res = await getPlans();
-      if (res.status === "success") {
-        const sorted = res.data.plans.sort((a, b) => a.level - b.level);
-        setLevels(sorted);
+      setLoading(true);
+      try {
+        const res = await getPlans();
+        if (res.status === "success") {
+          const sorted = res.data.plans.sort((a, b) => a.level - b.level);
+          setLevels(sorted);
 
-        // Set default plan
-        if (sorted.length > 0) {
-          setSelectedLevel(sorted[0]);
-          setAmount(sorted[0].minAmount.toString());
+          if (sorted.length > 0) {
+            setSelectedLevel(sorted[0]);
+            setAmount(sorted[0].minAmount.toString());
+          }
         }
+      } catch (error) {
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -60,17 +67,24 @@ function InvestCard({ onClose }) {
 
   const handleConfirm = async () => {
     if (selectedLevel && amount) {
-      const response = await investInPlan(user.token, {
-        planId: selectedLevel._id,
-        investedAmount: amount,
-      });
-
-      if (response.status === "success") {
-        console.log(response.message);
+      setLoading(true);
+      try {
+        const response = await investInPlan(user.token, {
+          planId: selectedLevel._id,
+          investedAmount: amount,
+        });
+        setIsModalOpen(false);
+        // Optionally: Show success message
+      } catch (error) {
+      } finally {
+        setLoading(false);
       }
-      setIsModalOpen(false);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="relative bg-primary-light text-text-heading rounded-md p-8 w-full max-w-3xl shadow-sm shadow-text-link">

@@ -1,12 +1,14 @@
-import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
 import { addNewAdmin } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
+import Loading from "../../../../pages/Loading";
 
 function AddNewAdmin() {
   const { user } = useUser();
   const navigate = useSafeNavigate();
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -15,18 +17,28 @@ function AddNewAdmin() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    const newData = {
-      name: data.name,
-      email: data.email,
-      ownerPassword: data.password,
-    };
+    try {
+      setLoading(true);
+      const newData = {
+        name: data.name,
+        email: data.email,
+        ownerPassword: data.password,
+      };
 
-    const response = await addNewAdmin(user.token, newData);
-    if (response.status === "success") {
-      navigate(-1);
+      const response = await addNewAdmin(user.token, newData);
+      if (response.status === "success") {
+        navigate(-1);
+      }
+      reset();
+    } catch {
+    } finally {
+      setLoading(false);
     }
-    reset();
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="bg-primary-dark h-full flex items-center p-2">

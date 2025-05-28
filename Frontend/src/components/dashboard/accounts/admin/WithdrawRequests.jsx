@@ -84,12 +84,11 @@ function Withdrawals() {
       setWithdrawals((prev) =>
         prev.map((w) => (w._id === id ? updatedWithdrawal : w))
       );
-
-      setModal(false);
     } catch (error) {
       console.error("Approval failed:", error);
     } finally {
-      setLoading(false); // End loading
+      setModal(false);
+      setLoading(false);
     }
   };
 
@@ -180,7 +179,7 @@ function Withdrawals() {
               </div>
             )}
 
-            {withdrawal.status !== "Approved" && (
+            {withdrawal.status !== "completed" && (
               <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
                   onClick={() => {

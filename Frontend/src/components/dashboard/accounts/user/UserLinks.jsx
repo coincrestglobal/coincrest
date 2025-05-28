@@ -35,14 +35,19 @@ function UserLinks() {
           <Wallet className="w-5 h-4" />
           <span>Bonus History</span>
         </NavItem>
-        <NavItem to={"settings"}>
-          <Settings className="w-5 h-4" />
-          <span>Settings</span>
-        </NavItem>
         <NavItem to={"team"}>
           <Users className="w-5 h-4" />
           <span>Your Team</span>
         </NavItem>
+        <NavItem to={"announcements"}>
+          <Users className="w-5 h-4" />
+          <span>Announcements</span>
+        </NavItem>
+        <NavItem to={"settings"}>
+          <Settings className="w-5 h-4" />
+          <span>Settings</span>
+        </NavItem>
+
         <NavItem to={"Help-and-Support"}>
           <HelpCircle className="w-5 h-4" />
           <span>Help & Support</span>

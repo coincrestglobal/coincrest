@@ -11,7 +11,7 @@ function ReachoutForm() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const token = user.token;
+  const token = user?.token;
   const onSubmit = async (data) => {
     if (!token) {
       toast.error("You must be logged in to submit the form.");

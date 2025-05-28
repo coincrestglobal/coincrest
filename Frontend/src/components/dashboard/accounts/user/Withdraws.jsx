@@ -7,12 +7,13 @@ import {
 import DashboardHeader from "../../../common/DashboardHeader";
 import Pagination from "../../../common/Pagination";
 import { toast } from "react-toastify";
+import Loading from "../../../../pages/Loading";
 
 const WithdrawPage = () => {
   const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
-    sortOrder: "asc",
+    sortOrder: "desc",
     selectedFilters: [],
   });
   const [activeTab, setActiveTab] = useState("New Withdrawal");
@@ -33,6 +34,7 @@ const WithdrawPage = () => {
   useEffect(() => {
     const getWithdrawalHistory = async () => {
       try {
+        setLoading(true);
         const { searchQuery, selectedFilters, sortOrder } = filterState;
         const params = new URLSearchParams();
 
@@ -49,7 +51,10 @@ const WithdrawPage = () => {
         params.append("role", "user");
         params.append("limit", numberOfEntries);
 
-        const response = await getUserWithdrawals(user.token);
+        const response = await getUserWithdrawals(
+          user.token,
+          params.toString()
+        );
         const withdrawals = response.data.withdrawals;
 
         setWithdrawHistory(withdrawals);
@@ -81,8 +86,10 @@ const WithdrawPage = () => {
           setIsCooldown(false);
           setTimeLeft("");
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching withdrawal history:", error);
+        setLoading(false);
       }
     };
 
@@ -127,6 +134,9 @@ const WithdrawPage = () => {
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="relative max-w-4xl mx-auto bg-primary-dark rounded-md p-6 sm:p-8">
       <div className="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-10 mb-6 sm:mb-8">

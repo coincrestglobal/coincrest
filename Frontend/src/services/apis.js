@@ -1,5 +1,6 @@
 // const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
-const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api/v1`;
+const BASE_URL = `https://coincrest.onrender.com/api/v1`;
+console.log(BASE_URL);
 
 // AUTH ENDPOINTS
 export const authEndpoints = {
@@ -93,6 +94,7 @@ export const ownerAndAdminDashboardEndPoints = {
 
   //stats
   GET_STATS: BASE_URL + "/stat",
+  GET_CONTROL_STATS: BASE_URL + "/stat/statCount",
 };
 
 //user dashboard
@@ -117,5 +119,5 @@ export const userDashboardEndPoints = {
   GET_REFERRAL_CODE: BASE_URL + "/referral/code",
   GET_REFERRAL_LINK: BASE_URL + "/referral/link",
   GET_REFERRAL_CODE_AND_LINK: BASE_URL + "/account/getReferredUsers",
-  GET_BONUS_HISTORY: BASE_URL + "account/getReferralBonus",
+  GET_BONUS_HISTORY: BASE_URL + "/account/getReferralBonus",
 };

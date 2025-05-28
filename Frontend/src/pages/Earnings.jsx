@@ -226,7 +226,7 @@ const EarningsPlansPage = () => {
       {/* Team Rewards */}
       <section className="mb-10 sm:mb-12 ">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
-          🎁 Monthly Team Rewards
+          🎁 Team Based Rewards
         </h2>
 
         <div className="overflow-x-auto ">
@@ -237,7 +237,7 @@ const EarningsPlansPage = () => {
                   Active Team Members
                 </th>
                 <th className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
-                  Monthly Salary Reward
+                  Reward
                 </th>
               </tr>
             </thead>
