@@ -77,6 +77,10 @@ const router = createBrowserRouter([
           { path: "bonus-history", Component: BonusHistory },
           { path: "team", Component: TeamTree },
           { path: "help-and-support", Component: HelpSupport },
+          {
+            path: "announcements",
+            Component: Announcements,
+          },
         ],
       },
 
