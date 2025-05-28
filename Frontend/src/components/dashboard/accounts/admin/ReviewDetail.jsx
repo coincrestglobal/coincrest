@@ -110,6 +110,10 @@ const ReviewDetails = () => {
                 name="rating"
               />
             </div>
+            <p className="text-white">
+              <span className="font-semibold text-button">status:</span>{" "}
+              {review.isApproved ? "Approved" : "Reject"}
+            </p>
           </div>
         </div>
 
@@ -120,16 +124,22 @@ const ReviewDetails = () => {
 
         <div className="flex flex-wrap gap-4">
           <button
-            className="bg-button px-4 py-2 rounded-lg"
+            className={`px-4 py-2 rounded-lg transition ${
+              review.isApproved
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-button text-white hover:bg-green-600"
+            }`}
             onClick={() => setAcceptModal(true)}
+            disabled={review.isApproved}
           >
-            Accept
+            {review.isApproved ? "Approved" : "Approve"}
           </button>
+
           <button
             onClick={() => handleDelete(review._id)}
             disabled={deleteConfirm.reviewId === review._id}
             className={`flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-text-heading rounded-lg transition ${
-              deleteConfirm.reviewId === review.id
+              deleteConfirm.reviewId === review._id
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}

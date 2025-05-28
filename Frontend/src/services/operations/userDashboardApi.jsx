@@ -229,3 +229,24 @@ export const getReferredUsers = async (token) => {
     throw error;
   }
 };
+
+//bonus history
+export const getBonustHistory = async (token, params) => {
+  let result = [];
+  try {
+    const response = await apiConnector(
+      "GET",
+      GET_BONUS_HISTORY,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      params
+    );
+    if (!response?.data?.success) {
+    }
+
+    result = response;
+  } catch (error) {}
+  return result;
+};

@@ -1,5 +1,6 @@
 import { homeEndPoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
+import { toast } from "react-toastify";
 
 const { GET_REVIEWS, ADD_REVIEW, EDIT_REVIEW, GET_FAQS } = homeEndPoints;
 
@@ -10,10 +11,7 @@ export const getHomeReviews = async (token) => {
       Authorization: `Bearer ${token}`,
     });
     return response;
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-    throw error;
-  }
+  } catch (error) {}
 };
 
 // ADD a new review
@@ -26,8 +24,7 @@ export const addReview = async (reviewData, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    console.error("Error adding review:", error);
-    throw error;
+    toast.error("Error adding review:", error);
   }
 };
 
@@ -46,8 +43,7 @@ export const editReview = async (reviewId, updatedData, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    console.error("Error editing review:", error);
-    throw error;
+    toast.error("Error editing review:", error);
   }
 };
 
@@ -57,7 +53,6 @@ export const getAllFaqs = async () => {
     const response = await apiConnector("GET", GET_FAQS);
     return response;
   } catch (error) {
-    console.error("Error fetching FAQs:", error);
-    throw error;
+    toast.error("Error fetching FAQs:", error);
   }
 };
