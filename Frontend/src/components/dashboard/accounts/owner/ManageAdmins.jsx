@@ -106,7 +106,7 @@ function AllAdmins() {
       setLoading(false);
     }
   };
-
+  console.log(admins);
   if (loading) {
     return <Loading />;
   }
@@ -161,10 +161,6 @@ function AllAdmins() {
             <p className="text-text-body mb-2">
               <FaEnvelope className="inline mr-2" />
               {admin.email}
-            </p>
-            <p className="text-text-subheading">
-              <strong className="text-text-heading">Status:</strong>{" "}
-              {admin.status}
             </p>
           </div>
 

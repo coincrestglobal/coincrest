@@ -64,9 +64,9 @@ export const controlPannelStats = async (token) => {
 //users
 
 export const getAllUsers = async (token, params) => {
-  let result = [];
+  let response = [];
   try {
-    const response = await apiConnector(
+    response = await apiConnector(
       "GET",
       GET_ALL_USERS_API,
       null,
@@ -75,13 +75,9 @@ export const getAllUsers = async (token, params) => {
       },
       params
     );
-    if (!response?.data?.success) {
-    }
-    result = response;
-  } catch (error) {
-    console.log(error);
-  }
-  return result;
+
+    return response;
+  } catch (error) {}
 };
 
 export const getUserDetails = async (token, params) => {
@@ -128,9 +124,9 @@ export const getWithdrawRequests = async (token, params) => {
 };
 
 export const approveWithdrawRequest = async (token, withdrawal_id) => {
-  let result = null;
+  let response = null;
   try {
-    const response = await apiConnector(
+    response = await apiConnector(
       "PATCH",
       `${APPROVE_WITHDRAW_REQUEST_API}/${withdrawal_id}`,
       null,
@@ -139,11 +135,10 @@ export const approveWithdrawRequest = async (token, withdrawal_id) => {
       }
     );
     toast.success(response.message);
-    result = response;
+    return response;
   } catch (error) {
-    toast.error("Failed to approve withdrawal request");
+    toast.error(response.message || "Failed to approve withdrawal request");
   }
-  return result;
 };
 
 //deposits
@@ -257,8 +252,9 @@ export const getAllFeedbacks = async (token, params) => {
 };
 
 export const respondToFeedback = async (feedbackId, responseMessage, token) => {
+  let response = null;
   try {
-    const response = await apiConnector(
+    response = await apiConnector(
       "PATCH",
       `${RESPOND_FEEDBACK_API}/${feedbackId}`,
       { message: responseMessage },
@@ -269,7 +265,7 @@ export const respondToFeedback = async (feedbackId, responseMessage, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to respond to feedback");
+    toast.error(response.message || "Failed to respond to feedback");
   }
 };
 
@@ -286,12 +282,13 @@ export const getAllFaqs = async () => {
 };
 
 export const addFaq = async (faqData) => {
+  let response = null;
   try {
-    const response = await apiConnector("POST", ADD_FAQ_API, faqData);
+    response = await apiConnector("POST", ADD_FAQ_API, faqData);
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to add FAQ");
+    toast.error(response.message || "Failed to add FAQ");
     return null;
   }
 };
@@ -395,16 +392,16 @@ export const getAllAdmins = async () => {
 // Add new admin
 
 export const addNewAdmin = async (token, adminData) => {
+  let response = null;
   try {
-    const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
+    response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
       Authorization: `Bearer ${token}`,
     });
     toast.success(response.message);
 
     return response;
   } catch (error) {
-    toast.error("Failed to add new admin");
-    return null;
+    toast.error(response.message || "Failed to add new admin");
   }
 };
 

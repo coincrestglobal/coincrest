@@ -13,14 +13,18 @@ const {
 export function signUp(data, navigate) {
   return async (dispatch) => {
     dispatch(setLoading(true));
+    let response = null;
     try {
-      const response = await apiConnector("POST", SIGNUP_API, data);
+      response = await apiConnector("POST", SIGNUP_API, data);
 
       if (response.status === "success") {
         toast.success(response.message);
       }
     } catch (error) {
-      toast.error("Something went wrong while signing up. Please try again.");
+      toast.error(
+        response.message ||
+          "Something went wrong while signing up. Please try again."
+      );
       navigate("/signup");
     }
     dispatch(setLoading(false));
@@ -28,8 +32,9 @@ export function signUp(data, navigate) {
 }
 
 export const login = async (data, navigate, setUser) => {
+  let response = null;
   try {
-    const response = await apiConnector("POST", LOGIN_API, data);
+    response = await apiConnector("POST", LOGIN_API, data);
 
     const { token, user } = response.data;
 
