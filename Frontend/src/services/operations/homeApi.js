@@ -23,6 +23,7 @@ export const addReview = async (reviewData, token) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     });
+    toast.success(response.message);
     return response;
   } catch (error) {
     console.error("Error adding review:", error);
@@ -42,6 +43,7 @@ export const editReview = async (reviewId, updatedData, token) => {
         Authorization: `Bearer ${token}`,
       }
     );
+    toast.success(response.message);
     return response;
   } catch (error) {
     console.error("Error editing review:", error);

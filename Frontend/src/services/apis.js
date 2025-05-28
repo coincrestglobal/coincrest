@@ -90,6 +90,9 @@ export const ownerAndAdminDashboardEndPoints = {
   GET_ALL_ANNOUNCEMENTS: BASE_URL + "/announcement",
   ADD_ANNOUNCEMENT: BASE_URL + "/announcement/create",
   DELETE_ANNOUNCEMENT: BASE_URL + "/announcement",
+
+  //stats
+  GET_STATS: BASE_URL + "/stat",
 };
 
 //user dashboard

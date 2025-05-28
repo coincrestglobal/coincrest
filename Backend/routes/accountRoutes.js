@@ -94,4 +94,12 @@ router.get(
   accountController.getReferredUsers
 );
 
+router.get(
+  "/getReferralBonus/:userId",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("user"),
+  queryParamsValidator,
+  accountController.getReferralBonusHistory
+);
+
 module.exports = router;

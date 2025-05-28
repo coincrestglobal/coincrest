@@ -8,7 +8,7 @@ import {
 } from "recharts";
 
 function StakedAmountChart({ timeFilter, statsData, title }) {
-  const currentStatsData = statsData[timeFilter];
+  const currentStatsData = statsData;
 
   return (
     <div className="bg-primary-dark p-3 sm:p-4 md:p-6 rounded-xl shadow-md flex flex-col justify-center items-center w-full">
