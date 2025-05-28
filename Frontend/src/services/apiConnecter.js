@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 export const apiConnector = async (
   method,
   url,
@@ -31,8 +32,7 @@ export const apiConnector = async (
   const result = await response.json();
 
   if (!response.ok) {
-    console.error("API Error", result);
-    throw new Error(result.message || "API call failed");
+    toast.error(result.message);
   }
 
   return result;
