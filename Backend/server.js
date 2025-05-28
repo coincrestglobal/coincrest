@@ -20,6 +20,7 @@ const startServer = async () => {
     // Start background jobs after server starts
     // require("./jobs/depositScanner");
     // require("./jobs/processInvestmentInterest");
+    require("./jobs/teamBonusScanner");
   } catch (error) {
     console.error("Failed to connect to server:", error);
     process.exit(1); // Exit process with failure
