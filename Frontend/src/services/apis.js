@@ -1,5 +1,5 @@
-const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
-// const BASE_URL = "http://192.168.61.172:5000/api/v1"; // for mobile only
+// const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
+const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api/v1`;
 
 // AUTH ENDPOINTS
 export const authEndpoints = {
@@ -117,4 +117,5 @@ export const userDashboardEndPoints = {
   GET_REFERRAL_CODE: BASE_URL + "/referral/code",
   GET_REFERRAL_LINK: BASE_URL + "/referral/link",
   GET_REFERRAL_CODE_AND_LINK: BASE_URL + "/account/getReferredUsers",
+  GET_BONUS_HISTORY: BASE_URL + "account/getReferralBonus",
 };

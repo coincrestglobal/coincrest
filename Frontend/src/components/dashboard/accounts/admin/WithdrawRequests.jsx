@@ -10,6 +10,7 @@ import {
 } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
 import Feedbacks from "./Feedbakcs";
+import Loading from "../../../../pages/Loading";
 
 function Withdrawals() {
   const { user } = useUser();
@@ -20,6 +21,7 @@ function Withdrawals() {
   });
 
   const [withdrawals, setWithdrawals] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [expandedWithdrawal, setExpandedWithdrawal] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,26 +30,28 @@ function Withdrawals() {
   const [selectedId, setSelectedId] = useState(null);
   const numberOfEntries = 5;
 
-  const currentAdmin = user.name; //need to change
-
   // Calculate filtered and paginated data
   useEffect(() => {
     const fetchWithdrawals = async () => {
       try {
+        setLoading(true); // Start loading
         const { searchQuery, selectedFilters, sortOrder } = filterState;
 
         const params = new URLSearchParams();
         if (searchQuery) params.append("search", searchQuery);
+
         if (selectedFilters) {
           if (selectedFilters["Date Interval"]) {
             const { startDate, endDate } = selectedFilters["Date Interval"];
             if (startDate) params.append("startDate", startDate);
             if (endDate) params.append("endDate", endDate);
           }
+
           if (selectedFilters["Status"]) {
             params.append("status", selectedFilters["Status"]);
           }
         }
+
         if (sortOrder) params.append("sort", sortOrder);
         params.append("page", currentPage);
         params.append("limit", numberOfEntries);
@@ -62,24 +66,34 @@ function Withdrawals() {
         setTotalPages(response.totalPages);
         setTotalWithdraws(response.total);
       } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false);
+        console.error("Error fetching withdrawals:", error);
+      } finally {
+        setLoading(false); // End loading
       }
     };
+
     fetchWithdrawals();
   }, [filterState, currentPage]);
 
   const handleApprove = async (id) => {
-    const response = await approveWithdrawRequest(user.token, id);
-    console.log(response);
-    const updatedWithdrawal = response.data.withdrawal;
+    try {
+      setLoading(true); // Start loading
+      const response = await approveWithdrawRequest(user.token, id);
+      const updatedWithdrawal = response.data.withdrawal;
 
-    setWithdrawals((prev) =>
-      prev.map((w) => (w._id === id ? updatedWithdrawal : w))
-    );
+      setWithdrawals((prev) =>
+        prev.map((w) => (w._id === id ? updatedWithdrawal : w))
+      );
 
-    setModal(false);
+      setModal(false);
+    } catch (error) {
+      console.error("Approval failed:", error);
+    } finally {
+      setLoading(false); // End loading
+    }
   };
+
+  if (loading) return <Loading />;
 
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">

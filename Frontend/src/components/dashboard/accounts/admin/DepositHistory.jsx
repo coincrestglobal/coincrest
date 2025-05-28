@@ -5,6 +5,7 @@ import NoResult from "../../../../pages/NoResult";
 import Pagination from "../../../common/Pagination";
 import { getAllUsersDepositHistory } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
+import Loading from "../../../../pages/Loading";
 
 function Deposits() {
   const { user } = useUser();
@@ -15,6 +16,7 @@ function Deposits() {
   });
 
   const [deposits, setDeposits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [expandedDeposit, setExpandedDeposit] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -22,13 +24,16 @@ function Deposits() {
   const numberOfEntries = 5;
 
   // Filter logic
+
   useEffect(() => {
     const fetchDeposits = async () => {
       try {
+        setLoading(true); // Start loading
         const { searchQuery, selectedFilters, sortOrder } = filterState;
 
         const params = new URLSearchParams();
         if (searchQuery) params.append("search", searchQuery);
+
         if (selectedFilters) {
           if (selectedFilters["Date Interval"]) {
             const { startDate, endDate } = selectedFilters["Date Interval"];
@@ -39,26 +44,31 @@ function Deposits() {
             params.append("tokenType", selectedFilters["Token Type"]);
           }
         }
+
         if (sortOrder) params.append("sort", sortOrder);
         params.append("page", currentPage);
         params.append("limit", numberOfEntries);
+
         const response = await getAllUsersDepositHistory(
           user.token,
           params.toString()
         );
+
         const { data } = response;
         setDeposits(data.deposits);
         setTotalPages(response.totalPages);
         setTotalDeposits(response.total);
       } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false);
+        console.error("Error fetching deposits:", error);
+      } finally {
+        setLoading(false); // Stop loading after everything
       }
     };
+
     fetchDeposits();
   }, [filterState, currentPage]);
 
-  console.log(deposits);
+  if (loading) return <Loading />;
 
   return (
     <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
