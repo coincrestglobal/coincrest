@@ -15,6 +15,8 @@ import {
   getAllUsers,
 } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import FireAdminConfirmationModal from "./FireAdminConfirmationModal";
+import Pagination from "../../../common/Pagination";
+import Loading from "../../../../pages/Loading";
 
 const filterOptions = [
   {
@@ -41,15 +43,16 @@ function AllAdmins() {
   const { user } = useUser();
 
   const [admins, setAdmins] = useState([]);
-  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const numberOfEntries = 10;
+  const numberOfEntries = 1;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
         const { searchQuery, selectedFilters, sortOrder } = filterState;
         const params = new URLSearchParams();
 
@@ -83,6 +86,8 @@ function AllAdmins() {
         setTotalUsers(response.total);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -90,11 +95,21 @@ function AllAdmins() {
   }, [currentPage, filterState]);
   // Handle "Fire Admin"
   const handleFireAdmin = async (adminId, password) => {
-    const response = await fireAdmin(adminId, user.token, password);
-    if (response.status === "success") {
-      setFireAdminConfirmationModal(false);
+    try {
+      setLoading(true);
+      const response = await fireAdmin(adminId, user.token, password);
+      if (response.status === "success") {
+        setFireAdminConfirmationModal(false);
+      }
+    } catch {
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="p-2 flex flex-col gap-4 h-full overscroll-y-scroll scrollbar-hide">
       <AdminsHeader
@@ -104,8 +119,9 @@ function AllAdmins() {
         setFilterState={setFilterState}
         filterOptions={filterOptions}
       />
+
       <div
-        className="flex items-center justify-between p-4  border border-button rounded-xl -my-2 cursor-pointer hover:bg-button-hover transition-all"
+        className="flex items-center justify-between p-4 border border-button rounded-xl -my-2 cursor-pointer hover:bg-button-hover transition-all"
         onClick={() => navigate("add-admin")}
       >
         <div className="flex items-center gap-2">
@@ -116,6 +132,7 @@ function AllAdmins() {
         </div>
       </div>
 
+      {/* Admins List */}
       {admins.map((admin) => (
         <div
           key={admin._id}
@@ -139,6 +156,7 @@ function AllAdmins() {
               )}
             </button>
           </div>
+
           <div className="flex justify-between text-text-heading p-3 rounded-md mb-4 shadow-sm">
             <p className="text-text-body mb-2">
               <FaEnvelope className="inline mr-2" />
@@ -172,16 +190,26 @@ function AllAdmins() {
               Fire Admin
             </button>
           </div>
+
           {fireAdminConfirmationModal && (
             <FireAdminConfirmationModal
               adminId={admin._id}
               text={`Are you sure you want to fire the admin ${admin.name}? This action cannot be undone.`}
               onCancel={() => setFireAdminConfirmationModal(false)}
-              onConfirm={handleFireAdmin} // no need to pass password here
+              onConfirm={handleFireAdmin}
             />
           )}
         </div>
       ))}
+
+      {/* ✅ Pagination Control */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 }

@@ -59,12 +59,15 @@ const ReviewDetails = () => {
 
   const confirmDelete = async () => {
     try {
+      setLoading(true);
       await rejectReview(user.token, deleteConfirm.reviewId);
       setDeleteConfirm({ show: false, reviewId: null });
       // Optionally navigate or refetch
       // navigate("/dashboard/owner/control-pannel/reviews");
     } catch (error) {
       console.error("Error deleting review:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

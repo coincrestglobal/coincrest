@@ -12,6 +12,7 @@ import {
   getAllAnnouncements,
 } from "../../services/operations/adminAndOwnerDashboardApi";
 import Pagination from "./Pagination";
+import Loading from "../../pages/Loading";
 
 function Announcement() {
   const { user } = useUser(); // { name, role, ... }
@@ -25,6 +26,7 @@ function Announcement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalAnnouncements, setTotalAnnouncements] = useState(0);
+  const [loading, setLoading] = useState(false);
   const numberOfEntries = 2;
 
   const [filterState, setFilterState] = useState({
@@ -36,6 +38,7 @@ function Announcement() {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
+        setLoading(true);
         const { searchQuery, selectedFilters, sortOrder } = filterState;
         const params = new URLSearchParams();
 
@@ -70,6 +73,8 @@ function Announcement() {
         setTotalAnnouncements(response.total);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -81,35 +86,53 @@ function Announcement() {
       alert("Title and Message are required.");
       return;
     }
-    const getFormattedAudience = (audience) => {
-      if (audience === "All Users") return "all";
-      if (audience === "Stakers") return "user";
-      if (audience === "Admins") return "admin";
-      return audience.toLowerCase(); // fallback
-    };
-    const formattedAudience = getFormattedAudience(selectedAudience);
-    const response = await addAnnouncement(user.token, {
-      title,
-      message,
-      visibleTo: formattedAudience,
-    });
 
-    // Reset form and refresh announcements
-    setTitle("");
-    setMessage("");
-    setSelectedAudience("All Users");
-    setShowForm(false);
-    setCurrentPage(1); // go to first page
-    setFilterState((prev) => ({ ...prev })); // trigger re-fetch
-  };
+    setLoading(true);
+    try {
+      const getFormattedAudience = (audience) => {
+        if (audience === "All Users") return "all";
+        if (audience === "Stakers") return "user";
+        if (audience === "Admins") return "admin";
+        return audience.toLowerCase(); // fallback
+      };
+      const formattedAudience = getFormattedAudience(selectedAudience);
+      const response = await addAnnouncement(user.token, {
+        title,
+        message,
+        visibleTo: formattedAudience,
+      });
 
-  const deleteAnnouncement = async (announcementId) => {
-    const response = await deleteAnnouncements(user.token, announcementId);
-    if (response.status === "success") {
-      setDeleteModal(false);
+      // Reset form and refresh announcements
+      setTitle("");
+      setMessage("");
+      setSelectedAudience("All Users");
+      setShowForm(false);
+      setCurrentPage(1); // go to first page
+      setFilterState((prev) => ({ ...prev })); // trigger re-fetch
+    } catch (error) {
+      console.error("Post announcement failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const deleteAnnouncement = async (announcementId) => {
+    setLoading(true);
+    try {
+      const response = await deleteAnnouncements(user.token, announcementId);
+      if (response.status === "success") {
+        setDeleteModal(false);
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
   const canPost = user?.role === "admin" || user?.role === "owner";
 
   return (

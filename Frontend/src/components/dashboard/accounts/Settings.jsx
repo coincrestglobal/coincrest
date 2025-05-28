@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../../common/UserContext.jsx";
 import ConfirmationModal from "../../common/ConfirmationModal.jsx";
-import axios from "axios";
+import Loading from "../../../pages/Loading";
 import {
   addOrUpdateWallet,
   updatePassword,
@@ -34,6 +34,7 @@ const ProfileForm = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const visibleTabs =
     user.role === "admin" || user.role === "owner"
@@ -51,49 +52,73 @@ const ProfileForm = () => {
   };
 
   const handleSaveWallet = async (index) => {
-    const wallet = wallets[index];
-    const data = {
-      address: wallet.address,
-      tokenType: wallet.tokenType,
-    };
-
-    const response = await addOrUpdateWallet(user.token, data);
-    if (response.message === "Withdrawal address updated successfully") {
-      const updatedWallets = [...wallets];
-      updatedWallets[index] = {
-        ...updatedWallets[index],
-        address: data.address,
-        tokenType: data.tokenType,
+    setLoading(true);
+    try {
+      const wallet = wallets[index];
+      const data = {
+        address: wallet.address,
+        tokenType: wallet.tokenType || (index === 0 ? "TRC-20" : "BEP-20"),
       };
-      setWallets(updatedWallets);
-      setUser((prev) => ({
-        ...prev,
-        wallets: wallets,
-      }));
+
+      const response = await addOrUpdateWallet(user.token, data);
+      if (response.message === "Withdrawal address updated successfully") {
+        const updatedWallets = [...wallets];
+        updatedWallets[index] = {
+          ...updatedWallets[index],
+          address: data.address,
+          tokenType: data.tokenType,
+        };
+        setWallets(updatedWallets);
+        setUser((prev) => ({
+          ...prev,
+          wallets: wallets,
+        }));
+      }
+      setEditableWalletIndex(null);
+    } catch (error) {
+      console.error("Wallet update failed:", error);
+    } finally {
+      setLoading(false);
     }
-    setEditableWalletIndex(null);
   };
 
   const handleUpdateDetails = async () => {
-    const response = await updatePersonalDetails(user.token, { name });
-    const updatedName = response.data.name;
-    setUser((prev) => ({
-      ...prev,
-      name: updatedName,
-    }));
-    setDetailsModal(false);
+    setLoading(true);
+    try {
+      const response = await updatePersonalDetails(user.token, { name });
+      const updatedName = response.data.name;
+      setUser((prev) => ({
+        ...prev,
+        name: updatedName,
+      }));
+      setDetailsModal(false);
+    } catch (error) {
+      console.error("Updating personal details failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpdatePassword = async () => {
-    const data = {
-      currentPassword: currentPassword,
-      newPassword: newPassword,
-      confirmNewPassword: confirmPassword,
-    };
-    await updatePassword(user.token, data);
-    setPasswordModal(false);
+    setLoading(true);
+    try {
+      const data = {
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        confirmNewPassword: confirmPassword,
+      };
+      await updatePassword(user.token, data);
+      setPasswordModal(false);
+    } catch (error) {
+      console.error("Password update failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="bg-primary-dark text-text-heading">
       <div className="relative max-w-5xl mx-auto p-8 shadow-lg">
@@ -176,7 +201,7 @@ const ProfileForm = () => {
                     Chain
                   </label>
                   <div className="bg-[#1e1c2f] w-[70%] text-text-heading border border-[#3a3752] rounded-lg px-4 py-3">
-                    {wallet.tokenType}
+                    {index == 0 ? "TRC - 20" : "BEP-20"}
                   </div>
                 </div>
 
@@ -187,7 +212,7 @@ const ProfileForm = () => {
                       onClick={() => handleEditClick(index)}
                       className="bg-yellow-500 text-text-heading font-medium px-6 py-2 rounded-lg hover:bg-yellow-600 transition"
                     >
-                      Edit
+                      {wallet.address ? "Edit" : "Add"}
                     </button>
                   ) : (
                     <button

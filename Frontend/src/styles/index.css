@@ -43,26 +43,7 @@ body,
   scrollbar-width: none;
 }
 
-/* Toast background */
-.custom-toast {
-  background-color: var(--primary) !important;
-  color: white !important;
-  border-left: 5px solid var(--button);
-}
 
-/* Toast progress bar */
-.Toastify__progress-bar {
-  background: var(--button) !important;
-}
-
-/* Close (X) icon in Toastify */
-.Toastify__close-button {
-  color: white !important;
-}
-
-.Toastify__close-button:hover {
-  opacity: 0.8;
-}
 
 
 :root {
@@ -87,45 +68,12 @@ body,
 
   --text-link: #51626b;
   --text-link-hover: #5EEAD4;
-  /* --text-highlighted: #12a05b; */
   --text-highlighted: #5EEAD4;
   --text-error: #e63946;
 
-  /* --nav-highlighted: #8929cd; */
-  /* --nav-highlighted: #e8d78b; */
+
   --nav-highlighted: #5EEAD4;
 
   --grad1: rgba(9, 25, 70, 1);
-  /* --grad2: rgba(14, 102, 64, 0.7); */
   --grad2: rgba(94, 234, 212, 0.5)
 }
-
-/* :root {
-  --primary-light: #0a1521;
-  --primary: #030b17;
-  --primary-dark: #01070f;
-
-  --secondary1-light: #347d88;
-  --secondary1: #104851;
-  --secondary1-dark: #0a363e;
-
-  --secondary2-light: #296ba2;
-  --secondary2: #0d3960;
-  --secondary2-dark: #0e2c49;
-
-  --button: #051a52;
-  --button-hover: #0e2974;
-
-  --text-heading: #ffff;
-  --text-subheading: #babdc0;
-  --text-body: #babdc0;
-
-  --text-link: #51626b;
-  --text-link-hover: #6C0BA9;
-  --text-highlighted: rgba(108, 11, 169, 1);
-
-  --grad1: rgba(9, 25, 70, 1);
-  --grad2: rgba(108, 11, 169, 0.5);
-} */
-
-

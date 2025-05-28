@@ -110,9 +110,16 @@ const HeroSection = () => {
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="w-full flex flex-col items-center lg:justify-center">
+        <div className="hidden md:flex w-full  flex-col items-center lg:justify-center">
           <img
             src="/images/heroImage2.png"
+            className="h-60 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"
+            alt="Hero"
+          />
+        </div>
+        <div className="w-full flex flex-col items-center justify-center md:hidden">
+          <img
+            src="/images/heroImage.png"
             className="h-60 md:h-[400px] lg:h-[500px] xl:h-[600px] animate-spin-slow"
             alt="Hero"
           />

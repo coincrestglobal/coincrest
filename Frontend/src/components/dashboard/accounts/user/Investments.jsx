@@ -8,16 +8,7 @@ import {
 } from "../../../../services/operations/userDashboardApi";
 import DashboardHeader from "../../../common/DashboardHeader";
 import Pagination from "../../../common/Pagination";
-
-const levels = [
-  { level: 1, stake: 100, title: "Star", weekly: "3%" },
-  { level: 2, stake: 300, title: "Bronze", weekly: "4%" },
-  { level: 3, stake: 500, title: "Silver", weekly: "4.5%" },
-  { level: 4, stake: 1000, title: "Gold", weekly: "5%" },
-  { level: 5, stake: 2000, title: "Diamond", weekly: "5.5%" },
-  { level: 6, stake: 5000, title: "Platinum", weekly: "6%" },
-  { level: 7, stake: 10000, title: "Satoshi", weekly: "7%" },
-];
+import Loading from "../../../../pages/Loading";
 
 const tabs = ["Active", "Closed"];
 
@@ -25,7 +16,7 @@ function Investments() {
   const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
-    sortOrder: "asc",
+    sortOrder: "desc",
     selectedFilters: [],
   });
   const [investHistory, setInvestHistory] = useState([]);
@@ -68,7 +59,6 @@ function Investments() {
         setTotalInvestments(response.total || 0);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching investment history:", error);
         setLoading(false);
       }
     };
@@ -80,6 +70,9 @@ function Investments() {
     const response = await redeemInvestPlan(user.token, id);
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   const filteredData =
     activeTab === "Active"
       ? investHistory.filter((item) => item.status === "active")

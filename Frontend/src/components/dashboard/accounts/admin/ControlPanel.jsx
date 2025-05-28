@@ -3,9 +3,11 @@ import useSafeNavigate from "../../../../utils/useSafeNavigate";
 import { useUser } from "../../../common/UserContext.jsx";
 import { useEffect, useState } from "react";
 import { controlPannelStats } from "../../../../services/operations/adminAndOwnerDashboardApi.js";
+import Loading from "../../../../pages/Loading";
 
 function ControlPanel() {
   const { user } = useUser();
+  const [loading, setLoading] = useState(false);
   const [statsSata, setStatsData] = useState({
     users: 0,
     Withdrawals: 0,
@@ -16,27 +18,37 @@ function ControlPanel() {
 
   useEffect(() => {
     const getStats = async () => {
-      const response = await controlPannelStats(user.token);
-      if (response.status === "success" && response.data) {
-        const {
-          totalUsers,
-          totalWithdrawals,
-          totalDeposits,
-          totalReviews,
-          totalFeedbacks,
-        } = response.data;
+      try {
+        setLoading(true);
+        const response = await controlPannelStats(user.token);
+        if (response.status === "success" && response.data) {
+          const {
+            totalUsers,
+            totalWithdrawals,
+            totalDeposits,
+            totalReviews,
+            totalFeedbacks,
+          } = response.data;
 
-        setStatsData({
-          users: totalUsers || 0,
-          Withdrawals: totalWithdrawals || 0,
-          deposits: totalDeposits || 0,
-          reviews: totalReviews || 0,
-          feedbacks: totalFeedbacks || 0,
-        });
+          setStatsData({
+            users: totalUsers || 0,
+            Withdrawals: totalWithdrawals || 0,
+            deposits: totalDeposits || 0,
+            reviews: totalReviews || 0,
+            feedbacks: totalFeedbacks || 0,
+          });
+        }
+      } catch {
+      } finally {
+        setLoading(false);
       }
     };
     getStats();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   const StatCard = ({ title, value, route }) => {
     const safeNavigate = useSafeNavigate();
