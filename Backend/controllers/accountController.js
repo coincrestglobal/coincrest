@@ -7,6 +7,7 @@ const Withdrawal = require("../models/withdrawalModel");
 const InvestmentPlan = require("../models/investmentPlanmodel");
 const Setting = require("../models/settingModel");
 const Decimal = require("decimal.js");
+const mongoose = require("mongoose");
 const {
   MIN_WITHDRAWAL_INTERVAL_DAYS,
   MIN_REDEMPTION_INTERVAL_DAYS,
@@ -628,5 +629,33 @@ exports.getReferredUsers = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Referred users fetched successfully",
     data: { referredUsers },
+  });
+});
+
+exports.getReferralBonusHistory = catchAsync(async (req, res, next) => {
+  const { userId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return next(new AppError("Invalid user ID", 400));
+  }
+
+  const user = await User.findById(userId).select("referralBonuses").lean();
+
+  const totalBonuses = user.referralBonuses.length;
+
+  const sortedBonuses = user.referralBonuses
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(skip, skip + limit);
+
+  res.status(200).json({
+    status: "success",
+    page,
+    limit,
+    totalBonuses,
+    totalPages: Math.ceil(totalBonuses / limit),
+    data: { bonuses: sortedBonuses },
   });
 });
