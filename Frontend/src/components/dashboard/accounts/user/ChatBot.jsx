@@ -145,15 +145,6 @@ function ChatBot() {
           <Send size={16} />
         </button>
       </div>
-      <button
-        className="self-start mx-4 my-4 px-4 py-2 rounded-md bg-button hover:bg-button-hover text-white flex items-center gap-2"
-        onClick={() =>
-          window.open("https://t.me/your_telegram_handle", "_blank")
-        }
-      >
-        <FaTelegramPlane className="text-lg" />
-        Contact Support via Telegram
-      </button>
     </div>
   );
 }

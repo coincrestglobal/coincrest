@@ -1,6 +1,5 @@
 // const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
 const BASE_URL = `https://coincrest.onrender.com/api/v1`;
-console.log(BASE_URL);
 
 // AUTH ENDPOINTS
 export const authEndpoints = {
