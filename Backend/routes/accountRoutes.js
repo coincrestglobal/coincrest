@@ -95,7 +95,7 @@ router.get(
 );
 
 router.get(
-  "/getReferralBonus/:userId",
+  "/getReferralBonus",
   authMiddleware.protect,
   authMiddleware.authorizeRoles("user"),
   queryParamsValidator,

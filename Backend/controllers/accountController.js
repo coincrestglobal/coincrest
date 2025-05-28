@@ -383,7 +383,7 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
 exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  let { page, limit, status, startDate, endDate, sort } = req.query;
+  let { page, limit, status, startDate, endDate } = req.query;
 
   page = parseInt(req.query.page) || 1;
   limit = parseInt(req.query.limit) || 5;
@@ -633,7 +633,7 @@ exports.getReferredUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getReferralBonusHistory = catchAsync(async (req, res, next) => {
-  const { userId } = req.params;
+  const { userId } = req.user;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;

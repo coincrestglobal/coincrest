@@ -45,12 +45,12 @@ router.post(
   managementController.createAdmin
 );
 
-router.patch(
-  "/togglePriority/:adminId",
-  authMiddleware.protect,
-  authMiddleware.authorizeRoles("owner"),
-  managementController.toggleAdminPriority
-);
+// router.patch(
+//   "/togglePriority/:adminId",
+//   authMiddleware.protect,
+//   authMiddleware.authorizeRoles("owner"),
+//   managementController.toggleAdminPriority
+// );
 
 router.patch(
   "/deleteAdmin/:adminId",
@@ -63,7 +63,7 @@ router.patch(
 router.patch(
   "/approveWithdrawal/:withdrawalId",
   authMiddleware.protect,
-  authMiddleware.authorizeRoles("owner", "admin"),
+  authMiddleware.authorizeRoles("owner"),
   managementController.approveWithdrawal
 );
 
