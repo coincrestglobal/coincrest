@@ -32,30 +32,49 @@ exports.createAnnouncement = catchAsync(async (req, res, next) => {
 exports.getAnnouncements = catchAsync(async (req, res) => {
   const { userId, role } = req.user;
 
+  // Pagination params
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+  const { sort = "desc", startDate, endDate } = req.query;
+
+  // Filter logic based on role
   let filter = {};
 
-  if (role === "owner") {
-    // Owner sees all announcements
-    filter = {};
-  } else if (role === "admin") {
-    // Admins see announcements visible to admins or created by themselves
+  if (role === "admin") {
     filter = {
       $or: [{ visibleTo: "admin" }, { createdBy: userId }],
     };
   } else if (role === "user") {
-    // Normal users see only those announcements meant for them
     filter = {
       visibleTo: role,
     };
   }
 
+  const sortOrder = sort === "desc" ? -1 : 1;
+
+  if (startDate && endDate) {
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+
+    filter.createdAt = {
+      $gte: start,
+      $lte: end,
+    };
+  }
+
+  // Total count for pagination metadata
+  const totalAnnouncements = await Announcement.countDocuments(filter);
+
   const announcements = await Announcement.find(filter)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: sortOrder })
+    .skip(skip)
+    .limit(limit)
     .populate("createdBy", "name")
     .lean();
 
   const result = announcements.map((a) => {
-    const createdBySelf = a.createdBy._id?.toString() === userId.toString();
+    const createdBySelf = a.createdBy?._id?.toString() === userId.toString();
 
     return {
       ...a,
@@ -63,7 +82,7 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
         role === "owner"
           ? createdBySelf
             ? "You"
-            : a.createdBy.name
+            : a.createdBy?.name
           : undefined,
     };
   });
@@ -72,6 +91,9 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
     status: "success",
     message: "Announcements fetched successfully",
     results: result.length,
+    page,
+    totalPages: Math.ceil(totalAnnouncements / limit),
+    total: totalAnnouncements,
     data: { announcements: result },
   });
 });
