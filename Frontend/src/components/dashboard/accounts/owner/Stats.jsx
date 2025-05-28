@@ -10,6 +10,9 @@ import {
 } from "recharts";
 
 import StakedAmountChart from "./StakeChart";
+import { statsData } from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
+import Loading from "../../../../pages/Loading";
 
 // Dummy data representing different time periods
 const dummyData = {
@@ -236,18 +239,78 @@ function DepositWithdrawAreaChart({ data }) {
 }
 
 function Stats() {
+  const { user, setUser } = useUser();
   const [timeFilter, setTimeFilter] = useState("24h");
-  const [data, setData] = useState(null);
-  const depositWithdrawData = dummyDepositWithdrawData[timeFilter] || [];
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalDeposit: 0,
+    totalProfit: 0,
+    payouts: 0,
+    incTotalUsers: 0,
+    incTotalDeposit: 0,
+    incTotalProfit: 0,
+    incPayouts: 0,
+  });
+  const [userStats, setUserStats] = useState([]);
+
+  const [depositStats, setDepositStats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setData(dummyData);
-  }, []);
+    const getStatsData = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        let formattedTimeFilter = timeFilter;
 
-  if (!data) return <div className="text-center p-4">Loading...</div>;
+        switch (timeFilter) {
+          case "24h":
+            formattedTimeFilter = "1d";
+            break;
+          case "1 week":
+            formattedTimeFilter = "1w";
+            break;
+          case "1 month":
+            formattedTimeFilter = "1m";
+            break;
+          case "1 year":
+            formattedTimeFilter = "1y";
+            break;
+          case "all time":
+            formattedTimeFilter = "lifetime";
+            break;
+        }
 
-  const currentData = data[timeFilter];
+        params.append("range", formattedTimeFilter);
 
+        const response = await statsData(user.token, params);
+
+        setStats({
+          totalUsers: response.totalUsers || 0,
+          totalDeposit: response.totalDeposit || 0,
+          totalProfit: response.totalProfit || 0,
+          payouts: response.payouts || 0,
+          incTotalUsers: response.incTotalUsers || 0,
+          incTotalDeposit: response.incTotalDeposit || 0,
+          incTotalProfit: response.incTotalProfit || 0,
+          incPayouts: response.incPayouts || 0,
+        });
+
+        setDepositStats(response.depositWithdrawChartData || []);
+        setUserStats(response.usersChartData || []);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false); // Always run after try or catch
+      }
+    };
+
+    getStatsData();
+  }, [timeFilter]);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="bg-primary-light space-y-2 h-full p-2 sm:p-4 overflow-y-auto scrollbar-hide">
       {/* Time Filter */}
@@ -271,26 +334,26 @@ function Stats() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
         <SummaryCard
           title="Total Users"
-          value={currentData.totalUsers}
-          inc={currentData.incTotalUsers}
+          value={stats.totalUsers}
+          inc={stats.incTotalUsers}
           filter={timeFilter}
         />
         <SummaryCard
           title="Total Available Balance"
-          value={currentData.totalProfit}
-          inc={currentData.incTotalProfit}
+          value={stats.totalProfit}
+          inc={stats.incTotalProfit}
           filter={timeFilter}
         />
         <SummaryCard
           title="Total Deposit Amount"
-          value={currentData.totalDeposit}
-          inc={currentData.incTotalDeposit}
+          value={stats.totalDeposit}
+          inc={stats.incTotalDeposit}
           filter={timeFilter}
         />
         <SummaryCard
           title="Payouts to Users"
-          value={currentData.payouts}
-          inc={currentData.incPayouts}
+          value={stats.payouts}
+          inc={stats.incPayouts}
           filter={timeFilter}
         />
       </div>
@@ -300,9 +363,9 @@ function Stats() {
         <StakedAmountChart
           title={"Total Number of Users"}
           timeFilter={timeFilter}
-          statsData={users}
+          statsData={userStats}
         />
-        <DepositWithdrawAreaChart data={depositWithdrawData} />
+        <DepositWithdrawAreaChart data={depositStats} />
       </div>
     </div>
   );

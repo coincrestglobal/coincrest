@@ -17,20 +17,26 @@ export default function reviewslider() {
   const [reviews, setReviews] = useState([]);
   const [index, setIndex] = useState(0);
   const [reviewModal, setReviewModal] = useState(false);
-  const [lodading, setLoading] = useState(true);
-  let hasUserReviewed;
+  const [loading, setLoading] = useState(true);
+  const [hasUserReviewed, setHasUserReviewed] = useState(false);
 
   const next = () => setIndex((prev) => (prev + 1) % reviews.length);
   const prev = () =>
     setIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
 
   useEffect(() => {
-    setLoading(true);
     const getReviews = async () => {
-      const token = user?.token;
-      const response = await getHomeReviews(token);
-      hasUserReviewed = response.data.hasUserReviewed;
-      setReviews(response.data.reviews);
+      try {
+        setLoading(true);
+        const token = user?.token;
+        const response = await getHomeReviews(token);
+        setHasUserReviewed(response.data.hasUserReviewed);
+        setReviews(response.data.reviews);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     setLoading(false);
     getReviews();
@@ -51,7 +57,7 @@ export default function reviewslider() {
     }
   };
 
-  if (lodading) {
+  if (loading) {
     return <Loading />;
   }
   return (
@@ -157,14 +163,17 @@ export default function reviewslider() {
             className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition w-full max-w-xs sm:max-w-none sm:w-auto"
             onClick={handleClick}
           >
-            {!hasUserReviewed ? "Edit Your Review" : "Add Your Review"}
+            {hasUserReviewed ? "Edit Your Review" : "Add Your Review"}
           </button>
         </div>
       )}
 
       {/* Add Review Modal */}
       {reviewModal && (
-        <AddReview initialReview={review} setIsModalOpen={setReviewModal} />
+        <AddReview
+          initialReview={reviews.find((r) => r.isCurrentUser)}
+          setIsModalOpen={setReviewModal}
+        />
       )}
     </div>
   );

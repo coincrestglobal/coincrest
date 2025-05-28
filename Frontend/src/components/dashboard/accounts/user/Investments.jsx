@@ -78,7 +78,6 @@ function Investments() {
 
   const cancelPlan = async (id) => {
     const response = await redeemInvestPlan(user.token, id);
-    console.log(response);
   };
 
   const filteredData =

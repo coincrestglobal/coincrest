@@ -59,7 +59,6 @@ export const login = async (data, navigate, setUser) => {
       navigate("/dashboard/user");
     }
   } catch (error) {
-    console.log("LOGIN API ERROR............", error);
     toast.error("Unable to login. Please try again later.");
   }
 };
@@ -88,7 +87,6 @@ export const getPasswordResetToken = async (email) => {
 
     toast.success(response.message);
   } catch (error) {
-    console.log("FORGOTPASSWORD ERROR............", error);
     toast.error("Unable to send reset email. Please try later.");
   }
 };
@@ -109,7 +107,6 @@ export const resetPassword = async (data, token, navigate) => {
     toast.success(response.message);
     navigate("/login");
   } catch (error) {
-    console.log("RESETPASSWORD ERROR............", error);
     toast.error("Something went wrong. Please try again.");
   }
 };

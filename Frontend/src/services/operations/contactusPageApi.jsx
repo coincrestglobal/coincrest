@@ -1,5 +1,6 @@
 import { contactUsEndPoints } from "../apis";
 import { apiConnector } from "../apiConnecter";
+import { toast } from "react-toastify";
 
 const { CONTACT_US } = contactUsEndPoints;
 
@@ -8,10 +9,9 @@ export const submitContactForm = async (formData, token) => {
     const response = await apiConnector("POST", CONTACT_US, formData, {
       Authorization: `Bearer ${token}`,
     });
-
-    return response; // Optional: return to show a success message or status
+    toast.success(response.message);
+    return response;
   } catch (error) {
-    console.error("Contact Form Submission Error:", error);
-    throw error;
+    toast.error("Contact Form Submission Error:");
   }
 };

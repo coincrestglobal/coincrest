@@ -17,8 +17,6 @@ const {
   UPDATE_PROFILE_PHOTO,
   UPDATE_PASSWORD,
   UPDATE_WALLET,
-  GET_REFERRAL_CODE,
-  GET_REFERRAL_LINK,
   GET_REFERRAL_CODE_AND_LINK,
 } = userDashboardEndPoints;
 
@@ -26,8 +24,7 @@ export const getPlans = async () => {
   let result = [];
   try {
     const response = await apiConnector("GET", GET_PLANS);
-    if (!response?.data?.success) {
-    }
+
     result = response;
   } catch (error) {}
   return result;
@@ -38,8 +35,7 @@ export const getBalance = async (token) => {
     const response = await apiConnector("GET", GET_BALANCE, null, {
       Authorization: `Bearer ${token}`,
     });
-    if (!response?.data?.success) {
-    }
+
     return response;
   } catch (error) {}
 };
@@ -50,10 +46,11 @@ export const investInPlan = async (token, data) => {
     const response = await apiConnector("POST", INVEST_IN_PLAN, data, {
       Authorization: `Bearer ${token}`,
     });
-    if (!response?.data?.success) {
-    }
+    toast.success(response.message);
     return response;
-  } catch (error) {}
+  } catch (error) {
+    toast.error("Investment failed");
+  }
 };
 
 export const investingHistory = async (token, params) => {
@@ -85,10 +82,12 @@ export const redeemInvestPlan = async (token, id) => {
       }
     );
 
-    if (!response?.data?.success) {
-    }
+    toast.success(response.message);
+
     return response;
-  } catch (error) {}
+  } catch (error) {
+    toast.error("Failed to redeem plan");
+  }
 };
 
 //deposits
@@ -139,9 +138,10 @@ export const withdraw = async (token, data) => {
     const response = await apiConnector("POST", WITHDRAW, data, {
       Authorization: `Bearer ${token}`,
     });
-    if (!response?.data?.success) {
-    }
-  } catch (error) {}
+    toast.success(response.message);
+  } catch (error) {
+    toast.error("Withdrawal request failed");
+  }
 };
 
 export const getUserWithdrawals = async (token) => {
@@ -166,8 +166,11 @@ export const updatePersonalDetails = async (token, data) => {
         Authorization: `Bearer ${token}`,
       }
     );
+    toast.success(response.message);
     return response;
-  } catch (error) {}
+  } catch (error) {
+    toast.error("Failed to update personal details");
+  }
 };
 
 export const updateProfilePhoto = async (token, data) => {
@@ -175,8 +178,12 @@ export const updateProfilePhoto = async (token, data) => {
     const response = await apiConnector("PATCH", UPDATE_PROFILE_PHOTO, data, {
       Authorization: `Bearer ${token}`,
     });
+    toast.success(response.message);
+
     return response;
-  } catch (error) {}
+  } catch (error) {
+    toast.error("Failed to update profile photo");
+  }
 };
 
 //pass update
@@ -186,7 +193,10 @@ export const updatePassword = async (token, data) => {
     const response = await apiConnector("PATCH", UPDATE_PASSWORD, data, {
       Authorization: `Bearer ${token}`,
     });
-  } catch (error) {}
+    toast.success(response.message);
+  } catch (error) {
+    toast.error("Password update failed");
+  }
 };
 
 // Update Wallet
@@ -196,40 +206,12 @@ export const addOrUpdateWallet = async (token, updatedData) => {
     const response = await apiConnector("POST", UPDATE_WALLET, updatedData, {
       Authorization: `Bearer ${token}`,
     });
+    toast.success(response.message);
     return response;
   } catch (error) {
-    console.error("Update Wallet Error:", error);
-    throw error;
+    toast.error("Failed to update wallet");
   }
 };
-
-// Get Referral Code
-// export const getReferralCode = async () => {
-//   try {
-//     const response = await apiConnector("GET", GET_REFERRAL_CODE, null, {
-//       Authorization: `Bearer ${token}`,
-//     });
-//     return response;
-//   } catch (error) {
-//     console.error("Get Referral Code Error:", error);
-//     throw error;
-//   }
-// };
-
-// // Get Referral Link
-// export const getReferralLink = async () => {
-//   try {
-//     const response = await apiConnector("GET", GET_REFERRAL_LINK, null, {
-//       Authorization: `Bearer ${token}`,
-//     });
-//     return response;
-//   } catch (error) {
-//     console.error("Get Referral Link Error:", error);
-//     throw error;
-//   }
-// };
-
-//get both referral code and link
 
 export const getReferredUsers = async (token) => {
   try {

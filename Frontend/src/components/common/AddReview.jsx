@@ -6,12 +6,11 @@ import { useUser } from "../common/UserContext";
 
 function AddReview({ initialReview = null, setIsModalOpen }) {
   const { user, setUser } = useUser();
-
-  const token = user.token;
+  const token = user?.token;
 
   const [rating, setRating] = useState(initialReview?.rating || 0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [reviewText, setReviewText] = useState(initialReview?.reviewText || "");
+  const [reviewText, setReviewText] = useState(initialReview?.comment || "");
   const [hasReviewed, setHasReviewed] = useState(!!initialReview);
   const [loading, setLoading] = useState(false);
 
@@ -25,36 +24,30 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
       return;
     }
 
-    let response;
-    let newReview;
+    setLoading(true);
 
-    if (user.review && user.review.rating && user.review.reviewText) {
-      // if review has an ID, call edit API
-      response = await editReview(
-        user.review.reviewId,
-        {
-          rating,
-          comment: reviewText,
-        },
-        token
-      );
-      newReview = { reviewId: user.review.reviewId, rating, reviewText };
-    } else {
-      // else add new review
-      response = await addReview({ rating, comment: reviewText }, token);
-      newReview = { reviewId: response.reviewId, rating, reviewText };
-    }
+    try {
+      let response;
+      if (initialReview) {
+        response = await editReview(
+          initialReview._id,
+          { rating, comment: reviewText },
+          token
+        );
+      } else {
+        response = await addReview({ rating, comment: reviewText }, token);
+      }
 
-    if (response.status === "success") {
-      setUser((prevUser) => ({
-        ...prevUser,
-        review: newReview,
-      }));
-
-      setIsModalOpen(false);
       setHasReviewed(true);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Review submission error:", error);
+      alert("Failed to submit review. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleMouseMove = (star, event) => {
     const { left, width } = event.target.getBoundingClientRect();
     const x = event.clientX - left;
@@ -62,6 +55,7 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
     setHoverRating(isHalf ? star - 0.5 : star);
   };
 
+  // ✅ return inside function
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-primary-light rounded-lg shadow-lg w-[450px] mx-4 relative">
@@ -76,7 +70,6 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
             {hasReviewed ? "Edit Your Review" : "Add a Review"}
           </h2>
           <div className="flex flex-col gap-4">
-            {/* Star Rating */}
             <div className="flex space-x-2 justify-center">
               {[1, 2, 3, 4, 5].map((star) => {
                 const isHalfStar =
@@ -117,7 +110,6 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
               })}
             </div>
 
-            {/* Review Input */}
             <textarea
               className="w-full p-2 text-text-body bg-primary-dark border border-button outline-none rounded-lg focus:ring-2 focus:ring-button-hover"
               rows="4"
@@ -126,7 +118,6 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
               onChange={(e) => setReviewText(e.target.value)}
             />
 
-            {/* Submit Button */}
             <button
               className="flex self-end cursor-pointer w-full sm:w-auto items-center justify-center mt-4 px-6 py-2 bg-button text-white rounded-lg hover:bg-button-hover transition"
               onClick={handleSubmit}

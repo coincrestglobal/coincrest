@@ -36,7 +36,9 @@ const ProfileForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const visibleTabs =
-    user.role === "admin" ? tabs.filter((tab) => tab !== "Wallets") : tabs;
+    user.role === "admin" || user.role === "owner"
+      ? tabs.filter((tab) => tab !== "Wallets")
+      : tabs;
 
   const handleWalletChange = (index, field, value) => {
     const updated = [...wallets];

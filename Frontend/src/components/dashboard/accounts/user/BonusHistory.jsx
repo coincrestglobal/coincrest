@@ -6,7 +6,7 @@ import Pagination from "../../../common/Pagination";
 import { getAllUsersDepositHistory } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
 
-function Deposits() {
+function BonusHistory() {
   const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
@@ -57,8 +57,6 @@ function Deposits() {
     };
     fetchDeposits();
   }, [filterState, currentPage]);
-
-  console.log(deposits);
 
   return (
     <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
@@ -115,27 +113,29 @@ function Deposits() {
 
             <div className="flex justify-between text-text-body p-3 rounded-md mb-4 shadow-sm bg-primary">
               <p>
-                <strong>Amount:</strong> ${deposit.amount}
+                <strong>Amount:</strong> {deposit.amount} {deposit.currency}
               </p>
               <p>
-                <strong>Deposited On:</strong>{" "}
-                {new Date(deposit.createdAt).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
+                <strong>Status:</strong> {deposit.status}
               </p>
             </div>
 
             {expandedDeposit === deposit._id && (
               <div className="p-4 bg-primary rounded-md text-text-body space-y-1 break-words whitespace-normal">
                 <p>
-                  <strong>Email:</strong> {deposit?.depositedBy?.email}
+                  <strong>Email:</strong> {deposit.depositedBy.email}
                 </p>
                 <p>
                   <strong>Wallet Address:</strong> {deposit.fromAddress}
                 </p>
-
+                <p>
+                  <strong>Deposited On:</strong>{" "}
+                  {new Date(deposit.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
                 <p>
                   <strong>Chain:</strong> {deposit.tokenType}
                 </p>
@@ -159,4 +159,4 @@ function Deposits() {
   );
 }
 
-export default Deposits;
+export default BonusHistory;
