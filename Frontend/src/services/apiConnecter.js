@@ -32,7 +32,9 @@ export const apiConnector = async (
   const result = await response.json();
 
   if (!response.ok) {
-    toast.error(result.message);
+    toast.error(
+      result.message || "Something went wrong. Please try again after a while"
+    );
   }
 
   return result;
