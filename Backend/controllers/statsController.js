@@ -256,10 +256,10 @@ exports.getStats = catchAsync(async (req, res, next) => {
   res.status(200).json({
     totalUsers,
     totalDeposit: totalDeposits,
-    totalProfit: depositAmount, // Assuming profit == depositAmount for demo
+    totalProfit: depositAmount,
     payouts: totalWithdrawals,
-    incTotalUsers: totalUsers, // You can calculate increment separately if needed
-    incTotalDeposit: depositAmount, // Ditto
+    incTotalUsers: totalUsers,
+    incTotalDeposit: depositAmount,
     incTotalProfit: depositAmount,
     incPayouts: withdrawalAmount,
     usersChartData,
