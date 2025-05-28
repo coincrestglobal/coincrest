@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -9,10 +9,10 @@ import useSafeNavigate from "../../utils/useSafeNavigate";
 
 function SignupForm() {
   const navigate = useSafeNavigate();
-  const dispatch = useDispatch();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const referralCode = queryParams.get("ref") || "";
+  const initialReferral = queryParams.get("ref") || "";
+
   const {
     register,
     handleSubmit,
@@ -23,6 +23,11 @@ function SignupForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [referralCodeState, setReferralCodeState] = useState("");
+
+  useEffect(() => {
+    setReferralCodeState(initialReferral);
+  }, [initialReferral]);
 
   const onSubmit = async (data) => {
     const data1 = {
@@ -31,8 +36,10 @@ function SignupForm() {
       password: data.password,
       confirmPassword: data.confirmPassword,
     };
+    const params = new URLSearchParams();
 
-    await dispatch(signUp(data1, navigate));
+    params.append("ref", referralCodeState || "");
+    await signUp(data1, navigate, params);
     reset();
   };
 
@@ -46,7 +53,7 @@ function SignupForm() {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-y-3"
         >
-          {/* First & Last Name Fields */}
+          {/* Name Field */}
           <div className="flex flex-col sm:flex-row gap-y-4 sm:gap-y-0 sm:gap-x-4">
             <label className="w-full">
               <p className="mb-1 text-lg text-text-heading"> Name</p>
@@ -146,16 +153,21 @@ function SignupForm() {
               )}
             </label>
           </div>
+
+          {/* Referral Code */}
           <label className="w-full">
             <p className="mb-1 text-lg text-text-heading">Referral Code</p>
             <input
               type="text"
               placeholder="Referral Code (optional)"
+              value={referralCodeState}
               {...register("referral")}
+              onChange={(e) => setReferralCodeState(e.target.value)}
               className="w-full focus:border-2 border-primary rounded-lg p-2 focus:outline-none"
-              readOnly={!!referralCode} // Make read-only if set from URL
+              readOnly={Boolean(initialReferral)}
             />
           </label>
+
           {/* Terms and Conditions */}
           <label className="flex items-start gap-2 text-sm text-text-heading">
             <input

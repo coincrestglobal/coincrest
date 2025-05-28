@@ -10,24 +10,21 @@ const {
   RESETPASSWORD_API,
 } = authEndpoints;
 
-export function signUp(data, navigate) {
-  return async (dispatch) => {
-    let response = null;
-    try {
-      response = await apiConnector("POST", SIGNUP_API, data);
+export const signUp = async (data, navigate, params) => {
+  let response = null;
+  try {
+    response = await apiConnector("POST", SIGNUP_API, data, {}, params);
 
-      if (response.status === "success") {
-        toast.success(response.message);
-      }
-    } catch (error) {
-      toast.error(
-        response.message ||
-          "Something went wrong while signing up. Please try again."
-      );
-      navigate("/signup");
+    if (response.status === "success") {
+      toast.success(response.message);
     }
-  };
-}
+  } catch (error) {
+    toast.error(
+      response.message ||
+        "Something went wrong while signing up. Please try again."
+    );
+  }
+};
 
 export const login = async (data, navigate, setUser) => {
   let response = null;

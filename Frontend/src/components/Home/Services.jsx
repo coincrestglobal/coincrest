@@ -49,7 +49,7 @@ const ServiceCard = ({ title, desc, imgSrc, reverse = false }) => {
 
 function Services() {
   return (
-    <div className="py-16 px-4 md:px-16 lg:px-32">
+    <div className="py-10 px-4 md:px-16 lg:px-32">
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading flex items-center justify-center gap-3 sm:gap-5">
         <span className="text-text-highlighted text-4xl md:text-6xl">««</span>
         <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">

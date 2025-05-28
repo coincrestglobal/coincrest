@@ -61,7 +61,7 @@ const ProfileForm = () => {
       };
 
       const response = await addOrUpdateWallet(user.token, data);
-      if (response.message === "Withdrawal address updated successfully") {
+      if (response.message) {
         const updatedWallets = [...wallets];
         updatedWallets[index] = {
           ...updatedWallets[index],
