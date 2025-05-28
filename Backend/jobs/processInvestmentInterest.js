@@ -20,12 +20,3 @@ cron.schedule("0 12 * * *", async () => {
     console.error("Error in interest payout job:", err);
   }
 });
-
-cron.schedule("*/1 * * * *", async () => {
-  try {
-    await calculateAndApplyWeeklyInterest();
-    console.log("✅ Interest payout job completed");
-  } catch (err) {
-    console.error("❌ Error in interest payout job:", err);
-  }
-});
