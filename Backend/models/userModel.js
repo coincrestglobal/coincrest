@@ -126,10 +126,6 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    priority: {
-      type: Boolean,
-      default: false,
-    },
     emailVerificationToken: String,
     emailVerificationTokenExpires: Date,
     passwordResetToken: String,

@@ -71,7 +71,7 @@ function filterBep20Deposits(transactions) {
   const filtered = transactions
     .filter(
       (tx) =>
-        tx?.contractAddress.toLowerCase() ===
+        tx?.contractAddress?.toLowerCase() ===
           bep20ContractAddress.toLowerCase() &&
         tx?.to.toLowerCase() === myWalletAddress.toLowerCase() &&
         tx?.to.toLowerCase() !== tx?.from.toLowerCase()

@@ -12,7 +12,6 @@ const {
 
 export function signUp(data, navigate) {
   return async (dispatch) => {
-    dispatch(setLoading(true));
     let response = null;
     try {
       response = await apiConnector("POST", SIGNUP_API, data);
@@ -27,7 +26,6 @@ export function signUp(data, navigate) {
       );
       navigate("/signup");
     }
-    dispatch(setLoading(false));
   };
 }
 
