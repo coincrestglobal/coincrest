@@ -21,7 +21,7 @@ const ReviewDetails = () => {
     show: false,
     reviewId: null,
   });
-  const [lodading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [review, setReview] = useState([]);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const ReviewDetails = () => {
     setDeleteConfirm({ show: false, reviewId: null });
   };
 
-  if (lodading) {
+  if (loading) {
     return <Loading />;
   }
   return (

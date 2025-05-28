@@ -50,7 +50,6 @@ function ControlPanel() {
       <StatCard title="FAQ Management" route="faq-management" />
       <StatCard title="Terms & Conditions" route="terms-and-conditions" />
       <StatCard title="Privacy Policy" route="privacy-policy" />
-      <StatCard title="Earnings Management" route="earnings-management" />
       {user.role === "owner" && (
         <StatCard title="Manage Admins" route="manage-admins" />
       )}

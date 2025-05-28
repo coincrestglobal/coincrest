@@ -21,6 +21,7 @@ import UserPortfolio from "../components/dashboard/accounts/user/UserPortfolio";
 import Investments from "../components/dashboard/accounts/user/Investments";
 import Withdraws from "../components/dashboard/accounts/user/Withdraws";
 import Deposits from "../components/dashboard/accounts/user/Deposit";
+import BonusHistory from "../components/dashboard/accounts/user/BonusHistory";
 
 //admin
 import AdminDashBoard from "../components/dashboard/accounts/admin/DashBoard";
@@ -38,7 +39,6 @@ import Feedbacks from "../components/dashboard/accounts/admin/Feedbakcs";
 import FAQs from "../components/dashboard/accounts/admin/FAQs";
 import TermsAndConditions from "../components/dashboard/accounts/admin/TermsAndConditions";
 import PrivacyPolicy from "../components/dashboard/accounts/admin/PrivacyPolicy";
-import EarningsManagement from "../components/dashboard/accounts/admin/EarningsManagement";
 
 // owner
 import ManageAdmins from "../components/dashboard/accounts/owner/ManageAdmins";
@@ -74,6 +74,7 @@ const router = createBrowserRouter([
           { path: "investments", Component: Investments },
           { path: "deposits", Component: Deposits },
           { path: "withdraws", Component: Withdraws },
+          { path: "bonus-history", Component: BonusHistory },
           { path: "team", Component: TeamTree },
           { path: "help-and-support", Component: HelpSupport },
         ],
@@ -115,10 +116,7 @@ const router = createBrowserRouter([
                   { path: ":id", Component: ReviewDetails },
                 ],
               },
-              {
-                path: "earnings-management",
-                children: [{ index: true, Component: EarningsManagement }],
-              },
+
               {
                 path: "feedbacks",
                 Component: Feedbacks,
@@ -185,10 +183,7 @@ const router = createBrowserRouter([
                       { path: ":id", Component: ReviewDetails },
                     ],
                   },
-                  {
-                    path: "earnings-management",
-                    children: [{ index: true, Component: EarningsManagement }],
-                  },
+
                   {
                     path: "feedbacks",
                     Component: Feedbacks,

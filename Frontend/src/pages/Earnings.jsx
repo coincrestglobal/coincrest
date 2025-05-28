@@ -9,16 +9,8 @@ import {
 } from "../services/operations/earningApi";
 import { toast } from "react-toastify";
 import { useUser } from "../components/common/UserContext";
-
-const levels = [
-  { level: 1, min: 100, title: "Star", weekly: "2.0%" },
-  { level: 2, min: 500, title: "Bronze", weekly: "2.5%" },
-  { level: 3, min: 1000, title: "Silver", weekly: "3.0%" },
-  { level: 4, min: 5000, title: "Gold", weekly: "3.25%" },
-  { level: 5, min: 10000, title: "Diamond", weekly: "3.37%" },
-  { level: 6, min: 50000, title: "Platinum", weekly: "3.5%" },
-  { level: 7, min: 100000, title: "Satoshi", weekly: "3.75%" },
-];
+import { getPlans } from "../services/operations/userDashboardApi";
+import Loading from "../pages/Loading";
 
 const levelIcons = [
   { level: 1, icon: "⭐", name: "Star" },
@@ -41,8 +33,10 @@ const earningDetails = [
 const EarningsPlansPage = () => {
   const { user } = useUser();
   const [isClickedOnInvestNow, setIsClickedOnInvestNow] = useState(false);
+  const [levels, setLevels] = useState([]);
   const [depositBonus, setDepositBonus] = useState(0);
   const [teamBonus, setTeamBonus] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getDepositBonus = async () => {
@@ -53,13 +47,35 @@ const EarningsPlansPage = () => {
   }, []);
 
   useEffect(() => {
-    const getTeamBonus = async () => {
-      const referralTeamBonus = await getTeamBasedRewards();
-      const entriesArray = await Object.entries(referralTeamBonus.data.value);
-      setTeamBonus(entriesArray);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch plans
+        const plansRes = await getPlans();
+        if (plansRes.status === "success") {
+          const sorted = plansRes.data.plans.sort((a, b) => a.level - b.level);
+          setLevels(sorted);
+        }
+
+        // Fetch team bonus
+        const teamRes = await getTeamBasedRewards();
+        if (teamRes.status === "success") {
+          const entriesArray = Object.entries(teamRes.data.value);
+          setTeamBonus(entriesArray);
+        }
+      } catch (error) {
+        console.error("Error fetching admin earnings data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    getTeamBonus();
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   const handleInvestClick = () => {
     if (!user || !user.token) {
@@ -148,10 +164,10 @@ const EarningsPlansPage = () => {
                     </div>
                     <p className="text-sm text-gray-300">
                       Min Stake:{" "}
-                      <span className="font-semibold">${plan.min}</span>
+                      <span className="font-semibold">${plan.minAmount}</span>
                     </p>
                     <p className="text-sm text-text-link">
-                      Weekly Return: <strong>{plan.weekly}</strong>
+                      Weekly Return: <strong>{plan.interestRate}%</strong>
                     </p>
                   </div>
                 </div>

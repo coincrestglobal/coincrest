@@ -8,6 +8,7 @@ import {
 import DashboardHeader from "../../../common/DashboardHeader";
 import { useUser } from "../../../common/UserContext";
 import Pagination from "../../../common/Pagination";
+import Loading from "../../../../pages/Loading";
 
 const DepositPage = () => {
   const { user } = useUser();
@@ -18,6 +19,7 @@ const DepositPage = () => {
   });
   const [activeTab, setActiveTab] = useState("New Deposit");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [chainType, setChainType] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +34,7 @@ const DepositPage = () => {
   useEffect(() => {
     const getHistory = async () => {
       try {
+        setLoading(true);
         const { searchQuery, selectedFilters, sortOrder } = filterState;
         const params = new URLSearchParams();
 
@@ -61,6 +64,8 @@ const DepositPage = () => {
         setTotalDeposits(response.total || 0);
       } catch (error) {
         console.error("Error fetching investment history:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -69,26 +74,41 @@ const DepositPage = () => {
 
   useEffect(() => {
     const getAddressess = async () => {
-      const response = await getDepositAddresses(user.token);
-      setAdresses(response.data.addresses);
+      try {
+        setLoading(true); // Start loading
+        const response = await getDepositAddresses(user.token);
+        setAdresses(response.data.addresses);
+      } catch (error) {
+        console.error("Failed to fetch addresses:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
+
     getAddressess();
   }, []);
 
   const handleVerify = async () => {
-    const data = {
-      tokenType: chainType,
-      txId: transactionId,
-      trxDateTime: new Date(dateAndTime).getTime(),
-      password: password,
-    };
+    try {
+      setLoading(true);
+      const data = {
+        tokenType: chainType,
+        txId: transactionId,
+        trxDateTime: new Date(dateAndTime).getTime(),
+        password: password,
+      };
 
-    await verifyDeposit(user.token, data);
-
-    //get admin's wallet addresess
-
-    setShowModal(false);
+      await verifyDeposit(user.token, data);
+      setShowModal(false);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="relative w-full max-w-4xl bg-primary-dark rounded-md p-4 sm:p-6 md:p-8 flex flex-col ">
@@ -117,36 +137,96 @@ const DepositPage = () => {
               Please transfer USDT to one of the following wallet addresses:
             </p>
 
-            <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
-              {/* TRC20 Address */}
-              {Object.entries(addresses).map(([key, value]) => (
-                <div key={key} className="mb-4">
-                  <label className="block text-sm text-gray-400 mb-1">
-                    {value.tokenType} Address
-                  </label>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                    <span className="text-text-heading break-words sm:break-all">
-                      {value.walletAddress
-                        ? `${value.walletAddress.slice(
-                            0,
-                            6
-                          )}...${value.walletAddress.slice(-6)}`
-                        : "Not Available"}
-                    </span>
-                    {value.walletAddress && (
+            {user?.wallets?.length > 0 ? (
+              <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
+                {/* TRC-20 Address */}
+                {user.wallets.find((w) => w.tokenType === "TRC-20") ? (
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-400 mb-1">
+                      TRC-20 Address
+                    </label>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                      <span className="text-text-heading break-words sm:break-all">
+                        {addresses["TRC-20"]?.walletAddress}
+                      </span>
                       <button
                         onClick={() =>
-                          navigator.clipboard.writeText(value.walletAddress)
+                          navigator.clipboard.writeText(
+                            user.wallets.find((w) => w.tokenType === "TRC-20")
+                              ?.address
+                          )
                         }
                         className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
                       >
                         Copy
                       </button>
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ) : (
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-400 mb-1">
+                      TRC-20 Address
+                    </label>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                      <span className="text-text-heading break-words sm:break-all">
+                        {addresses["TRC-20"]?.walletAddress}
+                      </span>
+                      <button
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            user.wallets.find((w) => w.tokenType === "TRC-20")
+                              ?.address
+                          )
+                        }
+                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* BEP-20 Address */}
+                {user.wallets.find((w) => w.tokenType === "BEP-20") ? (
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-400 mb-1">
+                      BEP-20 Address
+                    </label>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                      <span className="text-text-heading break-words sm:break-all">
+                        {addresses["BEP-20"]?.walletAddress}
+                      </span>
+                      <button
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            user.wallets.find((w) => w.tokenType === "BEP-20")
+                              ?.address
+                          )
+                        }
+                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
+                    <p className="font-medium">No BEP-20 Wallet Found</p>
+                    <p className="text-sm mt-1">
+                      Please add your BEP-20 wallet addresses to continue.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
+                <p className="font-medium">No Wallets Found</p>
+                <p className="text-sm mt-1">
+                  Please add your TRC-20 and BEP-20 wallet addresses to
+                  continue.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col py-2 gap-3">

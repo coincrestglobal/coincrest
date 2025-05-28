@@ -19,7 +19,6 @@ const UserNode = ({ user }) => {
     };
     getReferrals();
   }, []);
-  console.log(referrals);
   return (
     <div className="mb-4">
       <div className="p-3 bg-primary-light border border-button rounded shadow w-fit max-w-full">
