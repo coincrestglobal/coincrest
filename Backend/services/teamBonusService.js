@@ -1,6 +1,7 @@
 const Decimal = require("decimal.js");
 const User = require("../models/userModel");
 const Setting = require("../models/settingModel");
+const { MIN_VALID_REFERRAL_DEPOSIT } = require("../config/constants");
 
 async function runTeamBonusScanner() {
   try {
@@ -27,7 +28,7 @@ async function runTeamBonusScanner() {
         isDeleted: false,
       }).populate({
         path: "deposits",
-        match: { amount: { $gt: 100 } },
+        match: { amount: { $gt: MIN_VALID_REFERRAL_DEPOSIT } },
         select: "amount",
       });
 
