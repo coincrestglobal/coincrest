@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema(
           required: true,
           enum: ["deposit", "team"],
         },
+        milestone: {
+          type: Number,
+          required: function () {
+            return this.type === "team";
+          },
+        },
         amount: {
           type: Number,
           required: true,
