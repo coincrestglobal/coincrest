@@ -53,13 +53,11 @@ exports.getReviewById = catchAsync(async (req, res, next) => {
   const { reviewId } = req.params;
 
   const review = await Review.findById(reviewId)
-    .select("rating comment createdAt")
+    .select("rating comment createdAt isApproved")
     .populate("user", "name profile email -_id");
 
   if (!review) {
-    const error = new Error("Review not found");
-    error.statusCode = 404;
-    return next(error);
+    return next(new AppError("Review not found", 404));
   }
 
   res.status(200).json({
