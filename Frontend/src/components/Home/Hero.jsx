@@ -51,7 +51,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="flex pt-10 pb-10 sm:pt-0 sm:pb-0 lg:pt-10 lg:pb-10 justify-center text-text-heading">
+    <div className="flex pt-10 pb-10 sm:pt-0 sm:pb-0 lg:pt-10 lg:pb-0 justify-center text-text-heading">
       <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 h-full md:h-screen px-4 sm:px-10 md:px-16 lg:px-24 lg:mt-10 gap-8">
         {/* LEFT SECTION */}
         <div className="w-full flex flex-col items-center md:items-start lg:justify-center gap-3 md:gap-10 md:text-left">

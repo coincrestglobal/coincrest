@@ -151,9 +151,10 @@ function SignupForm() {
             <input
               type="text"
               placeholder="Referral Code (optional)"
+              value={referralCode}
               {...register("referral")}
               className="w-full focus:border-2 border-primary rounded-lg p-2 focus:outline-none"
-              readOnly={!!referralCode} // Make read-only if set from URL
+              readOnly={!!referralCode}
             />
           </label>
           {/* Terms and Conditions */}
