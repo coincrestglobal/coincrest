@@ -383,7 +383,7 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
 exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  let { page, limit, status, startDate, endDate } = req.query;
+  let { page, limit, status, startDate, endDate, sort = "desc" } = req.query;
 
   page = parseInt(req.query.page) || 1;
   limit = parseInt(req.query.limit) || 5;

@@ -117,5 +117,5 @@ export const userDashboardEndPoints = {
   GET_REFERRAL_CODE: BASE_URL + "/referral/code",
   GET_REFERRAL_LINK: BASE_URL + "/referral/link",
   GET_REFERRAL_CODE_AND_LINK: BASE_URL + "/account/getReferredUsers",
-  GET_BONUS_HISTORY: BASE_URL + "account/getReferralBonus",
+  GET_BONUS_HISTORY: BASE_URL + "/account/getReferralBonus",
 };

@@ -30,7 +30,7 @@ export default function reviewslider() {
         setLoading(true);
         const token = user?.token;
         const response = await getHomeReviews(token);
-        setHasUserReviewed(response.data.hasUserReviewed);
+        setHasUserReviewed(response?.data?.hasUserReviewed);
         setReviews(response.data.reviews);
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -157,7 +157,7 @@ export default function reviewslider() {
       )}
 
       {/* Add Review Button */}
-      {user.role === "user" && (
+      {user?.role === "user" && (
         <div className="py-4 flex justify-center">
           <button
             className="bg-button text-text-heading font-semibold py-2 px-6 rounded-md shadow-md hover:scale-105 transition w-full max-w-xs sm:max-w-none sm:w-auto"
