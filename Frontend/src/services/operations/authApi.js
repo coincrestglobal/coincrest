@@ -10,7 +10,7 @@ const {
   RESETPASSWORD_API,
 } = authEndpoints;
 
-export const signUp = async (data, navigate, params) => {
+export const signUp = async (data, params) => {
   let response = null;
   try {
     response = await apiConnector("POST", SIGNUP_API, data, {}, params);

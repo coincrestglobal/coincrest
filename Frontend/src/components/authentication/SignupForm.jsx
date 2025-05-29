@@ -38,7 +38,8 @@ function SignupForm() {
     };
     const params = new URLSearchParams();
 
-    params.append("ref", referralCodeState || "");
+    if (referralCodeState) params.append("ref", referralCodeState);
+
     await signUp(data1, navigate, params);
     reset();
   };
