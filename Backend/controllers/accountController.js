@@ -196,25 +196,34 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
 exports.getDepositHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  let { page, limit, startDate, endDate, sort = "desc" } = req.query;
+  let {
+    page,
+    limit,
+    startDate,
+    endDate,
+    sort = "desc",
+    search,
+    tokenType,
+  } = req.query;
 
-  page = parseInt(req.query.page) || 1;
-  limit = parseInt(req.query.limit) || 5;
-
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
   const skip = (page - 1) * limit;
 
-  const filter = {};
-
-  filter.depositedBy = userId;
+  const filter = { depositedBy: userId };
 
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+    filter.createdAt = { $gte: start, $lte: end };
+  }
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+  if (tokenType) {
+    filter.tokenType = tokenType;
+  }
+
+  if (search) {
+    filter.txId = { $regex: search, $options: "i" }; // search only in txId
   }
 
   const sortOrder = sort === "desc" ? -1 : 1;
@@ -224,7 +233,7 @@ exports.getDepositHistory = catchAsync(async (req, res, next) => {
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("amount createdAt tokenType -_id"),
+      .select("amount createdAt tokenType txId fromAddress -_id"),
     Deposit.countDocuments(filter),
   ]);
 
@@ -383,29 +392,34 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
 exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  let { page, limit, status, startDate, endDate, sort = "desc" } = req.query;
+  let {
+    page,
+    limit,
+    status,
+    startDate,
+    endDate,
+    sort = "desc",
+    search,
+  } = req.query;
 
-  page = parseInt(req.query.page) || 1;
-  limit = parseInt(req.query.limit) || 5;
-
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
   const skip = (page - 1) * limit;
 
-  const filter = {};
-
-  filter.initiatedBy = userId;
+  const filter = { initiatedBy: userId };
 
   if (status) {
-    filter.status = req.query.status;
+    filter.status = status;
   }
 
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+    filter.createdAt = { $gte: start, $lte: end };
+  }
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+  if (search) {
+    filter.txId = { $regex: search, $options: "i" }; // search only txId
   }
 
   const sortOrder = sort === "desc" ? -1 : 1;
@@ -501,7 +515,7 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
 exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
-  let { page, limit, status, startDate, endDate, sort } = req.query;
+  let { page, limit, status, startDate, endDate, sort, search } = req.query;
 
   page = parseInt(page) || 1;
   limit = parseInt(limit) || 5;
@@ -536,6 +550,13 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
         (redeemTime && redeemTime >= start && redeemTime <= end)
       );
     });
+  }
+
+  if (search) {
+    const searchLower = search.toLowerCase();
+    investments = investments.filter((inv) =>
+      inv.name.toLowerCase().includes(searchLower)
+    );
   }
 
   investments = investments.map(({ profit, ...rest }) => ({

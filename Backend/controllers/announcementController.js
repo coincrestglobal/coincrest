@@ -36,13 +36,14 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
-  const { sort = "desc", startDate, endDate } = req.query;
+  const { sort = "desc", startDate, endDate, search } = req.query;
 
-  // Filter logic based on role
-  let filter = {};
+  const sortOrder = sort === "desc" ? -1 : 1;
 
+  // Build role-based visibility filter
+  let roleFilter = {};
   if (role === "admin") {
-    filter = {
+    roleFilter = {
       $or: [
         { visibleTo: "admin" },
         { visibleTo: "all" },
@@ -50,27 +51,47 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
       ],
     };
   } else if (role === "user") {
-    filter = {
+    roleFilter = {
       $or: [{ visibleTo: "user" }, { visibleTo: "all" }],
     };
   }
 
-  const sortOrder = sort === "desc" ? -1 : 1;
+  // Build search filter (on title or message)
+  let searchFilter = {};
+  if (search) {
+    searchFilter = {
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { message: { $regex: search, $options: "i" } },
+      ],
+    };
+  }
+
+  // Build final filter combining role, search, and date filters
+  let filterConditions = [roleFilter];
+
+  if (search) {
+    filterConditions.push(searchFilter);
+  }
 
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+    filterConditions.push({
+      createdAt: { $gte: start, $lte: end },
+    });
   }
 
-  // Total count for pagination metadata
-  const totalAnnouncements = await Announcement.countDocuments(filter);
+  const finalFilter =
+    filterConditions.length > 1
+      ? { $and: filterConditions }
+      : filterConditions[0];
 
-  const announcements = await Announcement.find(filter)
+  // Total count for pagination metadata
+  const totalAnnouncements = await Announcement.countDocuments(finalFilter);
+
+  const announcements = await Announcement.find(finalFilter)
     .sort({ createdAt: sortOrder })
     .skip(skip)
     .limit(limit)

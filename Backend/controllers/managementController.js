@@ -17,40 +17,46 @@ exports.getUsers = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const filter = {};
-
-  filter.isDeleted = false;
+  const baseFilter = { isDeleted: false };
+  const filterConditions = [baseFilter];
 
   if (role) {
-    filter.role = role;
+    filterConditions.push({ role });
   }
 
   if (search) {
-    filter.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-    ];
+    filterConditions.push({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ],
+    });
   }
 
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+    filterConditions.push({
+      createdAt: {
+        $gte: start,
+        $lte: end,
+      },
+    });
   }
+
+  const finalFilter =
+    filterConditions.length > 1 ? { $and: filterConditions } : baseFilter;
 
   const sortOrder = { createdAt: sort === "desc" ? -1 : 1 };
 
   const [users, total] = await Promise.all([
-    User.find(filter)
+    User.find(finalFilter)
       .sort(sortOrder)
       .skip(skip)
       .limit(limit)
       .select("name email updatedAt role priority"),
-    User.countDocuments(filter),
+    User.countDocuments(finalFilter),
   ]);
 
   res.status(200).json({
@@ -59,9 +65,7 @@ exports.getUsers = catchAsync(async (req, res, next) => {
     total,
     page,
     totalPages: Math.ceil(total / limit),
-    data: {
-      users,
-    },
+    data: { users },
   });
 });
 
@@ -87,43 +91,67 @@ exports.getUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.getWithdrawals = catchAsync(async (req, res, next) => {
-  const { status, tokenType, startDate, endDate, sort = "desc" } = req.query;
+  const {
+    status,
+    tokenType,
+    startDate,
+    endDate,
+    sort = "desc",
+    search,
+  } = req.query;
 
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const filter = {};
+  const filterConditions = [];
 
+  // Basic filters
   if (status) {
-    filter.status = status;
+    filterConditions.push({ status });
   }
 
   if (tokenType) {
-    filter.tokenType = tokenType;
+    filterConditions.push({ tokenType });
   }
 
+  // Search: txId, toAddress, and amount
+  if (search) {
+    const searchRegex = { $regex: search, $options: "i" };
+    const orSearch = [{ toAddress: searchRegex }, { txId: searchRegex }];
+
+    // If search string is numeric, include amount
+    if (!isNaN(Number(search))) {
+      orSearch.push({ amount: Number(search) });
+    }
+
+    filterConditions.push({ $or: orSearch });
+  }
+
+  // Date range filter
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+    filterConditions.push({
+      createdAt: { $gte: start, $lte: end },
+    });
   }
+
+  const finalFilter =
+    filterConditions.length > 0 ? { $and: filterConditions } : {};
 
   const sortOrder = sort === "desc" ? -1 : 1;
 
   const [withdrawals, total] = await Promise.all([
-    Withdrawal.find(filter)
+    Withdrawal.find(finalFilter)
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
       .select("amount tokenType status toAddress txId createdAt")
       .populate("initiatedBy", "name email -_id")
       .populate("approvedBy", "name _id"),
-    Withdrawal.countDocuments(filter),
+    Withdrawal.countDocuments(finalFilter),
   ]);
 
   res.status(200).json({
@@ -139,37 +167,55 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
 });
 
 exports.getDeposits = catchAsync(async (req, res, next) => {
-  const { tokenType, startDate, endDate, sort = "desc" } = req.query;
+  const { tokenType, startDate, endDate, sort = "desc", search } = req.query;
 
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const filter = {};
+  const filterConditions = [];
 
   if (tokenType) {
-    filter.tokenType = tokenType;
+    filterConditions.push({ tokenType });
   }
 
+  // Search by fromAddress, txId or amount
+  if (search) {
+    const searchRegex = { $regex: search, $options: "i" };
+    const orSearch = [
+      { fromAddress: searchRegex },
+      { txId: searchRegex }, // <-- added txId search
+    ];
+
+    if (!isNaN(Number(search))) {
+      orSearch.push({ amount: Number(search) });
+    }
+
+    filterConditions.push({ $or: orSearch });
+  }
+
+  // Date range filter
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+    filterConditions.push({
+      createdAt: { $gte: start, $lte: end },
+    });
   }
+
+  const finalFilter =
+    filterConditions.length > 0 ? { $and: filterConditions } : {};
   const sortOrder = sort === "desc" ? -1 : 1;
 
   const [deposits, total] = await Promise.all([
-    Deposit.find(filter)
+    Deposit.find(finalFilter)
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("amount tokenType status fromAddress createdAt -_id")
+      .select("amount tokenType status fromAddress txId createdAt -_id") // added txId in select
       .populate("depositedBy", "name email -_id"),
-    Deposit.countDocuments(filter),
+    Deposit.countDocuments(finalFilter),
   ]);
 
   if (!deposits.length) {

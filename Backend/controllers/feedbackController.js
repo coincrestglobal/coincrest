@@ -70,10 +70,10 @@ exports.replyToFeedback = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllFeedbacks = catchAsync(async (req, res) => {
-  let { page, limit, status, startDate, endDate } = req.query;
+  let { page, limit, status, startDate, endDate, search } = req.query;
 
-  page = parseInt(req.query.page) || 1;
-  limit = parseInt(req.query.limit) || 10;
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 10;
   const skip = (page - 1) * limit;
 
   const filter = {};
@@ -89,6 +89,17 @@ exports.getAllFeedbacks = catchAsync(async (req, res) => {
       $gte: start,
       $lte: end,
     };
+  }
+
+  if (search) {
+    const searchRegex = new RegExp(search, "i"); // case-insensitive regex
+
+    filter.$or = [
+      { name: { $regex: searchRegex } },
+      { email: { $regex: searchRegex } },
+      { subject: { $regex: searchRegex } },
+      { message: { $regex: searchRegex } },
+    ];
   }
 
   const sortOrder = req.query.sort === "desc" ? -1 : 1;

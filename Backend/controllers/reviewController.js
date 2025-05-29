@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 
 exports.getReviews = catchAsync(async (req, res) => {
-  let { page, limit, status, sort, startDate, endDate } = req.query;
+  let { page, limit, status, sort, startDate, endDate, search } = req.query;
 
-  page = parseInt(req.query.page) || 1;
-  limit = parseInt(req.query.limit) || 5;
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
   const skip = (page - 1) * limit;
 
   const filter = {};
@@ -20,21 +20,21 @@ exports.getReviews = catchAsync(async (req, res) => {
   if (startDate && endDate) {
     const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
     const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+    filter.createdAt = { $gte: start, $lte: end };
+  }
 
-    filter.createdAt = {
-      $gte: start,
-      $lte: end,
-    };
+  if (search) {
+    filter.comment = { $regex: search, $options: "i" };
   }
 
   const sortOrder = sort === "desc" ? -1 : 1;
 
-  const [reviews, total] = await Promise.all([
+  let [reviews, total] = await Promise.all([
     Review.find(filter)
       .sort({ createdAt: sortOrder })
       .skip(skip)
       .limit(limit)
-      .select("rating createdAt")
+      .select("rating comment createdAt")
       .populate("user", "name email -_id"),
     Review.countDocuments(filter),
   ]);

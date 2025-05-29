@@ -75,21 +75,34 @@ exports.getStats = catchAsync(async (req, res, next) => {
       return next(new AppError("Invalid range value", 400));
   }
 
-  const userQuery = fromDate ? { createdAt: { $gte: fromDate } } : {};
+  const userBaseFilter = { role: "user", isDeleted: false };
+  const userQuery = fromDate
+    ? { ...userBaseFilter, createdAt: { $gte: fromDate } }
+    : userBaseFilter;
+
   const depositQuery = fromDate ? { createdAt: { $gte: fromDate } } : {};
   const withdrawalQuery = fromDate ? { createdAt: { $gte: fromDate } } : {};
 
-  // Basic totals
-  const [totalUsers, totalDeposits, totalWithdrawals] = await Promise.all([
+  const [
+    totalUsers,
+    incTotalUsers,
+    totalWithdrawals,
+    incTotalWithdrawals,
+    totalDepositAgg,
+    incDepositAgg,
+    totalWithdrawalAgg,
+    incWithdrawalAgg,
+  ] = await Promise.all([
+    User.countDocuments(userBaseFilter),
     User.countDocuments(userQuery),
-    Deposit.countDocuments(depositQuery),
+    Withdrawal.countDocuments(),
     Withdrawal.countDocuments(withdrawalQuery),
-  ]);
-
-  // Total amounts for deposits and withdrawals
-  const [depositAmountAgg, withdrawalAmountAgg] = await Promise.all([
+    Deposit.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }]),
     Deposit.aggregate([
       ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
+    Withdrawal.aggregate([
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
     Withdrawal.aggregate([
@@ -98,17 +111,42 @@ exports.getStats = catchAsync(async (req, res, next) => {
     ]),
   ]);
 
-  const depositAmount = depositAmountAgg[0]?.total || 0;
-  const withdrawalAmount = withdrawalAmountAgg[0]?.total || 0;
+  const totalDepositAmount = totalDepositAgg[0]?.total || 0;
+  const incDepositAmount = incDepositAgg[0]?.total || 0;
+  const totalWithdrawalAmount = totalWithdrawalAgg[0]?.total || 0;
+  const incWithdrawalAmount = incWithdrawalAgg[0]?.total || 0;
 
-  // ----------------- Prepare labels and aggregations for charts -----------------
+  // ----------------- Prepare labels and charts -----------------
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-  // Define expected labels per range
+  const formatLabel = (val, range) => {
+    if (range === "1d") return `${val * 2}:00`;
+    if (range === "1w") return dayNames[val];
+    if (range === "1m") return `Week ${val}`;
+    if (range === "1y") return monthNames[val - 1];
+    if (range === "lifetime") return val.toString();
+    return val;
+  };
+
   let expectedLabels = [];
 
   if (range === "1d") {
     for (let h = 0; h < 24; h += 2) {
-      expectedLabels.push(formatLabel(h, "1d"));
+      expectedLabels.push(formatLabel(h / 2, "1d"));
     }
   } else if (range === "1w") {
     expectedLabels = dayNames;
@@ -117,8 +155,7 @@ exports.getStats = catchAsync(async (req, res, next) => {
   } else if (range === "1y") {
     expectedLabels = monthNames;
   } else if (range === "lifetime") {
-    // Get earliest year from users collection for full lifetime range
-    const earliestUser = await User.findOne()
+    const earliestUser = await User.findOne(userBaseFilter)
       .sort({ createdAt: 1 })
       .select("createdAt");
     const startYear = earliestUser
@@ -130,103 +167,46 @@ exports.getStats = catchAsync(async (req, res, next) => {
     }
   }
 
-  // ----------------- Aggregate users count grouped by the time bucket -----------------
-  // Build group id and projection based on range
-  let groupIdUser = null;
+  let groupId = null;
   switch (range) {
     case "1d":
-      // group by 2-hour slot
-      groupIdUser = {
+      groupId = {
         $floor: { $divide: [{ $hour: "$createdAt" }, 2] },
       };
       break;
     case "1w":
-      // group by day of week (0=Sun..6=Sat)
-      groupIdUser = { $dayOfWeek: "$createdAt" }; // Sunday=1..Saturday=7
+      groupId = { $subtract: [{ $dayOfWeek: "$createdAt" }, 1] };
       break;
     case "1m":
-      // group by week of month (1-5)
-      groupIdUser = {
-        $ceil: {
-          $divide: [{ $dayOfMonth: "$createdAt" }, 7],
-        },
+      groupId = {
+        $ceil: { $divide: [{ $dayOfMonth: "$createdAt" }, 7] },
       };
       break;
     case "1y":
-      // group by month number 0-11
-      groupIdUser = { $month: "$createdAt" };
+      groupId = { $month: "$createdAt" };
       break;
     case "lifetime":
-      // group by year
-      groupIdUser = { $year: "$createdAt" };
+      groupId = { $year: "$createdAt" };
       break;
-    default:
-      groupIdUser = null;
   }
 
-  // Mongo $dayOfWeek returns 1 for Sunday, but our dayNames index is 0-based Sunday
-  // So we need to subtract 1 from $dayOfWeek to get 0-6 index
-  // but aggregation does not support subtract in _id directly, so we'll adjust after aggregation
-
-  let userGroupId = groupIdUser;
-  if (range === "1w") {
-    // Special handling for dayOfWeek - convert 1-7 to 0-6
-    userGroupId = {
-      $subtract: [{ $dayOfWeek: "$createdAt" }, 1],
-    };
-  }
-
-  // Aggregate users by time bucket
-  const usersAgg = await User.aggregate([
-    ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
-    {
-      $group: {
-        _id: userGroupId,
-        value: { $sum: 1 },
-      },
-    },
+  const [usersAgg, depositsAgg, withdrawalsAgg] = await Promise.all([
+    User.aggregate([
+      ...(fromDate
+        ? [{ $match: { ...userBaseFilter, createdAt: { $gte: fromDate } } }]
+        : []),
+      { $group: { _id: groupId, value: { $sum: 1 } } },
+    ]),
+    Deposit.aggregate([
+      ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
+      { $group: { _id: groupId, deposit: { $sum: "$amount" } } },
+    ]),
+    Withdrawal.aggregate([
+      ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
+      { $group: { _id: groupId, withdraw: { $sum: "$amount" } } },
+    ]),
   ]);
 
-  // ----------------- Aggregate deposits and withdrawals by time bucket -----------------
-
-  // Deposit groupId same as users groupId (based on range)
-  let depositGroupId = userGroupId;
-  if (range === "1w") {
-    depositGroupId = {
-      $subtract: [{ $dayOfWeek: "$createdAt" }, 1],
-    };
-  }
-
-  const depositsAgg = await Deposit.aggregate([
-    ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
-    {
-      $group: {
-        _id: depositGroupId,
-        deposit: { $sum: "$amount" },
-      },
-    },
-  ]);
-
-  // Withdrawals aggregated by time bucket and nested by day/week/etc. per deposit
-  // We'll flatten for now: group withdrawals similarly
-  let withdrawalGroupId = userGroupId;
-  if (range === "1w") {
-    withdrawalGroupId = {
-      $subtract: [{ $dayOfWeek: "$createdAt" }, 1],
-    };
-  }
-
-  const withdrawalsAgg = await Withdrawal.aggregate([
-    ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
-    {
-      $group: {
-        _id: withdrawalGroupId,
-        withdraw: { $sum: "$amount" },
-      },
-    },
-  ]);
-
-  // ------------------- Create maps for quick lookup -----------------
   const userMap = new Map();
   usersAgg.forEach((u) => {
     userMap.set(formatLabel(u._id, range), u.value);
@@ -242,7 +222,6 @@ exports.getStats = catchAsync(async (req, res, next) => {
     withdrawMap.set(formatLabel(w._id, range), w.withdraw);
   });
 
-  // ------------------- Merge expected labels with actual data -------------------
   const usersChartData = expectedLabels.map((label) => ({
     name: label,
     value: userMap.get(label) || 0,
@@ -254,16 +233,16 @@ exports.getStats = catchAsync(async (req, res, next) => {
     withdraw: withdrawMap.get(label) || 0,
   }));
 
-  // ------------------- Build response -------------------
+  // ------------------------ Final Response ------------------------
   res.status(200).json({
     totalUsers,
-    totalDeposit: totalDeposits,
-    totalProfit: depositAmount,
-    payouts: totalWithdrawals,
-    incTotalUsers: totalUsers,
-    incTotalDeposit: depositAmount,
-    incTotalProfit: depositAmount,
-    incPayouts: withdrawalAmount,
+    totalDeposit: totalDepositAmount,
+    totalProfit: totalDepositAmount,
+    payouts: totalWithdrawalAmount,
+    incTotalUsers,
+    incTotalDeposit: incDepositAmount,
+    incTotalProfit: incDepositAmount,
+    incPayouts: incWithdrawalAmount,
     usersChartData,
     depositWithdrawChartData,
   });
