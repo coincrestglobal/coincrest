@@ -22,18 +22,8 @@ router.patch(
   settingController.updateTeamBonus
 );
 
-router.get(
-  "/getDepositBonus",
-  authMiddleware.protect,
-  authMiddleware.authorizeRoles("admin", "owner"),
-  settingController.getDepositBonus
-);
+router.get("/getDepositBonus", settingController.getDepositBonus);
 
-router.get(
-  "/getTeamBonus",
-  authMiddleware.protect,
-  authMiddleware.authorizeRoles("admin", "owner"),
-  settingController.getTeamBonus
-);
+router.get("/getTeamBonus", settingController.getTeamBonus);
 
 module.exports = router;
