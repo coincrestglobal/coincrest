@@ -218,6 +218,12 @@ export default function FAQs() {
             Add New FAQ
           </h2>
           <div className="grid grid-cols-1 gap-4 mb-4">
+            <select className="w-full border border-button-hover p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary text-text-heading bg-primary">
+              <option value="">Choose FAQ type</option>
+              <option value="general">General</option>
+              <option value="deposit">Deposit</option>
+              <option value="payouts">Payouts</option>
+            </select>
             <input
               type="text"
               placeholder="Question"
@@ -227,12 +233,7 @@ export default function FAQs() {
                 setNewFAQ({ ...newFAQ, question: e.target.value })
               }
             />
-            <select className="w-full border border-button-hover p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary text-text-heading bg-primary">
-              <option value="">Choose FAQ type</option>
-              <option value="general">General</option>
-              <option value="deposit">Deposit</option>
-              <option value="payouts">Payouts</option>
-            </select>
+
             <textarea
               placeholder="Answer"
               className="p-2 border border-button-hover rounded text-text-heading bg-primary w-full"

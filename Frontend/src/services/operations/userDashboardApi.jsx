@@ -83,7 +83,7 @@ export const redeemInvestPlan = async (token, id) => {
       }
     );
 
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
 
     return response;
   } catch (error) {
@@ -98,7 +98,7 @@ export const verifyDeposit = async (token, data) => {
     const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(error.message);
   }
@@ -138,7 +138,7 @@ export const withdraw = async (token, data) => {
     const response = await apiConnector("POST", WITHDRAW, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(error.message || "Withdrawal request failed");
   }
@@ -172,7 +172,7 @@ export const updatePersonalDetails = async (token, data) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to update personal details");
@@ -184,7 +184,7 @@ export const updateProfilePhoto = async (token, data) => {
     const response = await apiConnector("PATCH", UPDATE_PROFILE_PHOTO, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
 
     return response;
   } catch (error) {
@@ -199,7 +199,7 @@ export const updatePassword = async (token, data) => {
     const response = await apiConnector("PATCH", UPDATE_PASSWORD, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(error.message || "Password update failed");
   }
@@ -212,7 +212,7 @@ export const addOrUpdateWallet = async (token, updatedData) => {
     const response = await apiConnector("POST", UPDATE_WALLET, updatedData, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to update wallet");
@@ -245,8 +245,6 @@ export const getBonustHistory = async (token, params) => {
       },
       params
     );
-    if (!response?.data?.success) {
-    }
 
     return response;
   } catch (error) {}

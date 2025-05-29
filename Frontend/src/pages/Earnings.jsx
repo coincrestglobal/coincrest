@@ -258,8 +258,7 @@ const EarningsPlansPage = () => {
         </div>
 
         <p className="mt-2 text-xs sm:text-sm text-gray-400">
-          💡 Monthly bonuses are based on the number of active members in your
-          team.
+          💡 Bonuses are based on the number of active members in your team.
         </p>
       </section>
     </div>

@@ -48,7 +48,7 @@ export const login = async (data, navigate, setUser) => {
     };
 
     setUser(userData);
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
 
     if (user.role === "admin") {
       navigate("/dashboard/admin");
@@ -78,13 +78,7 @@ export const emailVerification = async (token, navigate) => {
 export const getPasswordResetToken = async (email) => {
   try {
     const response = await apiConnector("POST", RESETPASSTOKEN_API, { email });
-
-    if (response.status !== "success") {
-      toast.error("Failed to send reset email. Try again.");
-      return;
-    }
-
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(
       error.message || "Unable to send reset email. Please try later."
@@ -100,12 +94,7 @@ export const resetPassword = async (data, token, navigate) => {
       data
     );
 
-    if (response.status !== "success") {
-      toast.error("Reset failed. Please try again.");
-      return;
-    }
-
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     navigate("/login");
   } catch (error) {
     toast.error(error.message || "Something went wrong. Please try again.");

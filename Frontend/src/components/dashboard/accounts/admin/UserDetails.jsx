@@ -82,19 +82,20 @@ const UserDetails = () => {
           <span className="font-semibold text-button">Name:</span>{" "}
           {showableUser.name}
         </p>
-        <p>
-          <span className="font-semibold text-button">Email:</span>{" "}
-          {showableUser.email}
-        </p>
+
         <p>
           <span className="font-semibold text-button">Number of Deposits:</span>{" "}
           {showableUser.deposits.length}
         </p>
         <p>
+          <span className="font-semibold text-button">Email:</span>{" "}
+          {showableUser.email}
+        </p>
+        <p>
           <span className="font-semibold text-button">
-            Total Deposited Amount:
+            Number of Withdrawals:
           </span>{" "}
-          {showableUser.totalDepositedAmount} USDT
+          {showableUser.withdrawals.length}
         </p>
         <p>
           <span className="font-semibold text-button">Last Login:</span>{" "}
