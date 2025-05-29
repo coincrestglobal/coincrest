@@ -13,6 +13,7 @@ import EmailVerifyingScreen from "../components/authentication/EmailVerification
 import TermsAndCondition from "../pages/TermsAndConditions";
 import ResetPassword from "../components/authentication/ResetPassword";
 import MainPrivacyPolicy from "../pages/PrivacyPolicy";
+import Notifications from "../components/dashboard/accounts/user/Notifications";
 
 //user
 import UserDashboard from "../components/dashboard/accounts/user/DashBoard";
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
       { path: "/earnings", Component: Earnings },
       { path: "/signup", Component: SignUp },
       { path: "/login", Component: Login },
+      { path: "/notifications", Component: Notifications },
       // { path: "/before-verify-email", Component: BeforeEmailVerify },
       { path: "/verify-email/:token", Component: EmailVerifyingScreen },
       { path: "/reset-password/:token", Component: ResetPassword },
@@ -77,10 +79,6 @@ const router = createBrowserRouter([
           { path: "bonus-history", Component: BonusHistory },
           { path: "team", Component: TeamTree },
           { path: "help-and-support", Component: HelpSupport },
-          {
-            path: "announcements",
-            Component: Announcements,
-          },
         ],
       },
 

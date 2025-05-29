@@ -21,7 +21,7 @@ export const addReview = async (reviewData, token) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Error adding review:");
@@ -40,7 +40,7 @@ export const editReview = async (reviewId, updatedData, token) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Error editing review:");

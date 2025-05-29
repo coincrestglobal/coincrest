@@ -1,11 +1,12 @@
-import { CircleUserRound, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import { useUser } from "../common/UserContext.jsx";
 import Avatar from "./Avatar.jsx";
+import NotificationBell from "../dashboard/accounts/user/NotificationBell";
 
 function Navbar() {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
 
   const navigate = useSafeNavigate();
 
@@ -86,34 +87,37 @@ function Navbar() {
           </ul>
 
           {/* User Profile - Positioned to the right on large screens */}
-          <button
-            onClick={handleProfileClick}
-            className="cursor-pointer ml-auto lg:ml-0"
-          >
-            {user ? (
-              user.profilePicUrl ? (
-                <Avatar
-                  size={48}
-                  imageURL={`${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/uploads/profilePics/${user.profilePicUrl}`}
-                />
+          <div className="flex gap-8">
+            <NotificationBell />
+            <button
+              onClick={handleProfileClick}
+              className="cursor-pointer ml-auto lg:ml-0"
+            >
+              {user ? (
+                user.profilePicUrl ? (
+                  <Avatar
+                    size={48}
+                    imageURL={`${
+                      import.meta.env.VITE_BACKEND_URL
+                    }/uploads/profilePics/${user.profilePicUrl}`}
+                  />
+                ) : (
+                  <Avatar
+                    size={48}
+                    bgColor="bg-"
+                    textColor="text-text-heading"
+                    textSize="text-xl"
+                    fontWeight="font-semibold"
+                    fullName={user.name}
+                  />
+                )
               ) : (
-                <Avatar
-                  size={48}
-                  bgColor="bg-"
-                  textColor="text-text-heading"
-                  textSize="text-xl"
-                  fontWeight="font-semibold"
-                  fullName={user.name}
-                />
-              )
-            ) : (
-              <div className="bg-primary text-nav-link p-2 rounded-full flex items-center justify-center shadow-sm shadow-nav-highlighted">
-                <UserRound className="text-white w-6 h-6" />
-              </div>
-            )}
-          </button>
+                <div className="bg-primary text-nav-link p-2 rounded-full flex items-center justify-center shadow-sm shadow-nav-highlighted">
+                  <UserRound className="text-white w-6 h-6" />
+                </div>
+              )}
+            </button>
+          </div>
         </nav>
       </div>
     </div>

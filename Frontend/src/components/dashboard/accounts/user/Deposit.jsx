@@ -30,6 +30,8 @@ const DepositPage = () => {
   const [addresses, setAdresses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const numberOfEntries = 1;
+  const [copiedBEP, setCopiedBEP] = useState(false);
+  const [copiedTRC, setCopiedTRC] = useState(false);
 
   useEffect(() => {
     const getHistory = async () => {
@@ -87,6 +89,26 @@ const DepositPage = () => {
     getAddressess();
   }, []);
 
+  const handleCopyTRC = () => {
+    const address = addresses["TRC-20"]?.walletAddress;
+    if (address) {
+      navigator.clipboard.writeText(address).then(() => {
+        setCopiedTRC(true);
+        setTimeout(() => setCopiedTRC(false), 2000); // Reset after 2s
+      });
+    }
+  };
+
+  const handleCopyBEP = () => {
+    const address = addresses["BEP-20"]?.walletAddress;
+    if (address) {
+      navigator.clipboard.writeText(address).then(() => {
+        setCopiedBEP(true);
+        setTimeout(() => setCopiedBEP(false), 2000); // Show "Copied!" for 2 seconds
+      });
+    }
+  };
+
   const handleVerify = async () => {
     try {
       setLoading(true);
@@ -139,7 +161,7 @@ const DepositPage = () => {
             {user?.wallets?.length > 0 ? (
               <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
                 {/* TRC-20 Address */}
-                {user.wallets.find((w) => w.tokenType !== "TRC-20") ? (
+                {user.wallets.find((w) => w.tokenType === "TRC-20") ? (
                   <div className="mb-4">
                     <label className="block text-sm text-gray-400 mb-1">
                       TRC-20 Address
@@ -149,39 +171,19 @@ const DepositPage = () => {
                         {addresses["TRC-20"]?.walletAddress}
                       </span>
                       <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(
-                            user.wallets.find((w) => w.tokenType === "TRC-20")
-                              ?.address
-                          )
-                        }
+                        onClick={handleCopyTRC}
                         className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
                       >
-                        Copy
+                        {copiedTRC ? "Copied!" : "Copy"}
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="mb-4">
-                    <label className="block text-sm text-gray-400 mb-1">
-                      TRC-20 Address
-                    </label>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                      <span className="text-text-heading break-words sm:break-all">
-                        {addresses["TRC-20"]?.walletAddress}
-                      </span>
-                      <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(
-                            user.wallets.find((w) => w.tokenType === "TRC-20")
-                              ?.address
-                          )
-                        }
-                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
-                      >
-                        Copy
-                      </button>
-                    </div>
+                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
+                    <p className="font-medium">No TRC-20 Wallet Found</p>
+                    <p className="text-sm mt-1">
+                      Please add your TRC-20 wallet address to continue.
+                    </p>
                   </div>
                 )}
 
@@ -196,15 +198,10 @@ const DepositPage = () => {
                         {addresses["BEP-20"]?.walletAddress}
                       </span>
                       <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(
-                            user.wallets.find((w) => w.tokenType === "BEP-20")
-                              ?.address
-                          )
-                        }
+                        onClick={handleCopyBEP}
                         className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
                       >
-                        Copy
+                        {copiedBEP ? "Copied!" : "Copy"}
                       </button>
                     </div>
                   </div>
@@ -212,7 +209,7 @@ const DepositPage = () => {
                   <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
                     <p className="font-medium">No BEP-20 Wallet Found</p>
                     <p className="text-sm mt-1">
-                      Please add your BEP-20 wallet addresses to continue.
+                      Please add your BEP-20 wallet address to continue.
                     </p>
                   </div>
                 )}

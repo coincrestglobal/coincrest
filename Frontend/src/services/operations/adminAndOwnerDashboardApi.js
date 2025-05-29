@@ -128,7 +128,7 @@ export const approveWithdrawRequest = async (token, withdrawal_id) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to approve withdrawal request");
@@ -198,7 +198,7 @@ export const acceptReview = async (token, reviewId) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.response || "Failed to accept review");
@@ -214,7 +214,7 @@ export const rejectReview = async (token, reviewId) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.response || "Failed to reject review");
@@ -250,7 +250,7 @@ export const respondToFeedback = async (feedbackId, responseMessage, token) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to respond to feedback");
@@ -269,7 +269,7 @@ export const getAllFaqs = async () => {
 export const addFaq = async (faqData) => {
   try {
     const response = await apiConnector("POST", ADD_FAQ_API, faqData);
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to add FAQ");
@@ -279,7 +279,7 @@ export const addFaq = async (faqData) => {
 export const deleteFaq = async (faqId) => {
   try {
     const response = await apiConnector("DELETE", `${DELETE_FAQ_API}/${faqId}`);
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to delete FAQ");
@@ -298,7 +298,7 @@ export const getTerms = async () => {
 export const addTerms = async (termsData) => {
   try {
     const response = await apiConnector("POST", ADD_TERMS_API, termsData);
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to add terms");
@@ -311,7 +311,7 @@ export const deleteTerms = async (termsId) => {
       "DELETE",
       `${DELETE_TERMS_API}/${termsId}`
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to delete terms");
@@ -330,7 +330,7 @@ export const getPrivacyPolicy = async () => {
 export const addPrivacyPolicy = async (privacyData) => {
   try {
     const response = await apiConnector("POST", ADD_PRIVACY_API, privacyData);
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to add privacy policy");
@@ -343,7 +343,7 @@ export const deletePrivacyPolicy = async (privacyId) => {
       "DELETE",
       `${DELETE_PRIVACY_API}/${privacyId}`
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to delete privacy policy");
@@ -366,7 +366,7 @@ export const addNewAdmin = async (token, adminData) => {
     const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
 
     return response;
   } catch (error) {
@@ -386,7 +386,7 @@ export const fireAdmin = async (id, token, password) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to remove admin");
@@ -419,7 +419,7 @@ export const addAnnouncement = async (token, data) => {
     const response = await apiConnector("POST", ADD_ANNOUNCEMENT, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to add announcement");
@@ -438,7 +438,7 @@ export const deleteAnnouncements = async (token, announcementId) => {
         Authorization: `Bearer ${token}`,
       }
     );
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to delete announcement");

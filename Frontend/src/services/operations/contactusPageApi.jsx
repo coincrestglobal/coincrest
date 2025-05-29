@@ -9,7 +9,7 @@ export const submitContactForm = async (formData, token) => {
     const response = await apiConnector("POST", CONTACT_US, formData, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Contact Form Submission Error:");
