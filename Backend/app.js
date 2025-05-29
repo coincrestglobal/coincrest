@@ -13,6 +13,9 @@ const settingRoutes = require("./routes/settingRoutes");
 const walletRoutes = require("./routes/walletRoutes");
 const announcementRoutes = require("./routes/announcementRoutes");
 const statRoutes = require("./routes/statRoutes");
+const faqRoutes = require("./routes/faqRoutes");
+const termRoutes = require("./routes/termRoutes");
+const policyRoutes = require("./routes/policyRoutes");
 const errorHandler = require("./middlewares/errorMiddleware");
 
 const app = express();
@@ -45,6 +48,9 @@ app.use("/api/v1/setting", settingRoutes);
 app.use("/api/v1/wallet", walletRoutes);
 app.use("/api/v1/announcement", announcementRoutes);
 app.use("/api/v1/stat", statRoutes);
+app.use("/api/v1/faq", faqRoutes);
+app.use("/api/v1/term", termRoutes);
+app.use("/api/v1/policy", policyRoutes);
 
 app.use(errorHandler);
 
