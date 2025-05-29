@@ -43,13 +43,18 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
 
   if (role === "admin") {
     filter = {
-      $or: [{ visibleTo: "admin" }, { createdBy: userId }],
+      $or: [
+        { visibleTo: "admin" },
+        { visibleTo: "all" },
+        { createdBy: userId },
+      ],
     };
   } else if (role === "user") {
     filter = {
-      visibleTo: role,
+      $or: [{ visibleTo: "user" }, { visibleTo: "all" }],
     };
   }
+
   const sortOrder = sort === "desc" ? -1 : 1;
 
   if (startDate && endDate) {

@@ -24,7 +24,7 @@ function UserPortfolio() {
     };
 
     fetchBalance();
-  }, [user.token]);
+  }, [user?.token]);
 
   if (loading) {
     return <Loading />;
