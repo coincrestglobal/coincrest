@@ -49,9 +49,7 @@ const TeamTree = () => {
   const [copied, setCopied] = useState(false);
 
   const referralCode = user?.referralCode || "N/A";
-  const referralLink = `${
-    import.meta.env.VITE_FRONTEND_URL
-  }?ref=${referralCode}`;
+  const referralLink = `${window.location.origin}/signup?ref=${referralCode}`;
 
   const copyToClipboard = async () => {
     try {
