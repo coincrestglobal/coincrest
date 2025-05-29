@@ -8,6 +8,7 @@ const config = require("../config/config");
 const sendEmail = require("../utils/email");
 const { transferTRC20 } = require("../services/trc20TransferService");
 const { transferBEP20 } = require("../services/bep20TransferService");
+const generateReferralCode = require("../utils/referralCodeGenerator");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, sort, startDate, endDate } = req.query;
@@ -217,7 +218,7 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
 
   // 5. Generate password
   const { token: randomPassword } = generateToken();
-
+  const referralCode = generateReferralCode();
   // 6. Create admin
   const admin = new User({
     name,
@@ -225,6 +226,7 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
     password: randomPassword,
     role: "admin",
     isVerified: true,
+    referralCode: referralCode,
   });
 
   await admin.save();
