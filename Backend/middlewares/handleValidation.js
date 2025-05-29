@@ -9,7 +9,7 @@ const validate = (validations) => {
         const errorMessages = errors.array().map((err) => err.msg);
         return res.status(400).json({
           status: "fail",
-          error: errorMessages[0],
+          message: errorMessages[0],
         });
       }
       next();
