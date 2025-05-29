@@ -13,7 +13,8 @@ router.get(
 
 router.post(
   "/create",
-  // authMiddleware.protect,
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   investmentPlanValidator.validateNewInvestmentPlan,
   investmentPlanController.createInvestmentPlan
 );
@@ -21,6 +22,7 @@ router.post(
 router.patch(
   "/update/:planId",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   investmentPlanValidator.validateUpdateInvestmentPlan,
   investmentPlanController.updateInvestmentPlan
 );

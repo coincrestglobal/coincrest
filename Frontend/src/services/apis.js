@@ -1,4 +1,3 @@
-// const BASE_URL = "http://localhost:5000/api/v1"; //for desktop  only
 const BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/api/v1`;
 
 // AUTH ENDPOINTS

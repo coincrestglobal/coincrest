@@ -24,15 +24,15 @@ router.patch(
 
 router.get(
   "/getDepositBonus",
-  // authMiddleware.protect,
-  // authMiddleware.authorizeRoles("admin", "owner"),
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   settingController.getDepositBonus
 );
 
 router.get(
   "/getTeamBonus",
-  // authMiddleware.protect,
-  // authMiddleware.authorizeRoles("admin", "owner"),
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   settingController.getTeamBonus
 );
 

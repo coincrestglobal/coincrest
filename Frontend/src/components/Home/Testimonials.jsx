@@ -10,7 +10,7 @@ import Avatar from "../common/Avatar";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import Loading from "../../pages/Loading";
 
-export default function reviewslider() {
+export default function Testimonials() {
   const navigate = useSafeNavigate();
   const { user } = useUser();
 

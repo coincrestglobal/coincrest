@@ -9,7 +9,8 @@ const router = express.Router();
 
 router.get(
   "/getUsers",
-  // authMiddleware.protect,
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   queryParamsValidator,
   paginationValidator,
   managementController.getUsers
@@ -17,13 +18,15 @@ router.get(
 
 router.get(
   "/getUser",
-  // authMiddleware.protect,
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   managementController.getUserById
 );
 
 router.get(
   "/getWithdrawals",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   queryParamsValidator,
   paginationValidator,
   managementController.getWithdrawals
@@ -32,6 +35,7 @@ router.get(
 router.get(
   "/getDeposits",
   authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
   queryParamsValidator,
   paginationValidator,
   managementController.getDeposits
