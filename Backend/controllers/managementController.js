@@ -244,7 +244,7 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
       Please log in and change your password soon.
     `,
     buttonText: "Login",
-    buttonUrl: `${config.frontendUrl}/auth/login`,
+    buttonUrl: `${config.frontendUrl}/login`,
   });
 
   res.status(201).json({
