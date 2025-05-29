@@ -19,7 +19,11 @@ function ResetPassword() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const onSubmit = async (data) => {
-    const response = await resetPassword(data, token, navigate);
+    try {
+      const response = await resetPassword(data, token, navigate);
+    } catch (error) {
+      console.error("Password reset failed:", error);
+    }
   };
 
   return (

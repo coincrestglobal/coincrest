@@ -30,18 +30,23 @@ function SignupForm() {
   }, [initialReferral]);
 
   const onSubmit = async (data) => {
-    const data1 = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-    };
-    const params = new URLSearchParams();
+    try {
+      const data1 = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      };
 
-    if (referralCodeState) params.append("ref", referralCodeState);
+      const params = new URLSearchParams();
 
-    await signUp(data1, navigate, params);
-    reset();
+      if (referralCodeState) {
+        params.append("ref", referralCodeState);
+      }
+
+      await signUp(data1, navigate, params);
+      reset();
+    } catch (error) {}
   };
 
   return (
