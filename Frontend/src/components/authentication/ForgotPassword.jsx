@@ -12,9 +12,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
 
     try {
       const response = await getPasswordResetToken(email);
-    } catch (error) {
-      console.error("Failed to send password reset email:", error);
-    }
+    } catch (error) {}
   };
 
   if (!isOpen) return null;

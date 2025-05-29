@@ -33,7 +33,6 @@ export default function Testimonials() {
         setHasUserReviewed(response?.data?.hasUserReviewed);
         setReviews(response?.data?.reviews);
       } catch (error) {
-        console.error("Error fetching stats:", error);
       } finally {
         setLoading(false);
       }
@@ -71,7 +70,7 @@ export default function Testimonials() {
           »»
         </span>
       </h1>
-      {reviews.length > 0 && (
+      {reviews?.length > 0 && (
         <div
           {...handlers} // Attach swipe handlers here
           className="backdrop-blur-sm text-text-heading py-12 sm:py-16 flex items-center justify-center relative min-h-[22rem] md:min-h-[21rem]"

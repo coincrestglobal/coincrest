@@ -2,23 +2,35 @@ import { useEffect, useState } from "react";
 import { FaCopy, FaShareAlt } from "react-icons/fa";
 import { useUser } from "../../../common/UserContext";
 import { getReferredUsers } from "../../../../services/operations/userDashboardApi";
+import Loading from "../../../../pages/Loading";
+import { toast } from "react-toastify";
 
 const UserNode = ({ user }) => {
   const [referrals, setReferrals] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getReferrals = async () => {
       if (!user?.token) return;
+
+      setLoading(true);
       try {
         const response = await getReferredUsers(user.token);
+
         setReferrals(response.data.referredUsers);
       } catch (err) {
-        console.error("Error fetching referrals:", err);
       } finally {
+        setLoading(false);
       }
     };
+
     getReferrals();
-  }, []);
+  }, [user?.token]);
+
+  if (loading) {
+    <Loading />;
+  }
+
   return (
     <div className="mb-4">
       <div className="p-3 bg-primary-light border border-button rounded shadow w-fit max-w-full">
@@ -65,25 +77,12 @@ const TeamTree = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Check this out!",
-          text: "Here’s my referral link:",
-          url: referralLink,
+          title: "Join the Future of Investing\n",
+          text: `Hey! I’ve started using CoinCrest — a secure and smart way to invest and earn. You can join too and get started instantly.\nUse my referral link to sign up now:\n${referralLink}`,
         });
-      } catch (err) {
-        console.error("Sharing failed", err);
-      }
-    } else {
-      alert("Share not supported in this browser.");
+      } catch (err) {}
     }
   };
-
-  if (!user) {
-    return (
-      <div className="p-4 text-center text-text-body bg-primary-dark rounded">
-        Loading user info...
-      </div>
-    );
-  }
 
   return (
     <div className="p-4 bg-primary-dark max-w-4xl mx-auto rounded-md">

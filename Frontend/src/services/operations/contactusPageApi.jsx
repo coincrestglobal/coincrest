@@ -12,6 +12,6 @@ export const submitContactForm = async (formData, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Contact Form Submission Error:");
+    toast.error(error.message || "Contact Form Submission Error:");
   }
 };

@@ -23,10 +23,12 @@ const levelIcons = [
 ];
 
 const earningDetails = [
-  { text: "Stake USDT (TRC20) to start earning weekly." },
-  { text: "Earn up to 7% Weekly ROI based on your level." },
+  { text: "Stake USDT  to start earning weekly." },
+  { text: "Earn up to 15% monthly ROI based on your investment plan level" },
   { text: "Refer friends and earn 10% from their deposits." },
-  { text: "Build a team and earn monthly bonuses." },
+  {
+    text: "Expand your team to earn scalable bonuses, directly aligned with your team's size and contribution.",
+  },
   { text: "Withdraw manually after admin approval." },
 ];
 
@@ -64,7 +66,6 @@ const EarningsPlansPage = () => {
           setTeamBonus(entriesArray);
         }
       } catch (error) {
-        console.error("Error fetching admin earnings data:", error);
       } finally {
         setLoading(false);
       }

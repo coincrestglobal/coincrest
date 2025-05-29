@@ -6,6 +6,7 @@ import ForgotPasswordModal from "./ForgotPassword"; // ✅ Import it
 import { login } from "../../services/operations/authApi";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import { useUser } from "../common/UserContext";
+import Loading from "../../pages/Loading";
 
 function LoginForm() {
   const { user, setUser } = useUser();
@@ -19,12 +20,21 @@ function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       const response = await login(data, navigate, setUser);
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex items-center justify-center h-[85vh] relative">

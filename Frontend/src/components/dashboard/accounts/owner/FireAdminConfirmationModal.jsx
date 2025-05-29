@@ -3,10 +3,8 @@ import { useState } from "react";
 const FireAdminConfirmationModal = ({ adminId, text, onCancel, onConfirm }) => {
   const [password, setPassword] = useState("");
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!password) return alert("Password is required");
-
-    await new Promise((resolve) => setTimeout(resolve, 100)); // Optional delay
 
     onConfirm(adminId, password); // Pass password here
   };

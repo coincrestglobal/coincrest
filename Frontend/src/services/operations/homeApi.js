@@ -24,7 +24,7 @@ export const addReview = async (reviewData, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Error adding review:", error);
+    toast.error(error.message || "Error adding review:");
   }
 };
 
@@ -43,7 +43,7 @@ export const editReview = async (reviewId, updatedData, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Error editing review:", error);
+    toast.error(error.message || "Error editing review:");
   }
 };
 
@@ -52,7 +52,5 @@ export const getAllFaqs = async () => {
   try {
     const response = await apiConnector("GET", GET_FAQS);
     return response;
-  } catch (error) {
-    toast.error("Error fetching FAQs:", error);
-  }
+  } catch (error) {}
 };

@@ -18,13 +18,18 @@ const UserDetails = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const params = new URLSearchParams();
-      params.append("id", id);
-      const userDetails = await getUserDetails(user.token, params);
-      setShowableUser(userDetails.data.user);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        params.append("id", id);
+        const userDetails = await getUserDetails(user.token, params);
+        setShowableUser(userDetails.data.user);
+        setLoading(false);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     };
-
     fetchUser();
   }, [id]);
 

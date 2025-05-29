@@ -5,7 +5,7 @@ import { useUser } from "../common/UserContext.jsx";
 
 function JoinUs() {
   const navigate = useSafeNavigate();
-  const { user, setUser } = useUser();
+  const { user } = useUser();
 
   const handlePrimaryAction = () => {
     if (user?.role === "user") {
@@ -45,7 +45,7 @@ function JoinUs() {
             onClick={handlePrimaryAction}
             className="w-full sm:w-fit cursor-pointer bg-button hover:bg-button-hover px-8 py-3 text-md font-semibold rounded-lg text-text-heading shadow-md transition-all duration-300 hover:scale-105 hover:shadow-xl"
           >
-            {user?.role === "user" ? "Go to Dashboard" : "Sign Up"}
+            {user ? "Go to Dashboard" : "Sign Up"}
           </button>
           <button
             onClick={handleAboutUs}

@@ -68,7 +68,7 @@ function Users() {
         setTotalUsers(response.total);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching users:", error);
+      } finally {
         setLoading(false);
       }
     };

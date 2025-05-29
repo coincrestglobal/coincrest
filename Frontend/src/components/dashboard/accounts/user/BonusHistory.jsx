@@ -34,7 +34,6 @@ function BonusHistory() {
         setBonusHistory(data.bonuses);
         setTotalPages(response.totalPages);
       } catch (error) {
-        console.error("Error fetching bonus history:", error);
       } finally {
         setLoading(false);
       }
@@ -49,15 +48,8 @@ function BonusHistory() {
 
   return (
     <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
-      <div className="mb-6">
+      <div className="bg-primary text-text-subheading flex flex-col mb-3 sm:flex-row sm:items-center justify-between p-4 rounded-lg shadow-md space-y-3 sm:space-y-0 sm:space-x-4">
         <h1 className="text-3xl font-bold text-white">Bonus History</h1>
-        <p className="text-sm text-text-light mt-1">
-          Showing a total of{" "}
-          <span className="font-semibold">
-            {Object.keys(bonusHistory).length}
-          </span>{" "}
-          bonuses
-        </p>
       </div>
 
       {bonusHistory.length > 0 ? (

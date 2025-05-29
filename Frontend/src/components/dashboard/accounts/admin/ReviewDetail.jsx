@@ -31,7 +31,6 @@ const ReviewDetails = () => {
         const response = await getReviewById(user.token, id);
         setReview(response.data.review);
       } catch (error) {
-        console.error("Error fetching review:", error);
       } finally {
         setLoading(false);
       }

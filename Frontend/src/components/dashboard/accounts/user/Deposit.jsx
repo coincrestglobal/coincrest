@@ -63,7 +63,6 @@ const DepositPage = () => {
         setTotalPages(response.totalPages || 1);
         setTotalDeposits(response.total || 0);
       } catch (error) {
-        console.error("Error fetching investment history:", error);
       } finally {
         setLoading(false);
       }

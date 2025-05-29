@@ -55,7 +55,6 @@ function Feedbacks() {
         setTotalPages(response.totalPages);
         setTotalFeedbacks(response.total);
       } catch (error) {
-        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }

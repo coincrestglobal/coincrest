@@ -11,16 +11,15 @@ const {
 } = authEndpoints;
 
 export const signUp = async (data, params) => {
-  let response = null;
   try {
-    response = await apiConnector("POST", SIGNUP_API, data, {}, params);
+    const response = await apiConnector("POST", SIGNUP_API, data, {}, params);
 
     if (response.status === "success") {
       toast.success(response.message);
     }
   } catch (error) {
     toast.error(
-      response.message ||
+      error.message ||
         "Something went wrong while signing up. Please try again."
     );
   }
@@ -59,7 +58,7 @@ export const login = async (data, navigate, setUser) => {
       navigate("/dashboard/user");
     }
   } catch (error) {
-    toast.error("Unable to login. Please try again later.");
+    toast.error(error.message || "Unable to login. Please try again later.");
   }
 };
 
@@ -71,7 +70,7 @@ export const emailVerification = async (token, navigate) => {
     }
     navigate("/login");
   } catch (error) {
-    toast.error("Verification link is invalid or expired.");
+    toast.error(error.message || "Verification link is invalid or expired.");
     navigate("/login");
   }
 };
@@ -87,7 +86,9 @@ export const getPasswordResetToken = async (email) => {
 
     toast.success(response.message);
   } catch (error) {
-    toast.error("Unable to send reset email. Please try later.");
+    toast.error(
+      error.message || "Unable to send reset email. Please try later."
+    );
   }
 };
 
@@ -107,6 +108,6 @@ export const resetPassword = async (data, token, navigate) => {
     toast.success(response.message);
     navigate("/login");
   } catch (error) {
-    toast.error("Something went wrong. Please try again.");
+    toast.error(error.message || "Something went wrong. Please try again.");
   }
 };

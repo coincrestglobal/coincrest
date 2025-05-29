@@ -24,7 +24,7 @@ function Investments() {
   const [modalMap, setModalMap] = useState({});
   const [totalPages, setTotalPages] = useState(1);
   const [totalInvestments, setTotalInvestments] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const numberOfEntries = 1;
 
@@ -67,7 +67,13 @@ function Investments() {
   }, [currentPage, filterState]);
 
   const cancelPlan = async (id) => {
-    const response = await redeemInvestPlan(user.token, id);
+    setLoading(true);
+    try {
+      const response = await redeemInvestPlan(user.token, id);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {

@@ -88,7 +88,7 @@ const WithdrawPage = () => {
         }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching withdrawal history:", error);
+      } finally {
         setLoading(false);
       }
     };

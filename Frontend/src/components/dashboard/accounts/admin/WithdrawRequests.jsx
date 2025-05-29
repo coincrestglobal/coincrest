@@ -66,7 +66,6 @@ function Withdrawals() {
         setTotalPages(response.totalPages);
         setTotalWithdraws(response.total);
       } catch (error) {
-        console.error("Error fetching withdrawals:", error);
       } finally {
         setLoading(false); // End loading
       }

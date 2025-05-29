@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router";
 import { signUp } from "../../services/operations/authApi";
 import useSafeNavigate from "../../utils/useSafeNavigate";
+import Loading from "../../pages/Loading";
 
 function SignupForm() {
   const navigate = useSafeNavigate();
@@ -24,6 +24,7 @@ function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [referralCodeState, setReferralCodeState] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setReferralCodeState(initialReferral);
@@ -31,6 +32,7 @@ function SignupForm() {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       const data1 = {
         name: data.name,
         email: data.email,
@@ -46,8 +48,15 @@ function SignupForm() {
 
       await signUp(data1, navigate, params);
       reset();
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="lg:mt-16 flex items-center justify-center px-4 sm:px-0 h-[85vh]">

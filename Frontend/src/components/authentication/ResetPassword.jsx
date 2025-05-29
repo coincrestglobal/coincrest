@@ -4,6 +4,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { resetPassword } from "../../services/operations/authApi";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import { useParams } from "react-router-dom";
+import Loading from "../../pages/Loading";
 
 function ResetPassword() {
   const { token } = useParams();
@@ -17,14 +18,21 @@ function ResetPassword() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      const response = await resetPassword(data, token, navigate);
+      await resetPassword(data, token, navigate);
     } catch (error) {
-      console.error("Password reset failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex items-center justify-center h-screen bg-[var(--primary-light)]">

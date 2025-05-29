@@ -64,9 +64,8 @@ export const controlPannelStats = async (token) => {
 //users
 
 export const getAllUsers = async (token, params) => {
-  let response = [];
   try {
-    response = await apiConnector(
+    const response = await apiConnector(
       "GET",
       GET_ALL_USERS_API,
       null,
@@ -81,7 +80,6 @@ export const getAllUsers = async (token, params) => {
 };
 
 export const getUserDetails = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",
@@ -94,15 +92,13 @@ export const getUserDetails = async (token, params) => {
     );
     if (!response?.data?.success) {
     }
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };
 
 //withdrawals
 
 export const getWithdrawRequests = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",
@@ -116,17 +112,15 @@ export const getWithdrawRequests = async (token, params) => {
     if (!response?.data?.success) {
       // Handle unsuccessful response if needed
     }
-    result = response;
+    return response;
   } catch (error) {
     // Handle error if needed
   }
-  return result;
 };
 
 export const approveWithdrawRequest = async (token, withdrawal_id) => {
-  let response = null;
   try {
-    response = await apiConnector(
+    const response = await apiConnector(
       "PATCH",
       `${APPROVE_WITHDRAW_REQUEST_API}/${withdrawal_id}`,
       null,
@@ -137,14 +131,13 @@ export const approveWithdrawRequest = async (token, withdrawal_id) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error(response.message || "Failed to approve withdrawal request");
+    toast.error(error.message || "Failed to approve withdrawal request");
   }
 };
 
 //deposits
 
 export const getAllUsersDepositHistory = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",
@@ -158,15 +151,13 @@ export const getAllUsersDepositHistory = async (token, params) => {
     if (!response?.data?.success) {
     }
 
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };
 
 //reviews
 
 export const getAllReviews = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",
@@ -179,10 +170,10 @@ export const getAllReviews = async (token, params) => {
     );
     if (!response?.data?.success) {
     }
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };
+
 export const getReviewById = async (token, id) => {
   try {
     const response = await apiConnector(
@@ -210,7 +201,7 @@ export const acceptReview = async (token, reviewId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to accept review");
+    toast.error(error.response || "Failed to accept review");
   }
 };
 export const rejectReview = async (token, reviewId) => {
@@ -226,14 +217,13 @@ export const rejectReview = async (token, reviewId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to reject review");
+    toast.error(error.response || "Failed to reject review");
   }
 };
 
 //feedbacks
 
 export const getAllFeedbacks = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",
@@ -246,15 +236,13 @@ export const getAllFeedbacks = async (token, params) => {
     );
     if (!response?.data?.success) {
     }
-    result = response;
+    return response;
   } catch (error) {}
-  return result;
 };
 
 export const respondToFeedback = async (feedbackId, responseMessage, token) => {
-  let response = null;
   try {
-    response = await apiConnector(
+    const response = await apiConnector(
       "PATCH",
       `${RESPOND_FEEDBACK_API}/${feedbackId}`,
       { message: responseMessage },
@@ -265,7 +253,7 @@ export const respondToFeedback = async (feedbackId, responseMessage, token) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error(response.message || "Failed to respond to feedback");
+    toast.error(error.message || "Failed to respond to feedback");
   }
 };
 
@@ -275,21 +263,16 @@ export const getAllFaqs = async () => {
   try {
     const response = await apiConnector("GET", GET_ALL_FAQS_API);
     return response;
-  } catch (error) {
-    // handle error
-    return null;
-  }
+  } catch (error) {}
 };
 
 export const addFaq = async (faqData) => {
-  let response = null;
   try {
-    response = await apiConnector("POST", ADD_FAQ_API, faqData);
+    const response = await apiConnector("POST", ADD_FAQ_API, faqData);
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error(response.message || "Failed to add FAQ");
-    return null;
+    toast.error(error.message || "Failed to add FAQ");
   }
 };
 
@@ -299,8 +282,7 @@ export const deleteFaq = async (faqId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to delete FAQ");
-    return null;
+    toast.error(error.message || "Failed to delete FAQ");
   }
 };
 
@@ -310,20 +292,16 @@ export const getTerms = async () => {
   try {
     const response = await apiConnector("GET", GET_TERMS_API);
     return response;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) {}
 };
 
 export const addTerms = async (termsData) => {
-  // termsData example: { content: "Your terms content here" }
   try {
     const response = await apiConnector("POST", ADD_TERMS_API, termsData);
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to add terms");
-    return null;
+    toast.error(error.message || "Failed to add terms");
   }
 };
 
@@ -336,8 +314,7 @@ export const deleteTerms = async (termsId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to delete terms");
-    return null;
+    toast.error(error.message || "Failed to delete terms");
   }
 };
 
@@ -347,20 +324,16 @@ export const getPrivacyPolicy = async () => {
   try {
     const response = await apiConnector("GET", GET_PRIVACY_API);
     return response;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) {}
 };
 
 export const addPrivacyPolicy = async (privacyData) => {
-  // privacyData example: { content: "Your privacy policy content here" }
   try {
     const response = await apiConnector("POST", ADD_PRIVACY_API, privacyData);
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to add privacy policy");
-    return null;
+    toast.error(error.message || "Failed to add privacy policy");
   }
 };
 
@@ -373,8 +346,7 @@ export const deletePrivacyPolicy = async (privacyId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to delete privacy policy");
-    return null;
+    toast.error(error.message || "Failed to delete privacy policy");
   }
 };
 
@@ -384,24 +356,21 @@ export const getAllAdmins = async () => {
   try {
     const response = await apiConnector("GET", GET_ALL_ADMINS);
     return response;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) {}
 };
 
 // Add new admin
 
 export const addNewAdmin = async (token, adminData) => {
-  let response = null;
   try {
-    response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
+    const response = await apiConnector("POST", ADD_NEW_ADMIN, adminData, {
       Authorization: `Bearer ${token}`,
     });
     toast.success(response.message);
 
     return response;
   } catch (error) {
-    toast.error(response.message || "Failed to add new admin");
+    toast.error(error.message || "Failed to add new admin");
   }
 };
 
@@ -420,8 +389,7 @@ export const fireAdmin = async (id, token, password) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to remove admin");
-    return null;
+    toast.error(error.message || "Failed to remove admin");
   }
 };
 
@@ -441,9 +409,7 @@ export const getAllAnnouncements = async (token, params) => {
       params
     );
     return response;
-  } catch (error) {
-    return null;
-  }
+  } catch (error) {}
 };
 
 // Add a new announcement
@@ -456,8 +422,7 @@ export const addAnnouncement = async (token, data) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to add announcement");
-    return null;
+    toast.error(error.message || "Failed to add announcement");
   }
 };
 
@@ -476,7 +441,6 @@ export const deleteAnnouncements = async (token, announcementId) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to delete announcement");
-    return null;
+    toast.error(error.message || "Failed to delete announcement");
   }
 };

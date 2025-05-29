@@ -47,10 +47,10 @@ export const investInPlan = async (token, data) => {
     const response = await apiConnector("POST", INVEST_IN_PLAN, data, {
       Authorization: `Bearer ${token}`,
     });
-    toast.success(response.message);
+    if (response.status === success) toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Investment failed");
+    toast.error(error.message || "failed to invest");
   }
 };
 
@@ -87,21 +87,20 @@ export const redeemInvestPlan = async (token, id) => {
 
     return response;
   } catch (error) {
-    toast.error("Failed to redeem plan");
+    toast.error(error.message || "Failed to redeem plan");
   }
 };
 
 //deposits
 
 export const verifyDeposit = async (token, data) => {
-  let response;
   try {
-    response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
+    const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
       Authorization: `Bearer ${token}`,
     });
     toast.success(response.message);
   } catch (error) {
-    toast.error(response.message);
+    toast.error(error.message);
   }
 };
 export const getDepositAddresses = async (token) => {
@@ -141,7 +140,7 @@ export const withdraw = async (token, data) => {
     });
     toast.success(response.message);
   } catch (error) {
-    toast.error("Withdrawal request failed");
+    toast.error(error.message || "Withdrawal request failed");
   }
 };
 
@@ -176,7 +175,7 @@ export const updatePersonalDetails = async (token, data) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to update personal details");
+    toast.error(error.message || "Failed to update personal details");
   }
 };
 
@@ -189,7 +188,7 @@ export const updateProfilePhoto = async (token, data) => {
 
     return response;
   } catch (error) {
-    toast.error("Failed to update profile photo");
+    toast.error(error.message || "Failed to update profile photo");
   }
 };
 
@@ -202,7 +201,7 @@ export const updatePassword = async (token, data) => {
     });
     toast.success(response.message);
   } catch (error) {
-    toast.error("Password update failed");
+    toast.error(error.message || "Password update failed");
   }
 };
 
@@ -216,7 +215,7 @@ export const addOrUpdateWallet = async (token, updatedData) => {
     toast.success(response.message);
     return response;
   } catch (error) {
-    toast.error("Failed to update wallet");
+    toast.error(error.message || "Failed to update wallet");
   }
 };
 
@@ -231,15 +230,11 @@ export const getReferredUsers = async (token) => {
       }
     );
     return response;
-  } catch (error) {
-    console.error("Get Referral Info Error:", error);
-    throw error;
-  }
+  } catch (error) {}
 };
 
 //bonus history
 export const getBonustHistory = async (token, params) => {
-  let result = [];
   try {
     const response = await apiConnector(
       "GET",

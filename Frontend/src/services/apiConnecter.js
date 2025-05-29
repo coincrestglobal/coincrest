@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+
 export const apiConnector = async (
   method,
   url,
@@ -22,7 +23,6 @@ export const apiConnector = async (
   if (bodyData && !["GET", "DELETE"].includes(method.toUpperCase())) {
     options.body = isFormData ? bodyData : JSON.stringify(bodyData);
 
-    // Don't set Content-Type manually if sending FormData
     if (!isFormData) {
       options.headers["Content-Type"] = "application/json";
     }
@@ -31,11 +31,7 @@ export const apiConnector = async (
   const response = await fetch(url + queryString, options);
   const result = await response.json();
 
-  if (!response.ok) {
-    toast.error(
-      result.message || "Something went wrong. Please try again after a while"
-    );
-  }
+  if (!response.ok) throw new Error(result.message || "API request failed");
 
   return result;
 };

@@ -18,7 +18,6 @@ function UserPortfolio() {
         setUserInvestableBalance(response.data.investableBalance);
         setUserWithdrawableBalance(response.data.withdrawableBalance);
       } catch (error) {
-        console.error("Failed to fetch balance:", error);
       } finally {
         setLoading(false);
       }

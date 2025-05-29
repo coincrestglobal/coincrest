@@ -50,7 +50,6 @@ exports.getAnnouncements = catchAsync(async (req, res) => {
       visibleTo: role,
     };
   }
-
   const sortOrder = sort === "desc" ? -1 : 1;
 
   if (startDate && endDate) {

@@ -98,7 +98,7 @@ const HeroSection = () => {
                 }
               }}
             >
-              REGISTER
+              {user ? "Go to Dashboard" : "REGISTER"}
             </button>
             <button
               className="bg-transparent border border-gray-300 px-8 py-3 text-sm font-semibold rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-900 transition-all duration-300 hover:scale-105 hover:shadow-lg"

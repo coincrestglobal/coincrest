@@ -4,8 +4,8 @@ function Sidebar({ children }) {
   return (
     <div
       className="
-        bg-primary-dark flex flex-col h-fit
-         max-h-[87vh]
+        bg-primary-dark flex flex-col 
+         max-h-[92vh]
         py-4 space-y-4 border border-button rounded
         w-full md:w-auto
       "

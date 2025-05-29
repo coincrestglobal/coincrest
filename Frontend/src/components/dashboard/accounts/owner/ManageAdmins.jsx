@@ -85,7 +85,6 @@ function AllAdmins() {
         setTotalPages(response.totalPages);
         setTotalUsers(response.total);
       } catch (error) {
-        console.error("Error fetching users:", error);
       } finally {
         setLoading(false);
       }
@@ -106,7 +105,7 @@ function AllAdmins() {
       setLoading(false);
     }
   };
-  console.log(admins);
+
   if (loading) {
     return <Loading />;
   }

@@ -59,9 +59,8 @@ function Deposits() {
         setTotalPages(response.totalPages);
         setTotalDeposits(response.total);
       } catch (error) {
-        console.error("Error fetching deposits:", error);
       } finally {
-        setLoading(false); // Stop loading after everything
+        setLoading(false);
       }
     };
 

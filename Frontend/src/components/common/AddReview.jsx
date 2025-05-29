@@ -41,8 +41,6 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
       setHasReviewed(true);
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Review submission error:", error);
-      alert("Failed to submit review. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -139,7 +139,7 @@ function InvestCard({ onClose }) {
 
       <div className="flex justify-center">
         <button
-          className="bg-button hover:opacity-90 transition-all text-text-heading font-semibold px-12 py-3 rounded-xl shadow-inner shadow-text-link"
+          className="bg-button hover:bg-button-hover transition-all text-text-heading font-semibold px-12 py-3 rounded-xl shadow-inner shadow-text-link"
           onClick={() => setIsModalOpen(true)}
           disabled={!selectedLevel || !amount || isNaN(parseFloat(amount))}
         >

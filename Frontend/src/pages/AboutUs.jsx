@@ -99,7 +99,7 @@ export default function AboutUs() {
             ««
           </span>
           <span className="text-text-heading text-2xl sm:text-3xl md:text-4xl tracking-tight pt-1 md:pt-2">
-            WHy Choose CoinCrest
+            Why Choose CoinCrest
           </span>
           <span className="text-text-highlighted text-4xl sm:text-5xl md:text-6xl">
             »»

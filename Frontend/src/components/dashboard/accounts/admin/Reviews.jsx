@@ -61,7 +61,7 @@ function Reviews() {
         setTotalReviews(response.total);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching reviews:", error);
+      } finally {
         setLoading(false);
       }
     };

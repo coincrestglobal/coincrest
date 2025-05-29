@@ -12,9 +12,7 @@ export default function EmailVerifyingScreen() {
     const verifyEmail = async () => {
       try {
         await emailVerification(token, navigate);
-      } catch (error) {
-        console.error("Email verification failed:", error);
-      }
+      } catch (error) {}
     };
 
     verifyEmail();

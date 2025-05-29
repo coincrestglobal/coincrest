@@ -76,7 +76,6 @@ const ProfileForm = () => {
       }
       setEditableWalletIndex(null);
     } catch (error) {
-      console.error("Wallet update failed:", error);
     } finally {
       setLoading(false);
     }
@@ -93,7 +92,6 @@ const ProfileForm = () => {
       }));
       setDetailsModal(false);
     } catch (error) {
-      console.error("Updating personal details failed:", error);
     } finally {
       setLoading(false);
     }
@@ -110,7 +108,6 @@ const ProfileForm = () => {
       await updatePassword(user.token, data);
       setPasswordModal(false);
     } catch (error) {
-      console.error("Password update failed:", error);
     } finally {
       setLoading(false);
     }

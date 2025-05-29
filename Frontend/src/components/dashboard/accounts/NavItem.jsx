@@ -1,11 +1,11 @@
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import useSafeNavigate from "../../../utils/useSafeNavigate";
 import { useState } from "react";
 import ConfirmationModal from "../../common/ConfirmationModal";
 import { useUser } from "../../common/UserContext";
 import { toast } from "react-toastify";
 
-function NavItem({ to, children }) {
+function NavItem({ to, children, isActive, onClick }) {
   const { setUser } = useUser();
   const safeNavigate = useSafeNavigate();
   const [modal, setModal] = useState(false);
@@ -17,42 +17,46 @@ function NavItem({ to, children }) {
     safeNavigate("/login");
   };
 
-  const style = `flex items-center px-2 md:px-8 py-2 md:py-3 md:text-xl uppercase bg-primary-dark text-text-link space-x-3 transition-all duration-75 ease-in-out `;
+  const baseStyle =
+    "flex items-center px-2 md:px-8 py-2 md:py-3 md:text-xl uppercase bg-primary-dark text-text-link space-x-3 transition-all duration-75 ease-in-out";
+
+  if (to === "logout") {
+    return (
+      <>
+        <button
+          onClick={() => {
+            setModal(true);
+          }}
+          className={`${baseStyle} hover:ml-1`}
+        >
+          <div className="flex items-center space-x-3">{children}</div>
+        </button>
+        {modal && (
+          <ConfirmationModal
+            text="Are you sure you want to log out?"
+            onConfirm={handleLogout}
+            onCancel={() => setModal(false)}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
-    <>
-      {to === "logout" ? (
-        <>
-          <button
-            onClick={() => setModal(true)}
-            className={`${style} hover:ml-1`}
-          >
-            <div className="flex items-center space-x-3">{children}</div>
-          </button>
-          {modal && (
-            <ConfirmationModal
-              text={"Are you sure you want to log out?"}
-              onConfirm={handleLogout}
-              onCancel={() => setModal(false)}
-            />
-          )}
-        </>
-      ) : (
-        <NavLink
-          to={to}
-          end
-          className={({ isActive }) =>
-            `${style} ${
-              isActive
-                ? "text-white border-b-2 border-button lg:border-b-0 lg:border-l-4 lg:border-l-button"
-                : " hover:ml-1 border-l-0"
-            }`
-          }
-        >
-          <div className="flex items-center space-x-3  ">{children}</div>
-        </NavLink>
-      )}
-    </>
+    <NavLink
+      to={to}
+      end
+      onClick={onClick}
+      className={({ isActive: navIsActive }) =>
+        `${baseStyle} ${
+          navIsActive
+            ? "text-white order-b-0 border-l-4 border-l-button"
+            : "hover:ml-1 border-l-0"
+        }`
+      }
+    >
+      <div className="flex items-center space-x-3">{children}</div>
+    </NavLink>
   );
 }
 
