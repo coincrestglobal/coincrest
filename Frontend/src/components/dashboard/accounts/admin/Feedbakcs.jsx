@@ -49,9 +49,7 @@ function Feedbacks() {
         if (sortOrder) params.append("sort", sortOrder);
         params.append("page", currentPage);
         params.append("limit", numberOfEntries);
-
         const response = await getAllFeedbacks(user.token, params.toString());
-
         const { data } = response;
         setFeedbacks(data.feedbacks);
         setTotalPages(response.totalPages);

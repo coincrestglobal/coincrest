@@ -33,7 +33,7 @@ export const apiConnector = async (
 
   if (!response.ok) {
     toast.error(
-      result.message || "Something went wrong. Please try again after a while"
+      result.message || "Something went wrong. Please try again after a while"
     );
   }
 

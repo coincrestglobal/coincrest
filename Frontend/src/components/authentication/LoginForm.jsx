@@ -21,7 +21,9 @@ function LoginForm() {
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   const onSubmit = async (data) => {
-    const response = await login(data, navigate, setUser);
+    try {
+      const response = await login(data, navigate, setUser);
+    } catch (error) {}
   };
 
   return (

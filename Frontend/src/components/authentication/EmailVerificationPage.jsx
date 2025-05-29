@@ -10,11 +10,15 @@ export default function EmailVerifyingScreen() {
   const navigate = useSafeNavigate();
   useEffect(() => {
     const verifyEmail = async () => {
-      const response = emailVerification(token, navigate);
+      try {
+        await emailVerification(token, navigate);
+      } catch (error) {
+        console.error("Email verification failed:", error);
+      }
     };
 
     verifyEmail();
-  }, []);
+  }, [token, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary px-4">
