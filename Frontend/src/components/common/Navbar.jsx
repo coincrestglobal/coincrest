@@ -29,7 +29,7 @@ function Navbar() {
       {/* Navbar */}
       <div className="  flex justify-between items-center px-8 sm:px-12 lg:px-28 py-4 z-10 relative">
         <NavLink to="/">
-          <img className="h-26 w-40" src="/images/logo4.png" alt="logo" />
+          <img className="h-26 w-40" src="/images/logo.png" alt="logo" />
         </NavLink>
 
         {/* Navigation Links (desktop version) */}
