@@ -1,6 +1,7 @@
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Withdrawal = require("../models/withdrawalModel");
 const generateReferralCode = require("../utils/referralCodeGenerator");
 const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/email");
@@ -9,6 +10,7 @@ const AppError = require("../utils/appError");
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
+const Decimal = require("decimal.js");
 
 // url variables
 const emailVerificationUrl = config.frontendUrl + "/verify-email/";
@@ -209,6 +211,94 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.sendOtpLogin = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email, isDeleted: false });
+  if (!user || !(await user.verifyPassword(password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
+
+  // Check if the user has verified their email
+  if (!user.isVerified) {
+    if (user.emailVerificationTokenExpires < Date.now()) {
+      // Token expired - generate a new one
+      const { token, tokenExpiresIn } = generateToken(30);
+
+      user.emailVerificationToken = token;
+      user.emailVerificationTokenExpires = tokenExpiresIn;
+      await user.save();
+
+      await sendEmail({
+        email: user.email,
+        greeting: user?.name ? `Hi ${user.name.trim().split(" ")[0]}` : "",
+        subject: "Email Verification Link",
+        message:
+          "Your previous verification link has expired. Please verify your email using the new link below.",
+        heading: "Verify Your Email",
+        buttonText: "Verify Email",
+        buttonUrl: emailVerificationUrl + user.emailVerificationToken,
+      });
+    }
+
+    return next(
+      new AppError(
+        "Your email is not verified yet. Please check your inbox to verify your email before logging in.",
+        400
+      )
+    );
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  user.otp = otp;
+  user.otpExpiresAt = otpExpiresAt;
+  await user.save();
+
+  // Send OTP on email
+  await sendEmail({
+    email: user.email,
+    subject: "Your OTP for Login",
+    greeting: user?.name ? `Hi ${user.name.trim().split(" ")[0]}` : "",
+    message: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    heading: "Verify Your Email",
+  });
+
+  res
+    .status(200)
+    .json({ status: "success", message: "OTP sent to your email." });
+});
+
+exports.verifyOtpLogin = catchAsync(async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  const user = await User.findOne({ email, isDeleted: false });
+  if (
+    !user ||
+    user.otp !== otp ||
+    !user.otpExpiresAt ||
+    user.otpExpiresAt < Date.now()
+  ) {
+    return next(new AppError("Invalid or expired OTP.", 401));
+  }
+
+  // OTP verified — reset it
+  user.otp = undefined;
+  user.otpExpiresAt = undefined;
+  await user.save();
+
+  const token = jwt.sign({ id: user._id }, config.jwtSecret, {
+    expiresIn: config.jwtTokenExpiresIn,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Logged in successfully",
+    data: { user, token },
+  });
+});
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -226,7 +316,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await sendEmail({
     email: user.email,
     subject: "Password Reset Request",
-    greeting: user?.name ? `Hello ${user.name.trim().split(" ")[0]}` : "",
+    greeting: user?.name ? `Hi ${user.name.trim().split(" ")[0]}` : "",
     message:
       "We received a request to reset your password. Click the button below to reset it.",
     heading: "Forgot Your Password?",

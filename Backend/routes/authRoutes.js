@@ -6,13 +6,29 @@ const authValidator = require("../validators/authValidator");
 const router = express.Router();
 
 router.post("/signup", authValidator.signupValidator, authController.signup);
+
 router.get("/verify/:token", authController.verifyEmail);
-router.post("/login", authValidator.loginValidator, authController.login);
+
+// router.post("/login", authValidator.loginValidator, authController.login);
+
+router.post(
+  "/sendOtp",
+  authValidator.sendOtpValidator,
+  authController.sendOtpLogin
+);
+
+router.post(
+  "/verifyOtp",
+  authValidator.verifyOtpValidator,
+  authController.verifyOtpLogin
+);
+
 router.post(
   "/forgotPassword",
   authValidator.forgotPasswordValidator,
   authController.forgotPassword
 );
+
 router.patch(
   "/resetPassword/:token",
   authValidator.resetPasswordValidator,
@@ -41,6 +57,7 @@ router.patch(
   authValidator.updatePasswordValidator,
   authController.updatePassword
 );
+
 router.patch(
   "/deleteAccount",
   authMiddleware.protect,
