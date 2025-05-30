@@ -9,7 +9,16 @@ const {
   VERIFY_EMAIL,
   RESETPASSTOKEN_API,
   RESETPASSWORD_API,
+  VALIDATE_TOKEN,
 } = authEndpoints;
+
+export const validateToken = async (token) => {
+  try {
+    const response = await apiConnector("GET", VALIDATE_TOKEN, null, {
+      Authorization: `Bearer ${token}`,
+    });
+  } catch {}
+};
 
 export const signUp = async (data, params) => {
   try {
@@ -29,6 +38,7 @@ export const signUp = async (data, params) => {
 export const sendOtp = async (data) => {
   try {
     const response = await apiConnector("POST", SEND_OTP_API, data);
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Unable to send OTP. Please try again later.");

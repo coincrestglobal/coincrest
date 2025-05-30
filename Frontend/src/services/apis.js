@@ -11,6 +11,7 @@ export const authEndpoints = {
   RESETPASSTOKEN_API: BASE_URL + "/auth/forgotPassword",
   RESETPASSWORD_API: BASE_URL + "/auth/resetPassword",
   VERIFY_EMAIL: BASE_URL + "/auth/verify",
+  VALIDATE_TOKEN: BASE_URL + "/auth/validateToken",
 };
 
 //home

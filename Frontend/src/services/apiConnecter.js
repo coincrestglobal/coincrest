@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-
 export const apiConnector = async (
   method,
   url,
