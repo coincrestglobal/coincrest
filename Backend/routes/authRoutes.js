@@ -5,6 +5,12 @@ const authValidator = require("../validators/authValidator");
 
 const router = express.Router();
 
+router.get(
+  "/validateToken",
+  authMiddleware.protect,
+  authController.validateToken
+);
+
 router.post("/signup", authValidator.signupValidator, authController.signup);
 
 router.get("/verify/:token", authController.verifyEmail);
