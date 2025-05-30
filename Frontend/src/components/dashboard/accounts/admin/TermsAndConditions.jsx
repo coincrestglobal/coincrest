@@ -101,7 +101,10 @@ export default function ManageTermsConditions() {
               key={idx}
               className="flex justify-between items-start bg-primary-dark border-l-4 border-text-highlighted p-4 shadow rounded"
             >
-              <p className="text-text-heading">{term.condition}</p>
+              <div>
+                <p className="text-text-heading">{term.title}</p>
+                <p className="text-text-heading">{term.condition}</p>
+              </div>
               <button
                 onClick={() => setConfirmDeleteId(term._id)}
                 className="text-red-500 hover:text-red-700 ml-4"

@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 
 const {
   SIGNUP_API,
-  LOGIN_API,
+  SEND_OTP_API,
+  VERIFY_OTP_API,
   VERIFY_EMAIL,
   RESETPASSTOKEN_API,
   RESETPASSWORD_API,
