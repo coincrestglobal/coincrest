@@ -3,9 +3,9 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.createTerms = catchAsync(async (req, res, next) => {
-  const { condition } = req.body;
+  const { title, condition } = req.body;
 
-  const terms = new Terms({ condition });
+  const terms = new Terms({ title, condition });
   await terms.save();
 
   res.status(201).json({

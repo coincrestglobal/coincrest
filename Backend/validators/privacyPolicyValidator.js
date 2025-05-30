@@ -7,6 +7,11 @@ const normalizeSpaces = (value) => {
 };
 
 exports.validateCreatePrivacy = validate([
+  body("title")
+    .customSanitizer(normalizeSpaces)
+    .notEmpty()
+    .withMessage("Title is required"),
+
   body("policy")
     .customSanitizer(normalizeSpaces)
     .notEmpty()

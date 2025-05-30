@@ -7,6 +7,11 @@ const normalizeSpaces = (value) => {
 };
 
 exports.validateCreateTerms = validate([
+  body("title")
+    .customSanitizer(normalizeSpaces)
+    .notEmpty()
+    .withMessage("Title is required"),
+
   body("condition")
     .customSanitizer(normalizeSpaces)
     .notEmpty()

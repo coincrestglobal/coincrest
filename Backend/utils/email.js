@@ -19,6 +19,8 @@ const generateEmailTemplate = ({
   buttonText,
   buttonUrl,
 }) => {
+  const showButton = buttonText && buttonUrl;
+
   return `
   <!DOCTYPE html>
   <html>
@@ -91,12 +93,17 @@ const generateEmailTemplate = ({
         <h2>${heading}</h2>
 
         ${greeting ? `<p><strong>${greeting}</strong></p>` : ""}
-
         <p>${message}</p>
 
+        ${
+          showButton
+            ? `
         <div class="button-wrapper">
           <a href="${buttonUrl}" class="button">${buttonText}</a>
         </div>
+        `
+            : ""
+        }
 
         <div class="footer">
           <p>If you did not request this, please ignore this email.</p>
@@ -124,18 +131,13 @@ const sendEmail = async (options) => {
     },
   });
 
-  let html = "";
-  if (options.heading && options.buttonText && options.buttonUrl) {
-    html = generateEmailTemplate({
-      heading: escapeHTML(options.heading),
-      greeting: options.greeting ? escapeHTML(options.greeting) : "",
-      message: escapeHTML(options.message).replace(/\n/g, "<br>"),
-      buttonText: escapeHTML(options.buttonText),
-      buttonUrl: options.buttonUrl,
-    });
-  } else {
-    html = `<p>${escapeHTML(options.message).replace(/\n/g, "<br>")}</p>`;
-  }
+  let html = generateEmailTemplate({
+    heading: escapeHTML(options.heading),
+    greeting: options.greeting ? escapeHTML(options.greeting) : "",
+    message: escapeHTML(options.message).replace(/\n/g, "<br>"),
+    buttonText: options.buttonText ? escapeHTML(options.buttonText) : null,
+    buttonUrl: options.buttonUrl || null,
+  });
 
   const mailOptions = {
     from: `"${config.companyName} Support" <noreply@${config.companyName}>`,

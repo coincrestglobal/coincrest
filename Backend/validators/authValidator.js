@@ -53,9 +53,21 @@ exports.signupValidator = validate([
     }),
 ]);
 
-exports.loginValidator = validate([
+// exports.loginValidator = validate([
+//   body("email").isEmail().withMessage("Please provide a valid email address"),
+//   body("password").notEmpty().withMessage("Password is required"),
+// ]);
+
+exports.sendOtpValidator = validate([
   body("email").isEmail().withMessage("Please provide a valid email address"),
   body("password").notEmpty().withMessage("Password is required"),
+]);
+
+exports.verifyOtpValidator = validate([
+  body("email").isEmail().withMessage("Please provide a valid email address"),
+  body("otp")
+    .isLength({ min: 6, max: 6 })
+    .withMessage("OTP must be a 6-digit code"),
 ]);
 
 exports.forgotPasswordValidator = validate([
