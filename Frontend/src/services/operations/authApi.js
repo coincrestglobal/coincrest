@@ -25,10 +25,19 @@ export const signUp = async (data, params) => {
   }
 };
 
-export const login = async (data, navigate, setUser) => {
+export const sendOtp = async (data) => {
+  try {
+    const response = await apiConnector("POST", SEND_OTP_API, data);
+    return response;
+  } catch (error) {
+    toast.error(error.message || "Unable to send OTP. Please try again later.");
+  }
+};
+
+export const handleVerifyOtp = async (data, navigate, setUser) => {
   let response = null;
   try {
-    response = await apiConnector("POST", LOGIN_API, data);
+    response = await apiConnector("POST", VERIFY_OTP_API, data);
 
     const { token, user } = response.data;
 
