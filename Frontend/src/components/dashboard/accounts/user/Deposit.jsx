@@ -153,6 +153,9 @@ const DepositPage = () => {
       {/* New Deposit Tab */}
       {activeTab === "New Deposit" && (
         <div className="space-y-6">
+          <p className="text-sm text-nav-highlighted">
+            Kindly read the guidelines to avoid any issues.
+          </p>
           <div>
             <p className="text-sm text-gray-300 mb-2">
               Please transfer USDT to one of the following wallet addresses:
@@ -226,10 +229,6 @@ const DepositPage = () => {
           </div>
 
           <div className="flex flex-col py-2 gap-3">
-            <p className="text-sm text-nav-highlighted">
-              Kindly read the guidelines to avoid any issues.
-            </p>
-
             <p className="text-sm text-gray-400">
               After sending the payment, please upload proof of payment using
               below verify button.
@@ -404,17 +403,47 @@ const DepositPage = () => {
 
       {activeTab === "Guidelines" && (
         <div className="text-gray-300 space-y-4">
-          <h2 className="text-xl font-semibold text-text-heading mb-4">
-            Deposit Guidelines
-          </h2>
-          <ul className="list-disc list-inside space-y-2 text-sm">
-            <li>Ensure your wallet address is correct before depositing.</li>
-            <li>Minimum deposit amount is $10.</li>
-            <li>All deposits are final and non-refundable.</li>
-            <li>Use only supported chains and tokens for deposits.</li>
-            <li>Deposits may take a few minutes to reflect in your account.</li>
+          <div className="flex flex-col bg-primary-light p-4 rounded-md">
+            <h2 className="text-xl font-semibold text-center text-text-heading mb-4 border-b border-b-button">
+              CoinCrest Deposit Guidelines
+            </h2>
+            <p>
+              Welcome to the future of finance. Before you fund your wallet,
+              please follow these important steps to ensure a seamless
+              experience:
+            </p>
+          </div>
+
+          <ul className="list-disc list-inside space-y-2 text-sm px-2">
             <li>
-              Contact support in case of issues with the deposit confirmation.
+              <strong>Double-Check Your Wallet Address:</strong> Blockchain
+              transactions are irreversible. Always confirm that your wallet
+              address is 100% accurate before making a deposit.
+            </li>
+            <li>
+              <strong>Minimum Deposit Requirement:</strong> The network doesn’t
+              run on dust — make sure your deposit meets the minimum threshold
+              of $100 to activate your staking.
+            </li>
+            <li>
+              <strong>All Transactions Are Final:</strong> On-chain means no
+              take-backs. Once confirmed, deposits are non-refundable and cannot
+              be reversed.
+            </li>
+            <li>
+              <strong>Use Supported Chains & Tokens Only:</strong> Stick to the
+              approved networks and tokens listed on CoinCrest. Unsupported
+              assets may be lost permanently.
+            </li>
+            <li>
+              <strong>Deposit Times May Vary:</strong> Most deposits reflect
+              within minutes, but network congestion or chain conditions may
+              cause slight delays. Your patience is appreciated.
+            </li>
+            <li>
+              <strong>Need Help? We’ve Got You:</strong> If your deposit doesn’t
+              show up or you're unsure about the process, our support team is
+              just a message away. Keep your transaction hash ready.
             </li>
           </ul>
         </div>

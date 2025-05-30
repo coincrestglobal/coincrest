@@ -157,15 +157,16 @@ const WithdrawPage = () => {
 
       <div>
         {/* New Withdrawal Form */}
-        <p className="text-sm text-nav-highlighted py-3">
-          Kindly read the guidelines to avoid any issues.
-        </p>
+
         <form
           className={`space-y-6 ${
             activeTab === "New Withdrawal" ? "" : "hidden"
           }`}
         >
           <div>
+            <p className="text-sm text-nav-highlighted py-3">
+              Kindly read the guidelines to avoid any issues.
+            </p>
             <label className="block mb-2 text-sm text-gray-300">
               Amount ($)
             </label>
@@ -303,24 +304,46 @@ const WithdrawPage = () => {
             activeTab === "Guidelines" ? "" : "hidden"
           } text-gray-300 space-y-4`}
         >
-          <h2 className="text-xl font-semibold text-text-heading mb-4">
-            Withdrawal Guidelines
-          </h2>
-          <ul className="list-disc list-inside space-y-2 text-sm">
-            <li>Withdrawals are allowed once every 7 days.</li>
+          <div className="flex flex-col bg-primary-light p-4 rounded-md">
+            <h2 className="text-xl font-semibold text-center text-text-heading mb-4 border-b border-b-button">
+              CoinCrest Withdrawal Guidelines
+            </h2>
+            <p>
+              Your assets, your control — but with secure and transparent
+              processes. Please review the following withdrawal terms:
+            </p>
+          </div>
+          <ul className="list-disc list-inside space-y-2 text-sm px-2">
             <li>
-              Ensure your wallet address is correctly added before initiating a
-              withdrawal.
+              📅 <strong>1. One Withdrawal Every 7 Days:</strong> To maintain
+              platform integrity and ensure smooth operations, withdrawals are
+              permitted once every 7 days per user.
             </li>
-            <li>Minimum withdrawal amount is $50.</li>
-            <li>Only approved wallets can be used for withdrawal.</li>
             <li>
-              All withdrawals are manually reviewed and may take up to 24–48
-              hours.
+              🎯 <strong>2. Verify Your Wallet Address:</strong> Make sure your
+              withdrawal wallet address is added and verified before initiating
+              a request. Incorrect addresses may lead to permanent loss of
+              funds.
             </li>
             <li>
-              In case of issues, contact support with your transaction reference
-              ID.
+              💸 <strong>3. Minimum Withdrawal: $30:</strong> To process a
+              withdrawal, the minimum amount must be $30 or more. Requests below
+              this threshold will not be accepted.
+            </li>
+            <li>
+              🛡️ <strong>4. Approved Wallets Only:</strong> Withdrawals are only
+              allowed to pre-approved wallet addresses linked to your account.
+              This enhances security and prevents unauthorized access.
+            </li>
+            <li>
+              ⏱️ <strong>5. Manual Review – 24 to 48 Hours:</strong> For your
+              safety, all withdrawal requests are manually reviewed. Please
+              allow 24 to 48 hours for processing and confirmation.
+            </li>
+            <li>
+              🆘 <strong>6. Need Assistance?</strong> If you experience any
+              issues, reach out to our support team with your transaction
+              reference ID for quick resolution.
             </li>
           </ul>
         </div>

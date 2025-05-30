@@ -8,6 +8,7 @@ import {
 } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
 import ConfirmationModal from "../../../common/ConfirmationModal";
+import Loading from "../../../../pages/Loading";
 
 export default function ManageTermsConditions() {
   const { user } = useUser();
@@ -15,6 +16,7 @@ export default function ManageTermsConditions() {
   const [termsList, setTermsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newTerm, setNewTerm] = useState("");
+  const [newTitle, setNewTitle] = useState("");
   const [activeTab, setActiveTab] = useState("view"); // "view" or "add"
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [showAddConfirm, setShowAddConfirm] = useState(false);
@@ -34,10 +36,11 @@ export default function ManageTermsConditions() {
   useEffect(() => {
     getTermsAndConditions();
   }, [activeTab]);
+
   const handleAddTerm = async () => {
     try {
       setLoading(true);
-      await addTerms(user.token, { condition: newTerm });
+      await addTerms(user.token, { condition: newTerm, title: newTitle });
       getTermsAndConditions();
       setActiveTab("view");
     } catch {
@@ -56,6 +59,10 @@ export default function ManageTermsConditions() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="p-2 bg-primary max-w-4xl mx-auto">
@@ -102,7 +109,7 @@ export default function ManageTermsConditions() {
               className="flex justify-between items-start bg-primary-dark border-l-4 border-text-highlighted p-4 shadow rounded"
             >
               <div>
-                <p className="text-text-heading">{term.title}</p>
+                <p className="text-text-heading text-2xl">{term.title}</p>
                 <p className="text-text-heading">{term.condition}</p>
               </div>
               <button
@@ -119,10 +126,21 @@ export default function ManageTermsConditions() {
 
       {/* Add Term Section */}
       {activeTab === "add" && (
-        <div className="bg-primary  p-6 rounded shadow-md">
+        <div className="bg-primary p-6 rounded shadow-md">
           <h2 className="text-xl font-semibold text-text-heading mb-4">
             Add New
           </h2>
+
+          {/* Title Input */}
+          <input
+            type="text"
+            className="w-full p-3 border border-button bg-primary-dark text-text-heading rounded mb-4"
+            placeholder="Enter title here..."
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+
+          {/* Term Textarea */}
           <textarea
             rows={3}
             className="w-full p-3 border border-button bg-primary-dark text-text-heading rounded mb-4"
@@ -130,6 +148,7 @@ export default function ManageTermsConditions() {
             value={newTerm}
             onChange={(e) => setNewTerm(e.target.value)}
           />
+
           <button
             onClick={() => setShowAddConfirm(true)}
             className="bg-button text-text-heading px-4 py-2 rounded flex items-center gap-2 hover:bg-button-hover"

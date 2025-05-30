@@ -350,9 +350,11 @@ export const getPrivacyPolicy = async () => {
   } catch (error) {}
 };
 
-export const addPrivacyPolicy = async (privacyData) => {
+export const addPrivacyPolicy = async (token, privacyData) => {
   try {
-    const response = await apiConnector("POST", ADD_PRIVACY_API, privacyData);
+    const response = await apiConnector("POST", ADD_PRIVACY_API, privacyData, {
+      Authorization: `Bearer ${token}`,
+    });
     if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
@@ -360,11 +362,15 @@ export const addPrivacyPolicy = async (privacyData) => {
   }
 };
 
-export const deletePrivacyPolicy = async (privacyId) => {
+export const deletePrivacyPolicy = async (token, privacyId) => {
   try {
     const response = await apiConnector(
       "DELETE",
-      `${DELETE_PRIVACY_API}/${privacyId}`
+      `${DELETE_PRIVACY_API}/${privacyId}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     if (response.status === "success") toast.success(response.message);
     return response;

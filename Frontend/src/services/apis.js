@@ -69,7 +69,7 @@ export const ownerAndAdminDashboardEndPoints = {
 
   // Privacy Policy
   GET_PRIVACY_API: BASE_URL + "/policy",
-  ADD_PRIVACY_API: BASE_URL + "policy/create",
+  ADD_PRIVACY_API: BASE_URL + "/policy/create",
   DELETE_PRIVACY_API: BASE_URL + "/policy/delete",
 
   // Plan Levels

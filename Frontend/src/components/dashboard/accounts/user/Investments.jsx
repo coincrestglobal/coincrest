@@ -191,6 +191,9 @@ function Investments() {
 
                 {activeTab === "Active" && (
                   <>
+                    <p className="text-sm text-nav-highlighted py-2">
+                      Kindly read the guidelines to avoid any issues.
+                    </p>
                     <button
                       className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
                       onClick={() =>
@@ -228,21 +231,58 @@ function Investments() {
         )}
         {activeTab === "Guidelines" && (
           <div className="text-gray-300 space-y-4 px-2">
-            <h2 className="text-xl font-semibold text-text-heading mb-4">
-              Investing Guidelines
-            </h2>
-            <ul className="list-disc list-inside space-y-2 text-sm">
-              <li>Ensure your wallet address is correct before depositing.</li>
-              <li>Minimum deposit amount is $10.</li>
-              <li>All deposits are final and non-refundable.</li>
-              <li>Use only supported chains and tokens for deposits.</li>
+            <div className="flex flex-col bg-primary-light p-4 rounded-md">
+              <h2 className="text-xl font-semibold text-center text-text-heading mb-4 border-b border-b-button">
+                Investing Guidelines
+              </h2>
+              <p>
+                Your capital works for you — but with structure and clarity.
+                Here's how withdrawal works after you've invested with
+                CoinCrest:
+              </p>
+            </div>
+            <ul className="list-disc list-inside space-y-2 text-sm px-2">
               <li>
-                Deposits may take a few minutes to reflect in your account.
+                💰 <strong>1. Interest Withdrawals Anytime:</strong> You can
+                withdraw your earned interest at any time without affecting your
+                principal investment. No lock-in for rewards — they're yours,
+                on-demand.
               </li>
               <li>
-                Contact support in case of issues with the deposit confirmation.
+                🔐 <strong>2. Full Withdrawal Requires Staking Closure:</strong>{" "}
+                To withdraw your full invested amount, you must first close your
+                staking position. This ensures your funds are safely released
+                from the staking pool.
+              </li>
+              <li>
+                ⏳{" "}
+                <strong>
+                  3. 10–15 Days Processing Time for Full Withdrawal:
+                </strong>{" "}
+                Once staking is closed, your full balance (principal + any
+                remaining interest) will be processed. Allow 10 to 15 business
+                days for the funds to be released and received in your linked
+                wallet.
               </li>
             </ul>
+
+            <div class="mt-4 p-4 bg-primary-dark border-l-4 border-yellow-400 rounded text-text-heading">
+              <p class="font-semibold mb-2">⚠️ Important Notes:</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li>
+                  Partial withdrawals of principal are not supported while
+                  staking is active.
+                </li>
+                <li>
+                  Ensure your wallet address is up-to-date before requesting
+                  full withdrawal.
+                </li>
+                <li>
+                  For any delays or concerns, contact support with your staking
+                  ID or transaction reference.
+                </li>
+              </ul>
+            </div>
           </div>
         )}
       </div>
