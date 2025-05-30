@@ -17,7 +17,7 @@ exports.createPrivacy = catchAsync(async (req, res, next) => {
 exports.getPrivacy = catchAsync(async (req, res) => {
   const policies = await Privacy.find()
     .sort({ updatedAt: -1 })
-    .select("policy");
+    .select("title policy");
 
   res.status(200).json({
     status: "success",
