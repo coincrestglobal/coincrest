@@ -3,9 +3,9 @@ const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 exports.createPrivacy = catchAsync(async (req, res, next) => {
-  const { policy } = req.body;
+  const { title, policy } = req.body;
 
-  const doc = new Privacy({ policy });
+  const doc = new Privacy({ title, policy });
   await doc.save();
 
   res.status(201).json({
