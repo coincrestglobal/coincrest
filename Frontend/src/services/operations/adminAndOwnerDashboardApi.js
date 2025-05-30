@@ -259,16 +259,26 @@ export const respondToFeedback = async (feedbackId, responseMessage, token) => {
 
 //FAQs
 
-export const getAllFaqs = async () => {
+export const getAllFaqs = async (token, params) => {
   try {
-    const response = await apiConnector("GET", GET_ALL_FAQS_API);
+    const response = await apiConnector(
+      "GET",
+      GET_ALL_FAQS_API,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      params
+    );
     return response;
   } catch (error) {}
 };
 
-export const addFaq = async (faqData) => {
+export const addFaq = async (token, faqData) => {
   try {
-    const response = await apiConnector("POST", ADD_FAQ_API, faqData);
+    const response = await apiConnector("POST", ADD_FAQ_API, faqData, {
+      Authorization: `Bearer ${token}`,
+    });
     if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
@@ -276,9 +286,16 @@ export const addFaq = async (faqData) => {
   }
 };
 
-export const deleteFaq = async (faqId) => {
+export const deleteFaq = async (token, faqId) => {
   try {
-    const response = await apiConnector("DELETE", `${DELETE_FAQ_API}/${faqId}`);
+    const response = await apiConnector(
+      "DELETE",
+      `${DELETE_FAQ_API}/${faqId}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
     if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
@@ -295,9 +312,11 @@ export const getTerms = async () => {
   } catch (error) {}
 };
 
-export const addTerms = async (termsData) => {
+export const addTerms = async (token, termsData) => {
   try {
-    const response = await apiConnector("POST", ADD_TERMS_API, termsData);
+    const response = await apiConnector("POST", ADD_TERMS_API, termsData, {
+      Authorization: `Bearer ${token}`,
+    });
     if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
@@ -305,11 +324,15 @@ export const addTerms = async (termsData) => {
   }
 };
 
-export const deleteTerms = async (termsId) => {
+export const deleteTerms = async (token, termsId) => {
   try {
     const response = await apiConnector(
       "DELETE",
-      `${DELETE_TERMS_API}/${termsId}`
+      `${DELETE_TERMS_API}/${termsId}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
     );
     if (response.status === "success") toast.success(response.message);
     return response;

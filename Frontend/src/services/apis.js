@@ -6,6 +6,8 @@ console.log(BASE_URL);
 export const authEndpoints = {
   SIGNUP_API: BASE_URL + "/auth/signup",
   LOGIN_API: BASE_URL + "/auth/login",
+  SEND_OTP_API: BASE_URL + "/auth/sendOtp",
+  VERIFY_OTP_API: BASE_URL + "/auth/verifyOtp",
   RESETPASSTOKEN_API: BASE_URL + "/auth/forgotPassword",
   RESETPASSWORD_API: BASE_URL + "/auth/resetPassword",
   VERIFY_EMAIL: BASE_URL + "/auth/verify",
@@ -56,19 +58,19 @@ export const ownerAndAdminDashboardEndPoints = {
   RESPOND_FEEDBACK_API: BASE_URL + "/feedback/reply",
 
   // FAQs
-  GET_ALL_FAQS_API: BASE_URL + "/management/faqs",
-  ADD_FAQ_API: BASE_URL + "/management/faqs/add",
-  DELETE_FAQ_API: BASE_URL + "/management/faqs/delete",
+  GET_ALL_FAQS_API: BASE_URL + "/faq",
+  ADD_FAQ_API: BASE_URL + "/faq/create",
+  DELETE_FAQ_API: BASE_URL + "/faq/delete",
 
   // Terms & Conditions
-  GET_TERMS_API: BASE_URL + "/management/terms",
-  ADD_TERMS_API: BASE_URL + "/management/terms/add",
-  DELETE_TERMS_API: BASE_URL + "/management/terms/delete",
+  GET_TERMS_API: BASE_URL + "/term",
+  ADD_TERMS_API: BASE_URL + "/term/create",
+  DELETE_TERMS_API: BASE_URL + "/term/delete",
 
   // Privacy Policy
-  GET_PRIVACY_API: BASE_URL + "/management/privacy",
-  ADD_PRIVACY_API: BASE_URL + "/management/privacy/add",
-  DELETE_PRIVACY_API: BASE_URL + "/management/privacy/delete",
+  GET_PRIVACY_API: BASE_URL + "/policy",
+  ADD_PRIVACY_API: BASE_URL + "policy/create",
+  DELETE_PRIVACY_API: BASE_URL + "/policy/delete",
 
   // Plan Levels
   GET_PLANS_API: BASE_URL + "/management/plans",

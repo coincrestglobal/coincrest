@@ -1,88 +1,62 @@
 import { Plus } from "lucide-react";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion"; // ✅ already imported
-
-const faqData = {
-  General: [
-    {
-      question: "What is Coin Crest?",
-      answer:
-        "Coin Crest is a secure platform where users can earn fixed interest on their deposited amounts over a chosen time period. We also offer referral bonuses and guaranteed payouts within 24 hours after maturity.",
-    },
-    {
-      question: "How does Coin Crest generate interest?",
-      answer:
-        "We use a diversified and risk-managed approach to generate returns, enabling us to offer fixed interest rates. Your returns are not dependent on market fluctuations.",
-    },
-    {
-      question: "Is Coin Crest secure and legit?",
-      answer:
-        "Yes. Coin Crest operates with full transparency. We promise 100% assured withdrawals and interest payments as per your selected plan.",
-    },
-    {
-      question: "How do I sign up?",
-      answer:
-        "You can sign up easily using your mobile number or email. Once verified, you can deposit and start earning.",
-    },
-    {
-      question: "Can I refer others?",
-      answer:
-        "Yes! You’ll receive a unique referral link. Every successful referral earns you a bonus on top of your interest.",
-    },
-  ],
-
-  Deposits: [
-    {
-      question: "What’s the minimum amount to start investing?",
-      answer:
-        "The minimum deposit amount is ₹500 (or its equivalent in your local currency), which ensures accessibility to all users.",
-    },
-    {
-      question: "Can I cancel or withdraw my deposit before maturity?",
-      answer:
-        "Premature withdrawals are not allowed to ensure fair interest distribution. However, we offer competitive returns for the full duration.",
-    },
-    {
-      question: "How long can I lock my deposit?",
-      answer:
-        "You can choose flexible lock-in durations, ranging from 15 days to 12 months, depending on your financial goal.",
-    },
-    {
-      question: "Will my interest vary during the deposit period?",
-      answer:
-        "No. The interest rate is fixed once you choose your deposit plan. You’ll know exactly what you’ll earn.",
-    },
-  ],
-
-  Payouts: [
-    {
-      question: "How and when will I get my money back?",
-      answer:
-        "Once your chosen time period is over, the principal amount along with earned interest is processed within 24 hours directly to your bank account or wallet.",
-    },
-    {
-      question: "Are there any withdrawal charges?",
-      answer:
-        "No hidden charges! Withdrawals are free. What you see in your payout summary is what you get.",
-    },
-    {
-      question: "What if my payout is delayed?",
-      answer:
-        "Delays are rare, but in case of unforeseen issues, our support team will assist you instantly to ensure prompt resolution.",
-    },
-    {
-      question: "How do referral bonuses get paid out?",
-      answer:
-        "Referral bonuses are credited once your referred user makes a successful deposit and completes the lock-in period. Bonuses can be withdrawn or added to your deposit.",
-    },
-  ],
-};
+import { getAllFaqs } from "../../services/operations/adminAndOwnerDashboardApi";
+import Loading from "../../pages/Loading";
+import { useUser } from "../common/UserContext";
 
 const FAQ = () => {
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState("General");
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getFaqs = async () => {
+      try {
+        setLoading(true);
+        const response = await getAllFaqs(user.token);
+        setFaqs(response.data.faqs);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
+    };
+    getFaqs();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const transformFaqData = (rawFaqs) => {
+    const grouped = {
+      General: [],
+      Deposits: [],
+      Payouts: [],
+    };
+
+    rawFaqs.forEach((faq) => {
+      const { question, answer, type } = faq;
+
+      const formattedFAQ = { question, answer };
+
+      if (type === "general") {
+        grouped.General.push(formattedFAQ);
+      } else if (type === "deposit") {
+        grouped.Deposits.push(formattedFAQ);
+      } else if (type === "payout") {
+        grouped.Payouts.push(formattedFAQ);
+      }
+    });
+
+    return grouped;
+  };
+
+  const transformedFaqs = transformFaqData(faqs);
 
   const handleQuestionClick = (index) => {
     setActiveQuestion(activeQuestion === index ? null : index);
@@ -112,7 +86,7 @@ const FAQ = () => {
       />
 
       <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
-        {Object.keys(faqData).map((tab) => (
+        {Object.keys(transformedFaqs).map((tab) => (
           <button
             key={tab}
             onClick={() => {
@@ -139,7 +113,7 @@ const FAQ = () => {
           transition={{ duration: 0.4 }}
           className="space-y-6 pt-5 relative z-10"
         >
-          {faqData[activeTab].map((item, index) => (
+          {transformedFaqs[activeTab].map((item, index) => (
             <div key={index} className="group">
               <div
                 onClick={() => handleQuestionClick(index)}

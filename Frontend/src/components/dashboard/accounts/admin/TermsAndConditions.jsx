@@ -1,29 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import useSafeNavigate from "../../../../utils/useSafeNavigate";
+import {
+  addTerms,
+  deleteTerms,
+  getTerms,
+} from "../../../../services/operations/adminAndOwnerDashboardApi";
+import { useUser } from "../../../common/UserContext";
+import ConfirmationModal from "../../../common/ConfirmationModal";
 
 export default function ManageTermsConditions() {
+  const { user } = useUser();
   const navigate = useSafeNavigate();
-  const [termsList, setTermsList] = useState([
-    "Coin Crest ensures all deposited funds are secure and handled transparently.",
-    "Interest is credited based on the chosen plan and lock-in duration.",
-    "Withdrawals are processed within 24 hours after the maturity date.",
-  ]);
-
+  const [termsList, setTermsList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [newTerm, setNewTerm] = useState("");
   const [activeTab, setActiveTab] = useState("view"); // "view" or "add"
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [showAddConfirm, setShowAddConfirm] = useState(false);
 
-  const handleAddTerm = () => {
-    if (!newTerm.trim()) return;
-    setTermsList([...termsList, newTerm.trim()]);
-    setNewTerm("");
-    setActiveTab("view"); // go back to view after adding
+  const getTermsAndConditions = async () => {
+    try {
+      setLoading(true);
+
+      const response = await getTerms();
+      setTermsList(response.data.terms);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteTerm = (index) => {
-    const updated = [...termsList];
-    updated.splice(index, 1);
-    setTermsList(updated);
+  useEffect(() => {
+    getTermsAndConditions();
+  }, [activeTab]);
+  const handleAddTerm = async () => {
+    try {
+      setLoading(true);
+      await addTerms(user.token, { condition: newTerm });
+      getTermsAndConditions();
+      setActiveTab("view");
+    } catch {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTerm = async (id) => {
+    try {
+      setLoading(true);
+      await deleteTerms(user.token, id);
+      getTermsAndConditions();
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,9 +101,9 @@ export default function ManageTermsConditions() {
               key={idx}
               className="flex justify-between items-start bg-primary-dark border-l-4 border-text-highlighted p-4 shadow rounded"
             >
-              <p className="text-text-heading">{term}</p>
+              <p className="text-text-heading">{term.condition}</p>
               <button
-                onClick={() => handleDeleteTerm(idx)}
+                onClick={() => setConfirmDeleteId(term._id)}
                 className="text-red-500 hover:text-red-700 ml-4"
                 title="Delete"
               >
@@ -97,12 +128,32 @@ export default function ManageTermsConditions() {
             onChange={(e) => setNewTerm(e.target.value)}
           />
           <button
-            onClick={handleAddTerm}
+            onClick={() => setShowAddConfirm(true)}
             className="bg-button text-text-heading px-4 py-2 rounded flex items-center gap-2 hover:bg-button-hover"
           >
             <FaPlus /> Add Term
           </button>
         </div>
+      )}
+      {showAddConfirm && (
+        <ConfirmationModal
+          text="Are you sure you want to add this new term?"
+          onConfirm={() => {
+            handleAddTerm();
+            setShowAddConfirm(false);
+          }}
+          onCancel={() => setShowAddConfirm(false)}
+        />
+      )}
+      {confirmDeleteId && (
+        <ConfirmationModal
+          text="Are you sure you want to delete this term?"
+          onConfirm={() => {
+            handleDeleteTerm(confirmDeleteId);
+            setConfirmDeleteId(null);
+          }}
+          onCancel={() => setConfirmDeleteId(null)}
+        />
       )}
     </div>
   );
