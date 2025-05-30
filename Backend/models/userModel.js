@@ -76,6 +76,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    currentLoginToken: {
+      type: String,
+      default: null,
+    },
     investableBalance: { type: Number, default: 0 },
     withdrawableBalance: { type: Number, default: 0 },
     withdrawalAddresses: [

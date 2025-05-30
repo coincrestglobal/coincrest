@@ -16,6 +16,13 @@ const Decimal = require("decimal.js");
 const emailVerificationUrl = config.frontendUrl + "/verify-email/";
 const passwordResetUrl = config.frontendUrl + "/reset-password/";
 
+exports.validateToken = (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Token is valid.",
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body;
   const { ref: refByRaw } = req.query;
@@ -147,69 +154,69 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
+// exports.login = catchAsync(async (req, res, next) => {
+//   const { email, password } = req.body;
 
-  // Check if the user exists
-  const user = await User.findOne({ email });
-  if (!user || user.isDeleted) {
-    return next(new AppError("No user found with this email.", 404)); // User not found
-  }
+//   // Check if the user exists
+//   const user = await User.findOne({ email });
+//   if (!user || user.isDeleted) {
+//     return next(new AppError("No user found with this email.", 404)); // User not found
+//   }
 
-  // Check if the user has verified their email
-  if (!user.isVerified) {
-    if (user.emailVerificationTokenExpires < Date.now()) {
-      // Token expired - generate a new one
-      const { token, tokenExpiresIn } = generateToken(30);
+//   // Check if the user has verified their email
+//   if (!user.isVerified) {
+//     if (user.emailVerificationTokenExpires < Date.now()) {
+//       // Token expired - generate a new one
+//       const { token, tokenExpiresIn } = generateToken(30);
 
-      user.emailVerificationToken = token;
-      user.emailVerificationTokenExpires = tokenExpiresIn;
-      await user.save({ validateBeforeSave: false });
+//       user.emailVerificationToken = token;
+//       user.emailVerificationTokenExpires = tokenExpiresIn;
+//       await user.save({ validateBeforeSave: false });
 
-      await sendEmail({
-        email: user.email,
-        subject: "Email Verification Link",
-        message:
-          "Your previous verification link has expired. Please verify your email using the new link below.",
-        heading: "Verify Your Email",
-        buttonText: "Verify Email",
-        buttonUrl: emailVerificationUrl + user.emailVerificationToken,
-      });
-    }
+//       await sendEmail({
+//         email: user.email,
+//         subject: "Email Verification Link",
+//         message:
+//           "Your previous verification link has expired. Please verify your email using the new link below.",
+//         heading: "Verify Your Email",
+//         buttonText: "Verify Email",
+//         buttonUrl: emailVerificationUrl + user.emailVerificationToken,
+//       });
+//     }
 
-    return next(
-      new AppError(
-        "Your email is not verified yet. Please check your inbox to verify your email before logging in.",
-        400
-      )
-    );
-  }
+//     return next(
+//       new AppError(
+//         "Your email is not verified yet. Please check your inbox to verify your email before logging in.",
+//         400
+//       )
+//     );
+//   }
 
-  // Check if the password is correct
-  const correctPassword = await user.verifyPassword(password);
-  if (!correctPassword) {
-    return next(new AppError("Incorrect email or password", 401));
-  }
+//   // Check if the password is correct
+//   const correctPassword = await user.verifyPassword(password);
+//   if (!correctPassword) {
+//     return next(new AppError("Incorrect email or password", 401));
+//   }
 
-  const token = jwt.sign({ id: user._id }, config.jwtSecret, {
-    expiresIn: config.jwtTokenExpiresIn,
-  });
+//   const token = jwt.sign({ id: user._id }, config.jwtSecret, {
+//     expiresIn: config.jwtTokenExpiresIn,
+//   });
 
-  // 3. Set cookie with token
-  res.cookie("jwt", token, {
-    httpOnly: true, // prevent client JS access
-    secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
-    sameSite: "Strict", // CSRF protection
-    maxAge: Number(config.jwtTokenExpiresIn.slice(0, -1)) * 24 * 60 * 60 * 1000, // removed d from duration (eg 90d)
-  });
+//   // 3. Set cookie with token
+//   res.cookie("jwt", token, {
+//     httpOnly: true, // prevent client JS access
+//     secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
+//     sameSite: "Strict", // CSRF protection
+//     maxAge: Number(config.jwtTokenExpiresIn.slice(0, -1)) * 24 * 60 * 60 * 1000, // removed d from duration (eg 90d)
+//   });
 
-  // Send the token as response
-  res.status(200).json({
-    status: "success",
-    message: "Logged in successfully",
-    data: { user, token },
-  });
-});
+//   // Send the token as response
+//   res.status(200).json({
+//     status: "success",
+//     message: "Logged in successfully",
+//     data: { user, token },
+//   });
+// });
 
 exports.sendOtpLogin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
@@ -286,11 +293,14 @@ exports.verifyOtpLogin = catchAsync(async (req, res, next) => {
   // OTP verified — reset it
   user.otp = undefined;
   user.otpExpiresAt = undefined;
-  await user.save();
 
   const token = jwt.sign({ id: user._id }, config.jwtSecret, {
     expiresIn: config.jwtTokenExpiresIn,
   });
+
+  // Store token in DB for single-device login
+  user.currentLoginToken = token;
+  await user.save();
 
   res.status(200).json({
     status: "success",

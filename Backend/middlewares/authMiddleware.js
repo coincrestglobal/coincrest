@@ -21,12 +21,23 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   const decoded = jwt.verify(token, config.jwtSecret);
 
-  const user = await User.findById(decoded.id).select("role isDeleted");
+  const user = await User.findById(decoded.id).select(
+    "role isDeleted currentLoginToken"
+  );
 
   if (!user || user.isDeleted) {
     return next(
       new AppError("Your session is no longer valid. Please log in again.", 401)
     );
+  }
+
+  // 🔐 Single device login check
+  if (user.currentLoginToken !== token) {
+    return res.status(401).json({
+      status: "fail",
+      message: "You have been logged out from this device. Please login again.",
+      isOldDevice: true,
+    });
   }
 
   req.user = { userId: decoded.id, role: user.role };
@@ -39,7 +50,7 @@ exports.authorizeRoles = (...roles) => {
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError(
-          `Access denied. Your role (${req.user.role}) does not have permission to access this resource.`,
+          `Access denied. You don't have permission to access this resource.`,
           403
         )
       );
