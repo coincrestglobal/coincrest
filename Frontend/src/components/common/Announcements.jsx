@@ -27,7 +27,7 @@ function Announcement() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalAnnouncements, setTotalAnnouncements] = useState(0);
   const [loading, setLoading] = useState(false);
-  const numberOfEntries = 2;
+  const numberOfEntries = 10;
 
   const [filterState, setFilterState] = useState({
     searchQuery: "",

@@ -68,7 +68,7 @@ function Deposits() {
   }, [filterState, currentPage]);
 
   if (loading) return <Loading />;
-
+  console.log(deposits);
   return (
     <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
       <DepositHeader
@@ -139,7 +139,7 @@ function Deposits() {
             {expandedDeposit === deposit._id && (
               <div className="p-4 bg-primary rounded-md text-text-body space-y-1 break-words whitespace-normal">
                 <p>
-                  <strong>Email:</strong> {deposit?.depositedBy?.email}
+                  <strong>Transaction Id:</strong> {deposit?.txId}
                 </p>
                 <p>
                   <strong>Wallet Address:</strong> {deposit.fromAddress}

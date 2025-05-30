@@ -47,7 +47,7 @@ function AllAdmins() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const numberOfEntries = 1;
+  const numberOfEntries = 5;
 
   useEffect(() => {
     const fetchUsers = async () => {

@@ -8,10 +8,9 @@ import { useUser } from "../../../common/UserContext";
 
 const headers = [
   { label: "S No.", width: "10%" },
-  { label: "Name", width: "20%" },
+  { label: "Name", width: "30%" },
   { label: "Email", width: "35%" },
-  // { label: "Number", width: "25%" },
-  { label: "Last Visit", width: "35%" },
+  { label: "Last Visit", width: "25%" },
 ];
 
 const getKeyFromLabel = (label) =>

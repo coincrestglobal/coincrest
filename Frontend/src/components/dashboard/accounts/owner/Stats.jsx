@@ -183,7 +183,7 @@ function Stats() {
           filter={timeFilter}
         />
         <SummaryCard
-          title="Total Available Balance"
+          title="Total Profit"
           value={stats.totalProfit}
           inc={stats.incTotalProfit}
           filter={timeFilter}

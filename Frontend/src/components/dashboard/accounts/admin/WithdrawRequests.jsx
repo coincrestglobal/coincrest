@@ -9,7 +9,6 @@ import {
   getWithdrawRequests,
 } from "../../../../services/operations/adminAndOwnerDashboardApi";
 import { useUser } from "../../../common/UserContext";
-import Feedbacks from "./Feedbakcs";
 import Loading from "../../../../pages/Loading";
 
 function Withdrawals() {
@@ -159,7 +158,7 @@ function Withdrawals() {
             {expandedWithdrawal === withdrawal._id && (
               <div className="p-4 bg-primary rounded-md text-sm md:text-lg text-text-body space-y-1 overflow-y-auto">
                 <p className="break-words whitespace-normal">
-                  <strong>Email:</strong> {withdrawal.initiatedBy.email}
+                  <strong>Transaction Id:</strong> {withdrawal?.txId}
                 </p>
                 <p className="break-words whitespace-normal">
                   <strong>Wallet Address:</strong> {withdrawal.toAddress}
