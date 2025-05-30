@@ -139,7 +139,7 @@ const WithdrawPage = () => {
   }
   return (
     <div className="relative max-w-4xl mx-auto bg-primary-dark rounded-md p-6 sm:p-8">
-      <div className="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-10 mb-6 sm:mb-8">
+      <div className="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-10 mb-8 md:mb-4 lg:mb-2">
         {["New Withdrawal", "History", "Guidelines"].map((tab) => (
           <button
             key={tab}
@@ -157,6 +157,9 @@ const WithdrawPage = () => {
 
       <div>
         {/* New Withdrawal Form */}
+        <p className="text-sm text-nav-highlighted py-3">
+          Kindly read the guidelines to avoid any issues.
+        </p>
         <form
           className={`space-y-6 ${
             activeTab === "New Withdrawal" ? "" : "hidden"

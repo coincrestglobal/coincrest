@@ -10,14 +10,14 @@ import DashboardHeader from "../../../common/DashboardHeader";
 import Pagination from "../../../common/Pagination";
 import Loading from "../../../../pages/Loading";
 
-const tabs = ["Active", "Closed"];
+const tabs = ["Active", "Closed", "Guidelines"];
 
 function Investments() {
   const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "desc",
-    selectedFilters: [],
+    selectedFilters: {},
   });
   const [investHistory, setInvestHistory] = useState([]);
   const [activeTab, setActiveTab] = useState("Active");
@@ -26,7 +26,7 @@ function Investments() {
   const [totalInvestments, setTotalInvestments] = useState(0);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const numberOfEntries = 1;
+  const numberOfEntries = 5;
 
   useEffect(() => {
     const getInvestingHistory = async () => {
@@ -51,26 +51,32 @@ function Investments() {
         params.append("page", currentPage);
         params.append("role", "user");
         params.append("limit", numberOfEntries);
+
         const response = await investingHistory(user.token, params);
         const { data } = response;
 
         setInvestHistory(data.investments || []);
         setTotalPages(response.totalPages || 1);
         setTotalInvestments(response.total || 0);
-        setLoading(false);
       } catch (error) {
+        // Ideally handle errors here (toast or console)
+      } finally {
         setLoading(false);
       }
     };
 
     getInvestingHistory();
-  }, [currentPage, filterState]);
+  }, [currentPage, filterState, user.token]);
 
   const cancelPlan = async (id) => {
     setLoading(true);
     try {
-      const response = await redeemInvestPlan(user.token, id);
+      await redeemInvestPlan(user.token, id);
+      // Optionally refresh investments after cancel
+      setInvestHistory((prev) => prev.filter((inv) => inv._id !== id));
+      setModalMap((prev) => ({ ...prev, [id]: false }));
     } catch (error) {
+      // Handle error properly
     } finally {
       setLoading(false);
     }
@@ -79,6 +85,7 @@ function Investments() {
   if (loading) {
     return <Loading />;
   }
+
   const filteredData =
     activeTab === "Active"
       ? investHistory.filter((item) => item.status === "active")
@@ -105,122 +112,109 @@ function Investments() {
 
       {/* Scrollable Tab Content */}
       <div className="overflow-y-auto flex-1 scrollbar-none">
-        <DashboardHeader
-          title={`${activeTab} Investments`}
-          totalCount={filteredData.length}
-          filterState={filterState}
-          setFilterState={setFilterState}
-          filterOptions={[
-            {
-              label: "Date Interval",
-              children: [
-                { label: "Start Date", value: "startDate", type: "date" },
-                { label: "End Date", value: "endDate", type: "date" },
-              ],
-            },
-          ]}
-        />
-
-        {loading ? (
-          <p className="text-center text-gray-400 mt-10">Loading...</p>
-        ) : filteredData.length === 0 ? (
-          <p className="text-center text-gray-400 mt-10">
-            No {activeTab.toLowerCase()} investments found.
-          </p>
-        ) : (
+        {activeTab !== "Guidelines" && (
           <>
-            {filteredData.map((data, index) => {
-              return (
-                <div
-                  key={data._id || index}
-                  className=" py-5 border-b border-gray-700 space-y-4 md:space-y-0 text-text-heading"
-                >
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                    {/* Left Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 border border-button rounded-full flex items-center justify-center">
-                          <LucideCoins size={20} className="text-text-link" />
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-semibold">
-                          {data.name}
-                        </h3>
-                      </div>
+            <DashboardHeader
+              title={`${activeTab} Investments`}
+              totalCount={filteredData.length}
+              filterState={filterState}
+              setFilterState={setFilterState}
+              filterOptions={[
+                {
+                  label: "Date Interval",
+                  children: [
+                    { label: "Start Date", value: "startDate", type: "date" },
+                    { label: "End Date", value: "endDate", type: "date" },
+                  ],
+                },
+              ]}
+            />
 
-                      <div className="text-sm space-y-2 text-gray-300">
-                        <p>
-                          <span className="text-text-heading">Opened at:</span>{" "}
-                          {new Date(data.investDate).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <span className="text-text-heading">Deposit:</span> $
-                          {data.investedAmount}
-                        </p>
-                        <p>
-                          <span className="text-text-heading">
-                            Weekly return:{data.interestRate}%
-                          </span>{" "}
-                        </p>
+            {filteredData.map((data, index) => (
+              <div
+                key={data._id || index}
+                className="py-5 border-b border-gray-700 space-y-4 md:space-y-0 text-text-heading"
+              >
+                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                  {/* Left Info */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 border border-button rounded-full flex items-center justify-center">
+                        <LucideCoins size={20} className="text-text-link" />
                       </div>
+                      <h3 className="text-lg sm:text-xl font-semibold">
+                        {data.name}
+                      </h3>
                     </div>
 
-                    {/* Right Profit */}
-                    <div className="flex md:flex-col md:gap-6 w-full md:w-auto md:py-5 justify-between">
-                      <div className="flex flex-col md:flex-row items-center gap-4">
-                        <p className="text-text-highlighted text-base sm:text-lg">
-                          Total Amount:
-                        </p>
-                        <p className="text-2xl font-semibold">
-                          $
-                          {(
-                            (data.profit ?? 0) + (data.investedAmount ?? 0)
-                          ).toFixed(2)}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col md:flex-row items-center gap-4">
-                        <p className="text-text-highlighted text-base sm:text-lg md:mb-1 self-end">
-                          Total Profit:
-                        </p>
-                        <div className="md:text-right">
-                          <p className="text-2xl font-semibold">
-                            ${data.profit}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="text-sm space-y-2 text-gray-300">
+                      <p>
+                        <span className="text-text-heading">Opened at:</span>{" "}
+                        {new Date(data.investDate).toLocaleDateString()}
+                      </p>
+                      <p>
+                        <span className="text-text-heading">Deposit:</span> $
+                        {data.investedAmount}
+                      </p>
+                      <p>
+                        <span className="text-text-heading">
+                          Weekly return: {data.interestRate}%
+                        </span>
+                      </p>
                     </div>
                   </div>
 
-                  {activeTab === "Active" && (
-                    <>
-                      <button
-                        className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
-                        onClick={() =>
+                  {/* Right Profit */}
+                  <div className="flex md:flex-col md:gap-6 w-full md:w-auto md:py-5 justify-between">
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                      <p className="text-text-highlighted text-base sm:text-lg">
+                        Total Amount:
+                      </p>
+                      <p className="text-2xl font-semibold">
+                        $
+                        {(
+                          (data.profit ?? 0) + (data.investedAmount ?? 0)
+                        ).toFixed(2)}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                      <p className="text-text-highlighted text-base sm:text-lg md:mb-1 self-end">
+                        Total Profit:
+                      </p>
+                      <div className="md:text-right">
+                        <p className="text-2xl font-semibold">${data.profit}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {activeTab === "Active" && (
+                  <>
+                    <button
+                      className="bg-button rounded-md px-4 py-2 text-base sm:text-lg"
+                      onClick={() =>
+                        setModalMap((prev) => ({ ...prev, [data._id]: true }))
+                      }
+                    >
+                      Close
+                    </button>
+                    {modalMap[data._id] && (
+                      <ConfirmationModal
+                        text="Are you sure you want to cancel this plan? This action cannot be undone."
+                        onConfirm={() => cancelPlan(data._id)}
+                        onCancel={() =>
                           setModalMap((prev) => ({
                             ...prev,
-                            [data._id]: true,
+                            [data._id]: false,
                           }))
                         }
-                      >
-                        Close
-                      </button>
-                      {modalMap[data._id] && (
-                        <ConfirmationModal
-                          text="Are you sure you want to cancel this plan? This action cannot be undone."
-                          onConfirm={() => cancelPlan(data._id)}
-                          onCancel={() =>
-                            setModalMap((prev) => ({
-                              ...prev,
-                              [data._id]: false,
-                            }))
-                          }
-                        />
-                      )}
-                    </>
-                  )}
-                </div>
-              );
-            })}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
@@ -231,6 +225,25 @@ function Investments() {
               />
             )}
           </>
+        )}
+        {activeTab === "Guidelines" && (
+          <div className="text-gray-300 space-y-4 px-2">
+            <h2 className="text-xl font-semibold text-text-heading mb-4">
+              Investing Guidelines
+            </h2>
+            <ul className="list-disc list-inside space-y-2 text-sm">
+              <li>Ensure your wallet address is correct before depositing.</li>
+              <li>Minimum deposit amount is $10.</li>
+              <li>All deposits are final and non-refundable.</li>
+              <li>Use only supported chains and tokens for deposits.</li>
+              <li>
+                Deposits may take a few minutes to reflect in your account.
+              </li>
+              <li>
+                Contact support in case of issues with the deposit confirmation.
+              </li>
+            </ul>
+          </div>
         )}
       </div>
     </div>

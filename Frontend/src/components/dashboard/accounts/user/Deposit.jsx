@@ -29,7 +29,7 @@ const DepositPage = () => {
   const [totalDeposits, setTotalDeposits] = useState([]);
   const [addresses, setAdresses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const numberOfEntries = 1;
+  const numberOfEntries = 5;
   const [copiedBEP, setCopiedBEP] = useState(false);
   const [copiedTRC, setCopiedTRC] = useState(false);
 
@@ -226,6 +226,10 @@ const DepositPage = () => {
           </div>
 
           <div className="flex flex-col py-2 gap-3">
+            <p className="text-sm text-nav-highlighted">
+              Kindly read the guidelines to avoid any issues.
+            </p>
+
             <p className="text-sm text-gray-400">
               After sending the payment, please upload proof of payment using
               below verify button.

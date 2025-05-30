@@ -21,7 +21,7 @@ const navLinks = [
   },
   {
     to: "investments",
-    label: "Investing",
+    label: "Investments",
     icon: <LineChart className="w-5 h-4" />,
   },
   {

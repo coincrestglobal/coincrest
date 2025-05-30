@@ -9,9 +9,9 @@ import { getAllReviews } from "../../../../services/operations/adminAndOwnerDash
 const headers = [
   { label: "S No.", width: "10%" },
   { label: "Name", width: "20%" },
-  { label: "Email", width: "25%" },
-  { label: "Date", width: "25%" },
-  { label: "Rating", width: "20%" },
+  { label: "Email", width: "35%" },
+  { label: "Date", width: "20%" },
+  { label: "Rating", width: "15%" },
 ];
 
 const getKeyFromLabel = (label) =>
