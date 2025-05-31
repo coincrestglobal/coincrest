@@ -22,6 +22,7 @@ const {
   fetchBep20Transactions,
   filterBep20Deposits,
 } = require("../services/bep20DepositService");
+const Notification = require("../models/notificationModel");
 
 exports.getBalance = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
@@ -160,6 +161,12 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   user.deposits.push(deposit._id);
   await user.save();
 
+  await Notification.create({
+    user: userId,
+    title: "Deposit Verified",
+    message: `Your deposit of ${deposit.amount} ${deposit.tokenType} has been successfully verified and added to your investable balance.`,
+  });
+
   if (user.referredBy && !deposit.bonusGiven) {
     const referrer = await User.findOne({ referralCode: user.referredBy });
 
@@ -186,6 +193,14 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
       await referrer.save();
       deposit.bonusGiven = true;
       await deposit.save();
+
+      await Notification.create({
+        user: referrer._id,
+        title: "Referral Bonus Received",
+        message: `You received a referral bonus of ${bonusAmount
+          .toDecimalPlaces(2)
+          .toString()} ${deposit.tokenType} from a referred user's deposit.`,
+      });
     }
   }
 
@@ -286,6 +301,16 @@ exports.upsertWithdrawalAddress = catchAsync(async (req, res, next) => {
 
   await user.save();
 
+  await Notification.create({
+    user: userId,
+    title: existingEntry
+      ? "Withdrawal Address Updated"
+      : "Withdrawal Address Added",
+    message: existingEntry
+      ? `Your ${tokenType} withdrawal address has been updated successfully.`
+      : `A new ${tokenType} withdrawal address has been added to your account.`,
+  });
+
   res.status(200).json({
     message: existingEntry
       ? "Withdrawal address updated successfully"
@@ -383,6 +408,12 @@ exports.withdraw = catchAsync(async (req, res, next) => {
   user.lastWithdrawnAt = new Date();
 
   await user.save();
+
+  await Notification.create({
+    user: userId,
+    title: "Withdrawal Requested",
+    message: `You have successfully requested a withdrawal of ${withdrawal.amount} ${withdrawal.tokenType}. It is currently pending processing.`,
+  });
 
   res.status(200).json({
     status: "success",
@@ -514,6 +545,14 @@ exports.investInPlan = catchAsync(async (req, res, next) => {
 
   await user.save();
 
+  await Notification.create({
+    user: userId,
+    title: "Investment Successful",
+    message: `You have successfully invested $${investAmount
+      .toDecimalPlaces(2)
+      .toString()} in the "${plan.name}" plan.`,
+  });
+
   return res.status(201).json({
     status: "success",
     message: "Investment successful",
@@ -635,6 +674,16 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
     .toNumber();
 
   await user.save();
+
+  await Notification.create({
+    user: userId,
+    title: "Investment Redeemed",
+    message: `You have successfully redeemed your investment of $${new Decimal(
+      investment.investedAmount
+    )
+      .toDecimalPlaces(2)
+      .toString()}. The amount has been added to your withdrawable balance.`,
+  });
 
   return res.status(200).json({
     status: "success",

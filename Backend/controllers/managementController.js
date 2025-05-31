@@ -171,6 +171,7 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.getDeposits = catchAsync(async (req, res, next) => {
   const { tokenType, startDate, endDate, sort = "desc", search } = req.query;
 
