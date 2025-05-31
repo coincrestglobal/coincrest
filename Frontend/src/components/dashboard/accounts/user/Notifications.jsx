@@ -92,7 +92,6 @@ export default function NotificationsPage() {
       setLoading(true);
       try {
         const res = await getNotifications(user.token);
-        console.log(res);
         if (res?.data) {
           setNotifications(res.data.notifications);
         }
@@ -114,7 +113,7 @@ export default function NotificationsPage() {
       setLoading(true);
       try {
         await Promise.all(
-          unreadNotifications.map((n) => markRead(user.token, n.id))
+          unreadNonAnnouncement.map((n) => markRead(user.token, n._id))
         );
       } catch (error) {
       } finally {

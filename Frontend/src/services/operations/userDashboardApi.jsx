@@ -283,7 +283,7 @@ export const getNotifications = async (token) => {
 
 export const markRead = async (token, id) => {
   try {
-    const response = await apiConnector("GET", `${MARK_READ}/${id}`, null, {
+    const response = await apiConnector("PATCH", `${MARK_READ}/${id}`, null, {
       Authorization: `Bearer ${token}`,
     });
     return response;

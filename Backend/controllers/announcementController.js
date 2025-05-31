@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const Announcement = require("../models/announcementModel");
 const Notification = require("../models/notificationModel");
+const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 
 exports.createAnnouncement = catchAsync(async (req, res, next) => {
