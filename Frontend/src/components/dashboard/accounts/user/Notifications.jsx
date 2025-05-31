@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
+import { useUser } from "../../../common/UserContext";
+import {
+  getNotifications,
+  markRead,
+} from "../../../../services/operations/userDashboardApi";
+import Loading from "../../../../pages/Loading";
 
 export default function NotificationsPage() {
+  const { user } = useUser();
   const initialNotifications = [
     {
       id: 1,
@@ -77,17 +84,47 @@ export default function NotificationsPage() {
     },
   ];
 
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // If all notifications already read, no need to update
-    if (notifications.every((n) => n.read)) return;
+    const fetchNotifications = async () => {
+      setLoading(true);
+      try {
+        const res = await getNotifications(user.token);
+        if (res?.data) {
+          setNotifications(res.data.notifications);
+        }
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Optimistically update UI
-    setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
+    fetchNotifications();
+  }, [user.token]);
 
-    // Call backend API to mark all read
-  }, []);
+  useEffect(() => {
+    const markAllUnreadAsRead = async () => {
+      if (!user.token || notifications.length === 0) return;
+
+      const unreadNonAnnouncement = notifications.filter((n) => !n.isRead);
+
+      setLoading(true);
+      try {
+        await Promise.all(
+          unreadNonAnnouncement.map((n) => markRead(user.token, n._id))
+        );
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    markAllUnreadAsRead();
+  }, [user.token, notifications]);
+
+  if (loading) return <Loading />;
 
   return (
     <div className="max-w-4xl mx-auto p-10">

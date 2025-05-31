@@ -30,7 +30,7 @@ function TopNav() {
 
       {/* Profile Icon */}
       <div className=" flex gap-6">
-        <NotificationBell />
+        {user?.role === "user" && <NotificationBell />}
 
         <button onClick={handleProfileClick} className="text-white text-2xl">
           {user ? (

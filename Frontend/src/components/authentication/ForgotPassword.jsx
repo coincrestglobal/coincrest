@@ -13,6 +13,7 @@ function ForgotPasswordModal({ isOpen, onClose }) {
     try {
       const response = await getPasswordResetToken(email);
     } catch (error) {}
+    onClose();
   };
 
   if (!isOpen) return null;

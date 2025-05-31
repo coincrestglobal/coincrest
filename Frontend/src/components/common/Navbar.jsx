@@ -88,7 +88,8 @@ function Navbar() {
 
           {/* User Profile - Positioned to the right on large screens */}
           <div className="flex gap-8">
-            <NotificationBell />
+            {user?.role === "user" && <NotificationBell />}
+
             <button
               onClick={handleProfileClick}
               className="cursor-pointer ml-auto lg:ml-0"

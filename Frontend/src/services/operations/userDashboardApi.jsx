@@ -19,6 +19,9 @@ const {
   UPDATE_WALLET,
   GET_REFERRAL_CODE_AND_LINK,
   GET_BONUS_HISTORY,
+  GET_NOTIFICATIONS,
+  MARK_READ,
+  GET_UNREAD,
 } = userDashboardEndPoints;
 
 export const getPlans = async () => {
@@ -48,7 +51,7 @@ export const getBalance = async (token) => {
 };
 
 //investments
-export const investInPlan = async (token, data, setUser) => {
+export const investInPlan = async (token, data) => {
   try {
     const response = await apiConnector(
       "POST",
@@ -57,8 +60,7 @@ export const investInPlan = async (token, data, setUser) => {
       {
         Authorization: `Bearer ${token}`,
       },
-      null,
-      setUser
+      null
     );
     if (response.status === "success") toast.success(response.message);
     return response;
@@ -116,7 +118,7 @@ export const verifyDeposit = async (token, data) => {
     toast.error(error.message);
   }
 };
-export const getDepositAddresses = async (token, setUser) => {
+export const getDepositAddresses = async (token) => {
   try {
     const response = await apiConnector(
       "GET",
@@ -125,8 +127,7 @@ export const getDepositAddresses = async (token, setUser) => {
       {
         Authorization: `Bearer ${token}`,
       },
-      null,
-      setUser
+      null
     );
     if (!response?.data?.success) {
     }
@@ -268,4 +269,32 @@ export const getBonustHistory = async (token, params) => {
 
     return response;
   } catch (error) {}
+};
+
+//notification
+export const getNotifications = async (token) => {
+  try {
+    const response = await apiConnector("GET", GET_NOTIFICATIONS, null, {
+      Authorization: `Bearer ${token}`,
+    });
+    return response;
+  } catch {}
+};
+
+export const markRead = async (token, id) => {
+  try {
+    const response = await apiConnector("PATCH", `${MARK_READ}/${id}`, null, {
+      Authorization: `Bearer ${token}`,
+    });
+    return response;
+  } catch {}
+};
+
+export const getUnreadValue = async (token) => {
+  try {
+    const response = await apiConnector("GET", GET_UNREAD, null, {
+      Authorization: `Bearer ${token}`,
+    });
+    return response;
+  } catch {}
 };

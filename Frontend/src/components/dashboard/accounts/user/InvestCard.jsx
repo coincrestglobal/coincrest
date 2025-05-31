@@ -10,7 +10,7 @@ import { useUser } from "../../../common/UserContext";
 import Loading from "../../../../pages/Loading";
 
 function InvestCard({ onClose }) {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const navigate = useSafeNavigate();
   const [amount, setAmount] = useState("");
   const [levels, setLevels] = useState([]);
@@ -69,14 +69,10 @@ function InvestCard({ onClose }) {
     if (selectedLevel && amount) {
       setLoading(true);
       try {
-        const response = await investInPlan(
-          user.token,
-          {
-            planId: selectedLevel._id,
-            investedAmount: amount,
-          },
-          setUser
-        );
+        const response = await investInPlan(user.token, {
+          planId: selectedLevel._id,
+          investedAmount: amount,
+        });
         setIsModalOpen(false);
         // Optionally: Show success message
       } catch (error) {

@@ -4,11 +4,9 @@ import { toast } from "react-toastify";
 
 const { CONTACT_US } = contactUsEndPoints;
 
-export const submitContactForm = async (formData, token) => {
+export const submitContactForm = async (formData) => {
   try {
-    const response = await apiConnector("POST", CONTACT_US, formData, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector("POST", CONTACT_US, formData);
     if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
