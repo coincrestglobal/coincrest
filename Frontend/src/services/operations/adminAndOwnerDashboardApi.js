@@ -155,6 +155,33 @@ export const getAllUsersDepositHistory = async (token, params) => {
   } catch (error) {}
 };
 
+//investments
+
+export const getInvestedPlanClousreHistory = async (token) => {
+  try {
+    const response = await apiConnector("GET", GET_USER_CLOSED_PLANS, null, {
+      Authorization: `Bearer ${token}`,
+    });
+    return response;
+  } catch {}
+};
+
+export const approvePlanCloseFund = async (token, id) => {
+  try {
+    const response = await apiConnector(
+      "GET",
+      `${APPROVE_USER_CLOSED_PLAN}/${id}`,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    );
+    if (response?.status === "success")
+      toast.success(response.message || "Fund Approved");
+    return response;
+  } catch {}
+};
+
 //reviews
 
 export const getAllReviews = async (token, params) => {

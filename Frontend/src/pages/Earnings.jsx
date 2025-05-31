@@ -257,8 +257,12 @@ const EarningsPlansPage = () => {
           </table>
         </div>
 
-        <p className="mt-2 text-xs sm:text-sm text-gray-400">
+        {/* <p className="mt-2 text-xs sm:text-sm text-gray-400">
           💡 Bonuses are based on the number of active members in your team.
+        </p> */}
+        <p className="mt-2 text-xs sm:text-sm text-gray-400">
+          💡Bonuses continue to increase by $500 for every additional 500 active
+          team members beyond the initial 500
         </p>
       </section>
     </div>

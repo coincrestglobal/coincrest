@@ -265,6 +265,12 @@ function Announcement() {
               ))}
             </div>
           }
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
 
@@ -272,12 +278,6 @@ function Announcement() {
         isOpen={selectedAnnouncement}
         onClose={() => setSelectedAnnouncement(null)}
         announcement={selectedAnnouncement}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
       />
     </div>
   );

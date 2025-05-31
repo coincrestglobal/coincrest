@@ -105,7 +105,6 @@ export const emailVerification = async (token, navigate) => {
     navigate("/login");
   } catch (error) {
     toast.error(error.message || "Verification link is invalid or expired.");
-    navigate("/login");
   }
 };
 

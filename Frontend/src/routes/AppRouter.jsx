@@ -109,6 +109,15 @@ const router = createBrowserRouter([
                 ],
               },
               {
+                path: "investment-closure-requests",
+                children: [
+                  {
+                    index: true,
+                    Component: InvestmentPlansCloseManagement,
+                  },
+                ],
+              },
+              {
                 path: "deposit-history",
                 children: [{ index: true, Component: DepositHistory }],
               },

@@ -11,7 +11,7 @@ import Pagination from "../../../common/Pagination";
 import Loading from "../../../../pages/Loading";
 
 const DepositPage = () => {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "desc",
@@ -77,7 +77,7 @@ const DepositPage = () => {
     const getAddressess = async () => {
       try {
         setLoading(true); // Start loading
-        const response = await getDepositAddresses(user.token, setUser);
+        const response = await getDepositAddresses(user.token);
         setAdresses(response.data.addresses);
       } catch (error) {
         console.error("Failed to fetch addresses:", error);
