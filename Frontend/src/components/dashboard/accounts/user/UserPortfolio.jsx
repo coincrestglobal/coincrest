@@ -6,7 +6,7 @@ import { getBalance } from "../../../../services/operations/userDashboardApi";
 import Loading from "../../../../pages/Loading";
 
 function UserPortfolio() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [userInvestableBalance, setUserInvestableBalance] = useState(0);
   const [userWithdrawableBalance, setUserWithdrawableBalance] = useState(0);
   const [loading, setLoading] = useState(true);

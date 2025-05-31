@@ -5,7 +5,7 @@ import { addReview, editReview } from "../../services/operations/homeApi";
 import { useUser } from "../common/UserContext";
 
 function AddReview({ initialReview = null, setIsModalOpen }) {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const token = user?.token;
 
   const [rating, setRating] = useState(initialReview?.rating || 0);

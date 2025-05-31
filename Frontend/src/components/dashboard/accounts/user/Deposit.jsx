@@ -11,7 +11,7 @@ import Pagination from "../../../common/Pagination";
 import Loading from "../../../../pages/Loading";
 
 const DepositPage = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [filterState, setFilterState] = useState({
     searchQuery: "",
     sortOrder: "desc",
@@ -77,7 +77,7 @@ const DepositPage = () => {
     const getAddressess = async () => {
       try {
         setLoading(true); // Start loading
-        const response = await getDepositAddresses(user.token);
+        const response = await getDepositAddresses(user.token, setUser);
         setAdresses(response.data.addresses);
       } catch (error) {
         console.error("Failed to fetch addresses:", error);
@@ -273,9 +273,14 @@ const DepositPage = () => {
                     <span>${deposit.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Token Type</span>
+                    <span>Token Type:</span>
                     <span className="text-text-link">{deposit.tokenType}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span>Transaction Id:</span>
+                    <span className="text-text-link">{deposit.txId}</span>
+                  </div>
+
                   <div className="flex justify-between">
                     <span>Date:</span>
                     <span>

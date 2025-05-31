@@ -178,12 +178,27 @@ function Investments() {
                       </p>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                      <p className="text-text-highlighted text-base sm:text-lg md:mb-1 self-end">
+                    <div className="flex flex-col items-center md:flex-row md:items-start gap-4">
+                      <p className="text-text-highlighted  sm:text-lg md:mb-10  self-end">
                         Total Profit:
                       </p>
-                      <div className="md:text-right">
-                        <p className="text-2xl font-semibold">${data.profit}</p>
+                      <div>
+                        <p className="text-2xl font-semibold">
+                          ${data.profit.toFixed(2)}
+                        </p>
+                        <p className="text-sm sm:text-xl text-text-linkHover font-bold text-right">
+                          +
+                          {Math.floor(
+                            (new Date() - new Date(data.investDate)) /
+                              (1000 * 60 * 60 * 24)
+                          ) > 0
+                            ? (
+                                (data.investedAmount *
+                                  (data.interestRate / 7)) /
+                                100
+                              ).toFixed(2)
+                            : "0.00"}
+                        </p>
                       </div>
                     </div>
                   </div>

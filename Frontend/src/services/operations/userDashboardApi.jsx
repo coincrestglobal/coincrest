@@ -33,21 +33,34 @@ export const getPlans = async () => {
 
 export const getBalance = async (token) => {
   try {
-    const response = await apiConnector("GET", GET_BALANCE, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      GET_BALANCE,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      null
+    );
 
     return response;
   } catch (error) {}
 };
 
 //investments
-export const investInPlan = async (token, data) => {
+export const investInPlan = async (token, data, setUser) => {
   try {
-    const response = await apiConnector("POST", INVEST_IN_PLAN, data, {
-      Authorization: `Bearer ${token}`,
-    });
-    if (response.status === success) toast.success(response.message);
+    const response = await apiConnector(
+      "POST",
+      INVEST_IN_PLAN,
+      data,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      null,
+      setUser
+    );
+    if (response.status === "success") toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "failed to invest");
@@ -103,11 +116,18 @@ export const verifyDeposit = async (token, data) => {
     toast.error(error.message);
   }
 };
-export const getDepositAddresses = async (token) => {
+export const getDepositAddresses = async (token, setUser) => {
   try {
-    const response = await apiConnector("GET", GET_DEPOSIT_ADDRESS_API, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      GET_DEPOSIT_ADDRESS_API,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      null,
+      setUser
+    );
     if (!response?.data?.success) {
     }
     return response;

@@ -86,6 +86,11 @@ function ControlPanel() {
         route="withdraw-requests"
       />
       <StatCard
+        title="Investment Closure Requests"
+        value={statsSata.Withdrawals}
+        route="investment-closure-requests"
+      />
+      <StatCard
         title="Deposit History"
         value={statsSata.deposits}
         route="deposit-history"
