@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 export const apiConnector = async (
   method,
   url,
@@ -29,7 +28,9 @@ export const apiConnector = async (
 
   const response = await fetch(url + queryString, options);
   const result = await response.json();
-
+  if (result.isOldDevice) {
+    throw result;
+  }
   if (!response.ok) throw new Error(result.message || "API request failed");
 
   return result;

@@ -30,7 +30,7 @@ function LoginForm() {
     try {
       setLoading(true);
       const response = await sendOtp({ email, password });
-      setStep(2);
+      if (response.status === "success") setStep(2);
     } catch (err) {
     } finally {
       setLoading(false);

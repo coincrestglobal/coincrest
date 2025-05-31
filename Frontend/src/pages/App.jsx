@@ -12,19 +12,17 @@ function App() {
     const validatingToken = async () => {
       try {
         setLoading(true);
-        const response = await validateToken(user.token);
-        if (response?.isOldDevice) {
-          setUser(null);
-          localStorage.removeItem("user");
-          toast.message(result.message);
-        }
+        const response = await validateToken(user?.token, setUser);
       } catch (error) {
       } finally {
         setLoading(false);
       }
     };
-    validatingToken();
-  }, []);
+
+    if (user?.token) {
+      validatingToken();
+    }
+  }, [user?.token]);
 
   if (loding) {
     return <Loading />;
