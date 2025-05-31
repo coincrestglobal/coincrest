@@ -16,6 +16,7 @@ const statRoutes = require("./routes/statRoutes");
 const faqRoutes = require("./routes/faqRoutes");
 const termRoutes = require("./routes/termRoutes");
 const policyRoutes = require("./routes/policyRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const errorHandler = require("./middlewares/errorMiddleware");
 
 const app = express();
@@ -51,6 +52,7 @@ app.use("/api/v1/stat", statRoutes);
 app.use("/api/v1/faq", faqRoutes);
 app.use("/api/v1/term", termRoutes);
 app.use("/api/v1/policy", policyRoutes);
+app.use("/api/v1/notification", notificationRoutes);
 
 app.use(errorHandler);
 

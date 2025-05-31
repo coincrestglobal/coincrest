@@ -1,5 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const Announcement = require("../models/announcementModel");
+const Notification = require("../models/notificationModel");
 const AppError = require("../utils/appError");
 
 exports.createAnnouncement = catchAsync(async (req, res, next) => {
@@ -15,13 +16,30 @@ exports.createAnnouncement = catchAsync(async (req, res, next) => {
 
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-  await Announcement.create({
+  const announcement = await Announcement.create({
     title,
     message,
     visibleTo,
     createdBy: userId,
     expiresAt,
   });
+
+  if (visibleTo === "user" || visibleTo === "all") {
+    const users = await User.find(
+      { role: "user", isDeleted: false },
+      "_id"
+    ).lean();
+
+    const notifications = users.map((user) => ({
+      user: user._id,
+      title,
+      message,
+    }));
+
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
+  }
 
   res.status(201).json({
     status: "success",
