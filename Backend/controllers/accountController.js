@@ -419,7 +419,14 @@ exports.getWithdrawalHistory = catchAsync(async (req, res, next) => {
   }
 
   if (search) {
-    filter.txId = { $regex: search, $options: "i" }; // search only txId
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(search);
+
+    filter.$or = [
+      { txId: { $regex: search, $options: "i" } },
+      ...(isValidObjectId
+        ? [{ _id: new mongoose.Types.ObjectId(search) }]
+        : []),
+    ];
   }
 
   const sortOrder = sort === "desc" ? -1 : 1;

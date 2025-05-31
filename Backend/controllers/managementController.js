@@ -115,14 +115,20 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
     filterConditions.push({ tokenType });
   }
 
-  // Search: txId, toAddress, and amount
+  // Search: txId, toAddress, amount, _id
   if (search) {
+    search = search.trim();
     const searchRegex = { $regex: search, $options: "i" };
-    const orSearch = [{ toAddress: searchRegex }, { txId: searchRegex }];
+    const orSearch = [{ txId: searchRegex }, { toAddress: searchRegex }];
 
-    // If search string is numeric, include amount
+    // Include amount if numeric
     if (!isNaN(Number(search))) {
       orSearch.push({ amount: Number(search) });
+    }
+
+    // Include _id if valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(search)) {
+      orSearch.push({ _id: new mongoose.Types.ObjectId(search) });
     }
 
     filterConditions.push({ $or: orSearch });
@@ -165,7 +171,6 @@ exports.getWithdrawals = catchAsync(async (req, res, next) => {
     },
   });
 });
-
 exports.getDeposits = catchAsync(async (req, res, next) => {
   const { tokenType, startDate, endDate, sort = "desc", search } = req.query;
 
