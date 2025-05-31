@@ -40,6 +40,7 @@ import Feedbacks from "../components/dashboard/accounts/admin/Feedbakcs";
 import FAQs from "../components/dashboard/accounts/admin/FAQs";
 import TermsAndConditions from "../components/dashboard/accounts/admin/TermsAndConditions";
 import PrivacyPolicy from "../components/dashboard/accounts/admin/PrivacyPolicy";
+import InvestmentPlansCloseManagement from "../components/dashboard/accounts/admin/InvestmentPlansCloseManagement";
 
 // owner
 import ManageAdmins from "../components/dashboard/accounts/owner/ManageAdmins";
@@ -169,9 +170,15 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "withdraw-requests",
+                    children: [{ index: true, Component: WithdrawalRequests }],
+                  },
+                  {
+                    path: "investment-closure-requests",
                     children: [
-                      { index: true, Component: WithdrawalRequests },
-                      { path: ":id", Component: UserDetails },
+                      {
+                        index: true,
+                        Component: InvestmentPlansCloseManagement,
+                      },
                     ],
                   },
                   {

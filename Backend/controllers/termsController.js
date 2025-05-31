@@ -15,9 +15,7 @@ exports.createTerms = catchAsync(async (req, res, next) => {
 });
 
 exports.getTerms = catchAsync(async (req, res) => {
-  const terms = await Terms.find()
-    .sort({ updatedAt: -1 })
-    .select("title condition");
+  const terms = await Terms.find().select("title condition");
 
   res.status(200).json({
     status: "success",

@@ -14,16 +14,23 @@ const {
 
 export const validateToken = async (token, setUser) => {
   try {
-    const response = await apiConnector("GET", VALIDATE_TOKEN, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      VALIDATE_TOKEN,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      null,
+      setUser
+    );
   } catch (error) {
-    setUser(null);
-    localStorage.removeItem("user");
-    toast.error(error.message);
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 5000);
+    // setUser(null);
+    // localStorage.removeItem("user");
+    // toast.error(error.message);
+    // setTimeout(() => {
+    //   window.location.href = "/";
+    // }, 7000);
   }
 };
 

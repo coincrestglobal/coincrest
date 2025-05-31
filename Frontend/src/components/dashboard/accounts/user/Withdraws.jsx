@@ -137,6 +137,7 @@ const WithdrawPage = () => {
   if (loading) {
     return <Loading />;
   }
+
   return (
     <div className="relative max-w-4xl mx-auto bg-primary-dark rounded-md p-6 sm:p-8">
       <div className="flex flex-wrap sm:flex-nowrap space-x-0 sm:space-x-10 mb-8 md:mb-4 lg:mb-2">
@@ -282,6 +283,10 @@ const WithdrawPage = () => {
                 >
                   {item.status}
                 </span>
+              </div>
+              <div className="flex justify-between">
+                <span>Transaction Id:</span>
+                <span className="text-text-link">{item.txId}</span>
               </div>
               <div className="flex justify-between">
                 <span>Date:</span>

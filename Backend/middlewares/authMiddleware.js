@@ -33,7 +33,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 🔐 Single device login check
   if (user.currentLoginToken !== token) {
-    return res.status(401).json({
+    return res.status(200).json({
       status: "fail",
       message: "You have been logged out from this device. Please login again.",
       isOldDevice: true,

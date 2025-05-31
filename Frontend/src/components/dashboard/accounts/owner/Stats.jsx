@@ -29,7 +29,7 @@ function SummaryCard({ title, value, inc = null, filter }) {
         <p className="text-sm sm:text-xl text-text-heading text-right">
           {filter}
         </p>
-        {inc && (
+        {inc >= 0 && (
           <p className="text-sm sm:text-xl text-text-linkHover font-bold text-right">
             + {inc}
           </p>
