@@ -5,8 +5,6 @@ const { MIN_VALID_REFERRAL_DEPOSIT } = require("../config/constants");
 
 async function runTeamBonusScanner() {
   try {
-    console.log("🚀 Running team bonus scanner...");
-
     // 1. Get team bonus thresholds from settings
     const setting = await Setting.findOne({ key: "team_bonus" });
     if (!setting || !setting.value) return;
@@ -49,10 +47,6 @@ async function runTeamBonusScanner() {
           );
 
           if (!alreadyGiven) {
-            console.log(
-              `💰 Giving ₹${bonusAmount} to ${referrer.email} for ${milestoneNumber} valid referrals.`
-            );
-
             referrer.referralBonuses.push({
               type: "team",
               milestone: milestoneNumber,
@@ -73,8 +67,6 @@ async function runTeamBonusScanner() {
         }
       }
     }
-
-    console.log("✅ Team bonus scanner finished.");
   } catch (err) {
     console.error("❌ Error in scanner:", err);
   }

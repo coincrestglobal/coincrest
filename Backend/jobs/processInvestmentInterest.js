@@ -6,7 +6,6 @@ const {
 cron.schedule("0 0 * * *", async () => {
   try {
     await calculateAndApplyWeeklyInterest();
-    console.log("Interest payout job completed");
   } catch (err) {
     console.error("Error in interest payout job:", err);
   }
@@ -15,7 +14,6 @@ cron.schedule("0 0 * * *", async () => {
 cron.schedule("0 12 * * *", async () => {
   try {
     await calculateAndApplyWeeklyInterest();
-    console.log("Interest payout job completed");
   } catch (err) {
     console.error("Error in interest payout job:", err);
   }
