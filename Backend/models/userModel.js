@@ -131,9 +131,12 @@ const userSchema = new mongoose.Schema(
         },
         status: {
           type: String,
-          enum: ["active", "redeemed"],
+          enum: ["active", "pending", "redeemed"],
           default: "active",
         },
+        redeemDate: { type: Date, default: null },
+
+        isManuallyApproved: { type: Boolean, default: false },
       },
     ],
     emailVerificationToken: String,
