@@ -91,7 +91,6 @@ function Withdrawals() {
   };
 
   if (loading) return <Loading />;
-
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <WithdrawHeader
@@ -158,7 +157,8 @@ function Withdrawals() {
             {expandedWithdrawal === withdrawal._id && (
               <div className="p-4 bg-primary rounded-md text-sm md:text-lg text-text-body space-y-1 overflow-y-auto">
                 <p className="break-words whitespace-normal">
-                  <strong>Transaction Id:</strong> {withdrawal?.txId}
+                  <strong>Transaction Id:</strong>{" "}
+                  {withdrawal?.txId ? withdrawal.txId : withdrawal?._id}
                 </p>
                 <p className="break-words whitespace-normal">
                   <strong>Wallet Address:</strong> {withdrawal.toAddress}

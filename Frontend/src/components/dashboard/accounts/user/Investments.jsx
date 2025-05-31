@@ -149,6 +149,10 @@ function Investments() {
 
                     <div className="text-sm space-y-2 text-gray-300">
                       <p>
+                        <span className="text-text-heading">Id:</span>
+                        {data._id}
+                      </p>
+                      <p>
                         <span className="text-text-heading">Opened at:</span>{" "}
                         {new Date(data.investDate).toLocaleDateString()}
                       </p>

@@ -286,11 +286,14 @@ const WithdrawPage = () => {
               </div>
               <div className="flex justify-between">
                 <span>Transaction Id:</span>
-                <span className="text-text-link">{item.txId}</span>
+                <span className="text-text-link">
+                  {" "}
+                  {item?.txId ? item.txId : item?._id}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Date:</span>
-                <span>{item.date}</span>
+                <span>{new Date(item.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
           ))}
