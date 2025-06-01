@@ -11,7 +11,6 @@ export default function NotificationBell() {
   const navigate = useSafeNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!user.token) return;
@@ -25,12 +24,10 @@ export default function NotificationBell() {
       } catch (error) {
         console.error("Failed to fetch unread count:", error);
       } finally {
-        setLoading(false);
       }
     };
 
     // Initial fetch immediately
-    setLoading(true);
     fetchUnreadCount();
 
     // Set interval to fetch every 1 minute
@@ -40,8 +37,6 @@ export default function NotificationBell() {
 
     return () => clearInterval(intervalId);
   }, [user.token]);
-
-  if (loading) return <Loading />;
 
   const handleClick = () => {
     setUnreadCount(false);

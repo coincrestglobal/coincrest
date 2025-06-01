@@ -10,7 +10,7 @@ import DashboardHeader from "../../../common/DashboardHeader";
 import Pagination from "../../../common/Pagination";
 import Loading from "../../../../pages/Loading";
 
-const tabs = ["Active", "Closed", "Guidelines"];
+const tabs = ["Active", "Redeemed", "Pending", "Guidelines"];
 
 function Investments() {
   const { user } = useUser();
@@ -51,9 +51,11 @@ function Investments() {
         params.append("page", currentPage);
         params.append("role", "user");
         params.append("limit", numberOfEntries);
+        params.append("status", activeTab.toLowerCase());
 
         const response = await investingHistory(user.token, params);
         const { data } = response;
+        console.log(data);
 
         setInvestHistory(data.investments || []);
         setTotalPages(response.totalPages || 1);
@@ -66,7 +68,7 @@ function Investments() {
     };
 
     getInvestingHistory();
-  }, [currentPage, filterState, user.token]);
+  }, [currentPage, filterState, user.token, activeTab]);
 
   const cancelPlan = async (id) => {
     setLoading(true);
@@ -86,15 +88,10 @@ function Investments() {
     return <Loading />;
   }
 
-  const filteredData =
-    activeTab === "Active"
-      ? investHistory.filter((item) => item.status === "active")
-      : investHistory.filter((item) => item.status === "closed");
-
   return (
     <div className="relative bg-primary-dark max-w-6xl mx-auto rounded-md p-6 sm:p-8 max-h-[87vh] flex flex-col">
       {/* Tabs */}
-      <div className="flex space-x-8 mb-6 flex-shrink-0 bg-primary-light justify-center rounded-md p-2">
+      <div className="flex space-x-8 mb-6 flex-shrink-0  justify-center rounded-md p-2">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -130,7 +127,7 @@ function Investments() {
               ]}
             />
 
-            {filteredData.map((data, index) => (
+            {investHistory.map((data, index) => (
               <div
                 key={data._id || index}
                 className="py-5 border-b border-gray-700 space-y-4 md:space-y-0 text-text-heading"
@@ -190,19 +187,21 @@ function Investments() {
                         <p className="text-2xl font-semibold">
                           ${data.profit.toFixed(2)}
                         </p>
-                        <p className="text-sm sm:text-xl text-text-linkHover font-bold text-right">
-                          +
-                          {Math.floor(
-                            (new Date() - new Date(data.investDate)) /
-                              (1000 * 60 * 60 * 24)
-                          ) > 0
-                            ? (
-                                (data.investedAmount *
-                                  (data.interestRate / 7)) /
-                                100
-                              ).toFixed(2)
-                            : "0.00"}
-                        </p>
+                        {activeTab === "Active" && (
+                          <p className="text-sm sm:text-xl text-text-linkHover font-bold text-right">
+                            +
+                            {Math.floor(
+                              (new Date() - new Date(data.investDate)) /
+                                (1000 * 60 * 60 * 24)
+                            ) > 0
+                              ? (
+                                  (data.investedAmount *
+                                    (data.interestRate / 7)) /
+                                  100
+                                ).toFixed(2)
+                              : "0.00"}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

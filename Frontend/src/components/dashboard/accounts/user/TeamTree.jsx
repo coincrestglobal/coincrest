@@ -77,10 +77,25 @@ const TeamTree = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join the Future of Investing\n",
-          text: `Hey! I’ve started using CoinCrest — a secure and smart way to invest and earn. You can join too and get started instantly.\nUse my referral link to sign up now:\n${referralLink}`,
+          // title: "Join the Future of Investing",
+          url: referralLink,
         });
-      } catch (err) {}
+      } catch (err) {
+        try {
+          await navigator.clipboard.writeText(referralLink);
+          toast.success("Referral link copied to clipboard!");
+        } catch {
+          toast.error("Sharing not supported and failed to copy link.");
+        }
+      }
+    } else {
+      // fallback for unsupported browsers
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        toast.success("Referral link copied to clipboard!");
+      } catch {
+        toast.error("Sharing not supported and failed to copy link.");
+      }
     }
   };
 

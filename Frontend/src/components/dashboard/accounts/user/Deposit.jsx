@@ -421,9 +421,11 @@ const DepositPage = () => {
 
           <ul className="list-disc list-inside space-y-2 text-sm px-2">
             <li>
-              <strong>Double-Check Your Wallet Address:</strong> Blockchain
-              transactions are irreversible. Always confirm that your wallet
-              address is 100% accurate before making a deposit.
+              <strong>Double-Check Your Wallet Address: </strong>Before making a
+              deposit, kindly add the wallet address from which you will be
+              depositing to your CoinCrest wallet. As blockchain transactions
+              are irreversible, please ensure the accuracy of the address before
+              proceeding.
             </li>
             <li>
               <strong>Minimum Deposit Requirement:</strong> The network doesn’t

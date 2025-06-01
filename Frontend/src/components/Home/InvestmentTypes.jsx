@@ -50,7 +50,7 @@ function InvestmentCard() {
         <div className="text-sm sm:text-base text-text-heading/80 space-y-2 md:space-y-1">
           <p>
             Earn up to{" "}
-            <span className="text-text-highlighted font-medium">15%</span>.
+            <span className="text-text-highlighted font-medium">15% </span>
             monthly ROI based on your investment plan level{""}
           </p>
           <p>

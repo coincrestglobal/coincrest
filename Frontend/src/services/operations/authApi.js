@@ -65,11 +65,11 @@ export const handleVerifyOtp = async (data, navigate, setUser) => {
     response = await apiConnector("POST", VERIFY_OTP_API, data);
 
     const { token, user } = response.data;
-
     const nameParts = user.name.trim().split(" ");
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(" ");
     const userData = {
+      _id: user._id,
       token,
       name: user.name,
       firstName,
