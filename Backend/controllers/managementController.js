@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const User = require("../models/userModel");
 const Withdrawal = require("../models/withdrawalModel");
 const Deposit = require("../models/depositModel");
+const Notification = require("../models/notificationModel");
 const generateToken = require("../utils/generateToken");
 const config = require("../config/config");
 const sendEmail = require("../utils/email");
@@ -350,6 +351,17 @@ exports.approveUserInvestmentRedemption = catchAsync(async (req, res, next) => {
     .plus(investment.investedAmount)
     .toDecimalPlaces(6)
     .toNumber();
+
+  //notification
+  await Notification.create({
+    user: user._id,
+    title: "Investment Redeemed",
+    message: `Your investment of $${new Decimal(
+      investment.investedAmount
+    ).toFixed(
+      2
+    )} has been approved . The amount is now available in your withdrawable balance.`,
+  });
 
   await user.save();
 

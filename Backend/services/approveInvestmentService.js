@@ -43,7 +43,7 @@ async function scanAndAutoApproveInvestments() {
                 investment.investedAmount
               ).toFixed(
                 2
-              )} has been auto-approved and redeemed. The amount is now available in your withdrawable balance.`,
+              )} has been approved . The amount is now available in your withdrawable balance.`,
             });
           }
         }

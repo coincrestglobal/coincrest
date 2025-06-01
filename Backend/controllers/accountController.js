@@ -205,6 +205,7 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
+    status: "success",
     message: "Deposit verified and your balance has been updated successfully.",
   });
 });
@@ -312,6 +313,7 @@ exports.upsertWithdrawalAddress = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({
+    status: "success",
     message: existingEntry
       ? "Withdrawal address updated successfully"
       : "Withdrawal address added successfully",

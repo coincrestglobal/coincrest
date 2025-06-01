@@ -48,6 +48,9 @@ function Reviews() {
           if (selectedFilters["Rating"]) {
             params.append("rating", selectedFilters["Rating"]);
           }
+          if (selectedFilters["Status"]) {
+            params.append("status", selectedFilters["Status"]);
+          }
         }
         if (sortOrder) params.append("sort", sortOrder);
         params.append("page", currentPage);
@@ -99,12 +102,10 @@ function Reviews() {
         setFilterState={setFilterState}
         filterOptions={[
           {
-            label: "Rating",
+            label: "Status",
             children: [
-              { label: "Above 1", value: "above_1" },
-              { label: "Above 2", value: "above_2" },
-              { label: "Above 3", value: "above_3" },
-              { label: "Above 4", value: "above_4" },
+              { label: "Approved", value: "approved" },
+              { label: "Pending", value: "pending" },
             ],
           },
           {

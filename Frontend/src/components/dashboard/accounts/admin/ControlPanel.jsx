@@ -14,6 +14,7 @@ function ControlPanel() {
     deposits: 0,
     reviews: 0,
     feedbacks: 0,
+    investments: 0,
   });
 
   useEffect(() => {
@@ -28,6 +29,7 @@ function ControlPanel() {
             totalDeposits,
             totalReviews,
             totalFeedbacks,
+            totalInvestments,
           } = response.data;
 
           setStatsData({
@@ -36,6 +38,7 @@ function ControlPanel() {
             deposits: totalDeposits || 0,
             reviews: totalReviews || 0,
             feedbacks: totalFeedbacks || 0,
+            investments: totalInvestments || 0,
           });
         }
       } catch {
@@ -76,7 +79,6 @@ function ControlPanel() {
       </div>
     );
   };
-  console.log(statsSata);
   return (
     <div className="bg-primary-light p-2 sm:p-4 rounded-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       <StatCard title="Users" value={statsSata.users} route="users" />
@@ -87,7 +89,7 @@ function ControlPanel() {
       />
       <StatCard
         title="Investment Closure Requests"
-        value={statsSata.Withdrawals}
+        value={statsSata.investments}
         route="investment-closure-requests"
       />
       <StatCard

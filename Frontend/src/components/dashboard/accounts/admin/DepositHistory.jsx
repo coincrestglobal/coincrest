@@ -68,7 +68,7 @@ function Deposits() {
   }, [filterState, currentPage]);
 
   if (loading) return <Loading />;
-  console.log(deposits);
+
   return (
     <div className="px-4 py-2 h-full overflow-y-auto scrollbar-hide bg-primary-dark">
       <DepositHeader

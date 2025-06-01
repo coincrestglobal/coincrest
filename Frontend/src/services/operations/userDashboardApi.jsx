@@ -113,6 +113,7 @@ export const verifyDeposit = async (token, data) => {
     const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
       Authorization: `Bearer ${token}`,
     });
+    console.log(response);
     if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(error.message);

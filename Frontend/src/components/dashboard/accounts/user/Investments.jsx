@@ -55,7 +55,6 @@ function Investments() {
 
         const response = await investingHistory(user.token, params);
         const { data } = response;
-        console.log(data);
 
         setInvestHistory(data.investments || []);
         setTotalPages(response.totalPages || 1);

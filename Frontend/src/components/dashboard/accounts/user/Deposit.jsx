@@ -276,19 +276,24 @@ const DepositPage = () => {
               </div>
             )}
           </div>
-
-          <div className="flex flex-col py-2 gap-3">
-            <p className="text-sm text-gray-400">
-              After sending the payment, please upload proof of payment using
-              below verify button.
+          {user?.wallets.length > 0 ? (
+            <div className="flex flex-col py-2 gap-3">
+              <p className="text-sm text-gray-400">
+                After sending the payment, please upload proof of payment using
+                below verify button.
+              </p>
+              <button
+                className="w-fit bg-button py-2 text-lg px-4 rounded-md"
+                onClick={() => setShowModal(true)}
+              >
+                Verify Payment
+              </button>
+            </div>
+          ) : (
+            <p className="text-white">
+              Kindly add your wallet address before proceeding.
             </p>
-            <button
-              className="w-fit bg-button py-2 text-lg px-4 rounded-md"
-              onClick={() => setShowModal(true)}
-            >
-              Verify Payment
-            </button>
-          </div>
+          )}
         </div>
       )}
 
