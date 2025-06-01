@@ -92,6 +92,8 @@ exports.getStats = catchAsync(async (req, res, next) => {
     incDepositAgg,
     totalWithdrawalAgg,
     incWithdrawalAgg,
+    pendingInvestmentsCountAgg,
+    redeemedInvestmentsCountAgg,
   ] = await Promise.all([
     User.countDocuments(userBaseFilter),
     User.countDocuments(userQuery),
@@ -109,14 +111,30 @@ exports.getStats = catchAsync(async (req, res, next) => {
       ...(fromDate ? [{ $match: { createdAt: { $gte: fromDate } } }] : []),
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
+    // Pending investments count
+    User.aggregate([
+      { $match: { "investments.0": { $exists: true } } },
+      { $unwind: "$investments" },
+      { $match: { "investments.status": "pending" } },
+      { $count: "total" },
+    ]),
+    // Redeemed investments count
+    User.aggregate([
+      { $match: { "investments.0": { $exists: true } } },
+      { $unwind: "$investments" },
+      { $match: { "investments.status": "redeemed" } },
+      { $count: "total" },
+    ]),
   ]);
 
   const totalDepositAmount = totalDepositAgg[0]?.total || 0;
   const incDepositAmount = incDepositAgg[0]?.total || 0;
   const totalWithdrawalAmount = totalWithdrawalAgg[0]?.total || 0;
   const incWithdrawalAmount = incWithdrawalAgg[0]?.total || 0;
+  const pendingInvestments = pendingInvestmentsCountAgg[0]?.total || 0;
+  const redeemedInvestments = redeemedInvestmentsCountAgg[0]?.total || 0;
 
-  // ----------------- Prepare labels and charts -----------------
+  // Chart logic
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthNames = [
     "Jan",
@@ -170,17 +188,13 @@ exports.getStats = catchAsync(async (req, res, next) => {
   let groupId = null;
   switch (range) {
     case "1d":
-      groupId = {
-        $floor: { $divide: [{ $hour: "$createdAt" }, 2] },
-      };
+      groupId = { $floor: { $divide: [{ $hour: "$createdAt" }, 2] } };
       break;
     case "1w":
       groupId = { $subtract: [{ $dayOfWeek: "$createdAt" }, 1] };
       break;
     case "1m":
-      groupId = {
-        $ceil: { $divide: [{ $dayOfMonth: "$createdAt" }, 7] },
-      };
+      groupId = { $ceil: { $divide: [{ $dayOfMonth: "$createdAt" }, 7] } };
       break;
     case "1y":
       groupId = { $month: "$createdAt" };
@@ -208,19 +222,17 @@ exports.getStats = catchAsync(async (req, res, next) => {
   ]);
 
   const userMap = new Map();
-  usersAgg.forEach((u) => {
-    userMap.set(formatLabel(u._id, range), u.value);
-  });
+  usersAgg.forEach((u) => userMap.set(formatLabel(u._id, range), u.value));
 
   const depositMap = new Map();
-  depositsAgg.forEach((d) => {
-    depositMap.set(formatLabel(d._id, range), d.deposit);
-  });
+  depositsAgg.forEach((d) =>
+    depositMap.set(formatLabel(d._id, range), d.deposit)
+  );
 
   const withdrawMap = new Map();
-  withdrawalsAgg.forEach((w) => {
-    withdrawMap.set(formatLabel(w._id, range), w.withdraw);
-  });
+  withdrawalsAgg.forEach((w) =>
+    withdrawMap.set(formatLabel(w._id, range), w.withdraw)
+  );
 
   const usersChartData = expectedLabels.map((label) => ({
     name: label,
@@ -233,16 +245,17 @@ exports.getStats = catchAsync(async (req, res, next) => {
     withdraw: withdrawMap.get(label) || 0,
   }));
 
-  // ------------------------ Final Response ------------------------
   res.status(200).json({
     totalUsers,
     totalDeposit: totalDepositAmount,
-    totalProfit: totalDepositAmount,
+    totalProfit: totalDepositAmount, // Assuming profit is equal to deposit
     payouts: totalWithdrawalAmount,
     incTotalUsers,
     incTotalDeposit: incDepositAmount,
     incTotalProfit: incDepositAmount,
     incPayouts: incWithdrawalAmount,
+    pendingInvestments,
+    redeemedInvestments,
     usersChartData,
     depositWithdrawChartData,
   });

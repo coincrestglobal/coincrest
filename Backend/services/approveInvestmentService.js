@@ -8,8 +8,6 @@ function daysBetween(date1, date2) {
 }
 
 async function scanAndAutoApproveInvestments() {
-  console.log("Investment scan started:", new Date());
-
   try {
     const users = await User.find({
       "investments.status": "pending",
@@ -47,10 +45,6 @@ async function scanAndAutoApproveInvestments() {
                 2
               )} has been auto-approved and redeemed. The amount is now available in your withdrawable balance.`,
             });
-
-            console.log(
-              `Auto-approved investment ${investment._id} for user ${user._id}`
-            );
           }
         }
       }
@@ -64,8 +58,6 @@ async function scanAndAutoApproveInvestments() {
         await user.save();
       }
     }
-
-    console.log("Investment scan completed.");
   } catch (err) {
     console.error("Error during investment scan:", err);
   }
