@@ -46,7 +46,11 @@ function Investments() {
           }
 
           if (selectedFilters["Status"]) {
-            params.append("status", selectedFilters["Status"]);
+            const statusValue =
+              selectedFilters["Status"] === "approved"
+                ? "redeemed"
+                : selectedFilters["Status"];
+            params.append("status", statusValue);
           }
         }
 
@@ -60,12 +64,18 @@ function Investments() {
         );
 
         const { data } = response;
-        console.log(data);
+        console.log(data.investments);
+        const filteredData = Array.isArray(data?.investments)
+          ? data.investments.filter(
+              (n) => n.status === "redeemed" || n.status === "pending"
+            )
+          : [];
+
+        console.log(filteredData);
         setInvestments(data.investments);
         setTotalPages(response.totalPages);
         setTotalInvestments(response.total);
       } catch (error) {
-        console.error("Failed to fetch investments:", error);
       } finally {
         setLoading(false);
       }
@@ -84,7 +94,6 @@ function Investments() {
         prev.map((inv) => (inv._id === id ? updatedInvestment : inv))
       );
     } catch (error) {
-      console.error("Approval failed:", error);
     } finally {
       setModal(false);
       setLoading(false);
@@ -125,7 +134,7 @@ function Investments() {
           >
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-text-heading mb-2">
-                {investment.investedBy.name}
+                Plan: {investment.name}
               </h2>
               <button
                 onClick={() =>
@@ -147,37 +156,35 @@ function Investments() {
 
             <div className="flex justify-between text-text-body p-3 rounded-md mb-4 shadow-sm bg-primary">
               <p>
-                <strong>Amount:</strong> {investment.amount}{" "}
-                {investment.currency}
+                <strong>Amount:</strong> {investment.investedAmount}
               </p>
               <p>
-                <strong>Status:</strong> {investment.status}
+                <strong>Status: </strong>
+                {investment.status !== "redeemed"
+                  ? "Pending"
+                  : investment.status}
               </p>
             </div>
 
             {expandedInvestment === investment._id && (
               <div className="p-4 bg-primary rounded-md text-sm md:text-lg text-text-body space-y-1 overflow-y-auto">
                 <p className="break-words whitespace-normal">
-                  <strong>Transaction Id:</strong> {investment?.txId}
+                  <strong>Transaction Id:</strong>
+                  {investment?.txId ? investment.txId : investment?._id}
                 </p>
-                <p className="break-words whitespace-normal">
-                  <strong>Wallet Address:</strong> {investment.fromAddress}
-                </p>
+
                 <p>
                   <strong>Invested On:</strong>{" "}
-                  {new Date(investment.createdAt).toLocaleDateString("en-GB", {
+                  {new Date(investment.investDate).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
                   })}
                 </p>
-                <p>
-                  <strong>Chain:</strong> {investment.tokenType}
-                </p>
               </div>
             )}
 
-            {investment.status !== "approved" && (
+            {investment.status !== "redeemed" && (
               <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
                   onClick={() => {
@@ -189,14 +196,6 @@ function Investments() {
                   <FaCheck size={16} /> Approve
                 </button>
 
-                <div className="text-sm text-text-body">
-                  <strong>Approved by:</strong>{" "}
-                  {investment.approvedBy.length > 0
-                    ? investment.approvedBy
-                        .map((approver) => approver.name)
-                        .join(", ")
-                    : "No one yet"}
-                </div>
                 {modal && (
                   <ConfirmationModal
                     text={"Are you sure you want to approve this investment?"}
