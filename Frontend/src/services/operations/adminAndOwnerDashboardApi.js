@@ -177,7 +177,7 @@ export const getInvestedPlanClousreHistory = async (token, params) => {
 export const approvePlanCloseFund = async (token, id) => {
   try {
     const response = await apiConnector(
-      "GET",
+      "PATCH",
       `${APPROVE_USER_CLOSED_PLAN}/${id}`,
       null,
       {

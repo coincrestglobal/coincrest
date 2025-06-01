@@ -29,70 +29,66 @@ function Investments() {
   const [selectedId, setSelectedId] = useState(null);
   const numberOfEntries = 5;
 
-  useEffect(() => {
-    const fetchInvestments = async () => {
-      try {
-        setLoading(true);
-        const { searchQuery, selectedFilters, sortOrder } = filterState;
+  const fetchInvestments = async () => {
+    try {
+      setLoading(true);
+      const { searchQuery, selectedFilters, sortOrder } = filterState;
 
-        const params = new URLSearchParams();
-        if (searchQuery) params.append("search", searchQuery);
+      const params = new URLSearchParams();
+      if (searchQuery) params.append("search", searchQuery);
 
-        if (selectedFilters) {
-          if (selectedFilters["Date Interval"]) {
-            const { startDate, endDate } = selectedFilters["Date Interval"];
-            if (startDate) params.append("startDate", startDate);
-            if (endDate) params.append("endDate", endDate);
-          }
-
-          if (selectedFilters["Status"]) {
-            const statusValue =
-              selectedFilters["Status"] === "approved"
-                ? "redeemed"
-                : selectedFilters["Status"];
-            params.append("status", statusValue);
-          }
+      if (selectedFilters) {
+        if (selectedFilters["Date Interval"]) {
+          const { startDate, endDate } = selectedFilters["Date Interval"];
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
         }
 
-        if (sortOrder) params.append("sort", sortOrder);
-        params.append("page", currentPage);
-        params.append("limit", numberOfEntries);
-
-        const response = await getInvestedPlanClousreHistory(
-          user.token,
-          params.toString()
-        );
-
-        const { data } = response;
-        console.log(data.investments);
-        const filteredData = Array.isArray(data?.investments)
-          ? data.investments.filter(
-              (n) => n.status === "redeemed" || n.status === "pending"
-            )
-          : [];
-
-        console.log(filteredData);
-        setInvestments(data.investments);
-        setTotalPages(response.totalPages);
-        setTotalInvestments(response.total);
-      } catch (error) {
-      } finally {
-        setLoading(false);
+        if (selectedFilters["Status"]) {
+          const statusValue =
+            selectedFilters["Status"] === "approved"
+              ? "redeemed"
+              : selectedFilters["Status"];
+          params.append("status", statusValue);
+        }
       }
-    };
 
+      if (sortOrder) params.append("sort", sortOrder);
+      params.append("page", currentPage);
+      params.append("limit", numberOfEntries);
+
+      const response = await getInvestedPlanClousreHistory(
+        user.token,
+        params.toString()
+      );
+
+      const { data } = response;
+      console.log(data.investments);
+      const filteredData = Array.isArray(data?.investments)
+        ? data.investments.filter(
+            (n) => n.status === "redeemed" || n.status === "pending"
+          )
+        : [];
+
+      console.log(filteredData);
+      setInvestments(data.investments);
+      setTotalPages(response.totalPages);
+      setTotalInvestments(response.total);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchInvestments();
   }, [filterState, currentPage]);
 
   const handleApprove = async (id) => {
     try {
       setLoading(true);
-      const response = await approvePlanCloseFund(user.token, id);
-      const updatedInvestment = response.data.investment;
-
-      setInvestments((prev) =>
-        prev.map((inv) => (inv._id === id ? updatedInvestment : inv))
-      );
+      await approvePlanCloseFund(user.token, id);
+      fetchInvestments();
     } catch (error) {
     } finally {
       setModal(false);
