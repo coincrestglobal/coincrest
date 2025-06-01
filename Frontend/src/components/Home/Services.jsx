@@ -2,8 +2,8 @@ import React from "react";
 
 const services = [
   {
-    title: "Guaranteed Withdrawals Within 24 Hours",
-    desc: "Your money, your control — At Coin Crest, we promise 100% assured withdrawals. Once your decided time is complete, your funds (including interest) will be transferred to your account within 24 hours — fast, reliable, and secure.",
+    title: "Guaranteed Withdrawals Within 24 to 48 Hours",
+    desc: "Your money, your control — At CoinCrest, we guarantee 100% assured withdrawals. Once your chosen withdrawal period is complete, your funds will be transferred to your account within 24 to 48 hours — fast, reliable, and secure.",
     imgSrc: "/images/feature1.png",
   },
   {

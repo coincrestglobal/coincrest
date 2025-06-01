@@ -8,81 +8,6 @@ import Loading from "../../../../pages/Loading";
 
 export default function NotificationsPage() {
   const { user } = useUser();
-  const initialNotifications = [
-    {
-      id: 1,
-      title: "Wallet Connected",
-      message: "Your BEP-20 wallet has been successfully connected.",
-      date: "2025-05-28T14:30:00",
-      read: true,
-    },
-    {
-      id: 2,
-      title: "Bonus Received",
-      message: "You received a $20 bonus for referring a new user.",
-      date: "2025-05-27T18:45:00",
-      read: true,
-    },
-    {
-      id: 3,
-      title: "Action Required",
-      message:
-        "Please verify your email address to continue using your account.",
-      date: "2025-05-26T09:15:00",
-      read: false,
-    },
-    {
-      id: 4,
-      title: "Transaction Failed",
-      message: "Your recent deposit attempt failed due to an invalid address.",
-      date: "2025-05-25T21:00:00",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Bonus Received",
-      message: "You received a $20 bonus for referring a new user.",
-      date: "2025-05-27T18:45:00",
-      read: true,
-    },
-    {
-      id: 3,
-      title: "Action Required",
-      message:
-        "Please verify your email address to continue using your account.",
-      date: "2025-05-26T09:15:00",
-      read: false,
-    },
-    {
-      id: 4,
-      title: "Transaction Failed",
-      message: "Your recent deposit attempt failed due to an invalid address.",
-      date: "2025-05-25T21:00:00",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Bonus Received",
-      message: "You received a $20 bonus for referring a new user.",
-      date: "2025-05-27T18:45:00",
-      read: true,
-    },
-    {
-      id: 3,
-      title: "Action Required",
-      message:
-        "Please verify your email address to continue using your account.",
-      date: "2025-05-26T09:15:00",
-      read: false,
-    },
-    {
-      id: 4,
-      title: "Transaction Failed",
-      message: "Your recent deposit attempt failed due to an invalid address.",
-      date: "2025-05-25T21:00:00",
-      read: false,
-    },
-  ];
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -140,7 +65,14 @@ export default function NotificationsPage() {
             <p className="font-semibold text-text-heading">{notif.title}</p>
             <p className="text-text-subheading">{notif.message}</p>
             <p className="text-xs text-text-subheading">
-              {new Date(notif.date).toLocaleString()}
+              {new Date(notif.updatedAt).toLocaleString("en-US", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
             </p>
           </li>
         ))}

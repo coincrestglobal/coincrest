@@ -30,46 +30,43 @@ function Withdrawals() {
   const numberOfEntries = 5;
 
   // Calculate filtered and paginated data
-  useEffect(() => {
-    const fetchWithdrawals = async () => {
-      try {
-        setLoading(true); // Start loading
-        const { searchQuery, selectedFilters, sortOrder } = filterState;
 
-        const params = new URLSearchParams();
-        if (searchQuery) params.append("search", searchQuery);
+  const fetchWithdrawals = async () => {
+    try {
+      setLoading(true); // Start loading
+      const { searchQuery, selectedFilters, sortOrder } = filterState;
 
-        if (selectedFilters) {
-          if (selectedFilters["Date Interval"]) {
-            const { startDate, endDate } = selectedFilters["Date Interval"];
-            if (startDate) params.append("startDate", startDate);
-            if (endDate) params.append("endDate", endDate);
-          }
+      const params = new URLSearchParams();
+      if (searchQuery) params.append("search", searchQuery);
 
-          if (selectedFilters["Status"]) {
-            params.append("status", selectedFilters["Status"]);
-          }
+      if (selectedFilters) {
+        if (selectedFilters["Date Interval"]) {
+          const { startDate, endDate } = selectedFilters["Date Interval"];
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
         }
 
-        if (sortOrder) params.append("sort", sortOrder);
-        params.append("page", currentPage);
-        params.append("limit", numberOfEntries);
-
-        const response = await getWithdrawRequests(
-          user.token,
-          params.toString()
-        );
-
-        const { data } = response;
-        setWithdrawals(data.withdrawals);
-        setTotalPages(response.totalPages);
-        setTotalWithdraws(response.total);
-      } catch (error) {
-      } finally {
-        setLoading(false); // End loading
+        if (selectedFilters["Status"]) {
+          params.append("status", selectedFilters["Status"]);
+        }
       }
-    };
 
+      if (sortOrder) params.append("sort", sortOrder);
+      params.append("page", currentPage);
+      params.append("limit", numberOfEntries);
+
+      const response = await getWithdrawRequests(user.token, params.toString());
+
+      const { data } = response;
+      setWithdrawals(data.withdrawals);
+      setTotalPages(response.totalPages);
+      setTotalWithdraws(response.total);
+    } catch (error) {
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
+  useEffect(() => {
     fetchWithdrawals();
   }, [filterState, currentPage]);
 
@@ -77,13 +74,8 @@ function Withdrawals() {
     try {
       setLoading(true); // Start loading
       const response = await approveWithdrawRequest(user.token, id);
-      const updatedWithdrawal = response.data.withdrawal;
-
-      setWithdrawals((prev) =>
-        prev.map((w) => (w._id === id ? updatedWithdrawal : w))
-      );
+      fetchWithdrawals();
     } catch (error) {
-      console.error("Approval failed:", error);
     } finally {
       setModal(false);
       setLoading(false);
@@ -91,6 +83,7 @@ function Withdrawals() {
   };
 
   if (loading) return <Loading />;
+
   return (
     <div className="px-4 py-4 h-full overflow-y-auto scrollbar-hide bg-[var(--primary)]">
       <WithdrawHeader
@@ -184,9 +177,27 @@ function Withdrawals() {
                     setSelectedId(withdrawal._id);
                     setModal(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-button text-text-heading rounded-lg hover:bg-button-hover"
+                  disabled={withdrawal.approvedBy?.find(
+                    (approver) => approver._id === user._id
+                  )}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg
+                  ${
+                    withdrawal.approvedBy?.find(
+                      (approver) => approver._id === user._id
+                    )
+                      ? "bg-gray-500 cursor-not-allowed text-gray-300"
+                      : "bg-button text-text-heading hover:bg-button-hover"
+                  }`}
                 >
-                  <FaCheck size={16} /> Approve
+                  {!withdrawal.approvedBy?.find(
+                    (approver) => approver._id === user._id
+                  ) ? (
+                    <>
+                      <FaCheck size={16} /> Approve
+                    </>
+                  ) : (
+                    <span>Already approved by you</span>
+                  )}
                 </button>
 
                 <div className="text-sm text-text-body">

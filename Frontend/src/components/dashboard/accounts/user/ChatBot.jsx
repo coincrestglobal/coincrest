@@ -22,7 +22,7 @@ function ChatBot() {
       return "💸 Withdrawals are manually approved by our multi-sig wallet team. They may take up to 24 hours to reflect.";
     }
     if (msg.includes("deposit")) {
-      return "💰 Deposits are automated. Send USDT (TRC20) to your assigned wallet address. It will reflect once confirmed.";
+      return "💰 Deposits are automated. Send USDT (TRC-20 & BEP-20) to your assigned wallet address. It will reflect once confirmed.";
     }
     if (msg.includes("staking")) {
       return "📈 Our staking system gives weekly returns based on your level — from Star (3%) to Satoshi (7%).";
@@ -37,7 +37,7 @@ function ChatBot() {
       return "👥 Invite friends and earn rewards! Share your referral link from the dashboard.";
     }
     if (msg.includes("plan") || msg.includes("returns")) {
-      return "🗓️ Plans return weekly yields based on levels:\n• Star (3%)\n• Bronze (4%)\n• Silver (4.5%)\n• Gold (5%)\n• Diamond (5.5%)\n• Platinum (6%)\n• Satoshi (7%)";
+      return "🗓️ Plans return weekly yields based on levels:\n• Star (2%)\n• Bronze (2.5%)\n• Silver (3%)\n• Gold (3.25%)\n• Diamond (3.37%)\n• Platinum (3.5%)\n• Satoshi (3..75%)";
     }
     if (msg.includes("faq") || msg.includes("help")) {
       return "❓ Try asking about: deposit, withdraw, staking, level, referral, or support.";
