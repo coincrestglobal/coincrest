@@ -612,9 +612,13 @@ exports.getInvestmentHistory = catchAsync(async (req, res, next) => {
 
   investments = investments.sort((a, b) => {
     const aDate =
-      a.status === "redeemed" ? new Date(a.redeemDate) : new Date(a.investDate);
+      a.status === "redeemed" || a.status === "pending"
+        ? new Date(a.redeemDate)
+        : new Date(a.investDate);
     const bDate =
-      b.status === "redeemed" ? new Date(b.redeemDate) : new Date(b.investDate);
+      b.status === "redeemed" || b.status === "pending"
+        ? new Date(b.redeemDate)
+        : new Date(b.investDate);
 
     return sort === "desc" ? bDate - aDate : aDate - bDate;
   });
@@ -666,13 +670,8 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
     );
   }
 
-  investment.status = "redeemed";
+  investment.status = "pending";
   investment.redeemDate = new Date();
-  user.withdrawableBalance = new Decimal(user.withdrawableBalance)
-    .plus(new Decimal(investment.investedAmount))
-    .toDecimalPlaces(6)
-    .toNumber();
-
   await user.save();
 
   await Notification.create({
@@ -682,12 +681,52 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
       investment.investedAmount
     )
       .toDecimalPlaces(2)
-      .toString()}. The amount has been added to your withdrawable balance.`,
+      .toString()}. The amount will remain reflected in your account for 15 days before it becomes withdrawable.`,
   });
 
   return res.status(200).json({
     status: "success",
     message: "Investment redeemed successfully",
+  });
+});
+
+exports.approveUserInvestmentRedemption = catchAsync(async (req, res, next) => {
+  const { investmentId } = req.params;
+
+  // Find the user who owns this investment by searching the investments array for investmentId
+  const user = await User.findOne({
+    "investments._id": investmentId,
+    role: "user",
+    isDeleted: false,
+  });
+
+  if (!user) {
+    return next(new AppError("User with this investment not found", 404));
+  }
+
+  const investment = user.investments.id(investmentId);
+
+  if (!investment) {
+    return next(new AppError("Investment not found", 404));
+  }
+
+  if (investment.status === "redeemed") {
+    return next(new AppError("Investment already redeemed", 400));
+  }
+
+  investment.isManuallyApproved = true;
+  investment.status = "redeemed";
+
+  user.withdrawableBalance = new Decimal(user.withdrawableBalance || 0)
+    .plus(investment.investedAmount)
+    .toDecimalPlaces(6)
+    .toNumber();
+
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Investment redemption manually approved.",
   });
 });
 
