@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import useSafeNavigate from "../../utils/useSafeNavigate";
 import FilterDropdown from "./FilterDropdown";
 import { useState } from "react";
@@ -10,10 +11,14 @@ function DashboardHeader({
   setFilterState,
   filterOptions,
 }) {
+  const location = useLocation();
   const navigate = useSafeNavigate();
   const [query, setQuery] = useState(filterState.searchQuery || "");
+  const isClosurePage =
+    location.pathname ===
+    "/dashboard/owner/control-pannel/investment-closure-requests";
 
-  if (totalCount <= 0) {
+  if (totalCount <= 0 && !isClosurePage) {
     return (
       <div className="bg-[var(--primary)] border border-[var(--secondary2)] p-3 rounded-md shadow-sm mb-2 w-full">
         <div className="flex items-center space-x-4">

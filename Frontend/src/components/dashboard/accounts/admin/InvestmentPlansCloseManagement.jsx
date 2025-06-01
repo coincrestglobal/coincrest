@@ -63,14 +63,6 @@ function Investments() {
       );
 
       const { data } = response;
-      console.log(data.investments);
-      const filteredData = Array.isArray(data?.investments)
-        ? data.investments.filter(
-            (n) => n.status === "redeemed" || n.status === "pending"
-          )
-        : [];
-
-      console.log(filteredData);
       setInvestments(data.investments);
       setTotalPages(response.totalPages);
       setTotalInvestments(response.total);
@@ -111,6 +103,7 @@ function Investments() {
             children: [
               { label: "Pending", value: "pending" },
               { label: "Approved", value: "approved" },
+              { label: "Active", value: "active" },
             ],
           },
           {
@@ -156,8 +149,8 @@ function Investments() {
               </p>
               <p>
                 <strong>Status: </strong>
-                {investment.status !== "redeemed"
-                  ? "Pending"
+                {investment.status === "redeemed"
+                  ? "Approved"
                   : investment.status}
               </p>
             </div>
@@ -180,7 +173,7 @@ function Investments() {
               </div>
             )}
 
-            {investment.status !== "redeemed" && (
+            {investment.status === "pending" && (
               <div className="flex relative justify-between items-center mt-4 flex-wrap gap-4">
                 <button
                   onClick={() => {

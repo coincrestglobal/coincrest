@@ -129,7 +129,6 @@ function Stats() {
         params.append("range", formattedTimeFilter);
 
         const response = await statsData(user.token, params);
-
         setStats({
           totalUsers: response.totalUsers || 0,
           totalDeposit: response.totalDeposit || 0,
