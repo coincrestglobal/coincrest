@@ -116,7 +116,7 @@ function Investments() {
           <>
             <DashboardHeader
               title={`${activeTab} Investments`}
-              totalCount={filteredData.length}
+              totalCount={totalInvestments}
               filterState={filterState}
               setFilterState={setFilterState}
               filterOptions={[
