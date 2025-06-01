@@ -233,7 +233,7 @@ export const addOrUpdateWallet = async (token, updatedData) => {
     const response = await apiConnector("POST", UPDATE_WALLET, updatedData, {
       Authorization: `Bearer ${token}`,
     });
-    if (response.status === "success") toast.success(response.message);
+    toast.success(response.message);
     return response;
   } catch (error) {
     toast.error(error.message || "Failed to update wallet");

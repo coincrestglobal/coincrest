@@ -89,24 +89,73 @@ const DepositPage = () => {
     getAddressess();
   }, []);
 
-  const handleCopyTRC = () => {
-    const address = addresses["TRC-20"]?.walletAddress;
-    if (address) {
-      navigator.clipboard.writeText(address).then(() => {
-        setCopiedTRC(true);
-        setTimeout(() => setCopiedTRC(false), 2000); // Reset after 2s
-      });
+  const handleCopyBEP = () => {
+    const address = addresses["BEP-20"]?.walletAddress;
+    if (!address) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(address)
+        .then(() => {
+          setCopiedBEP(true);
+          setTimeout(() => setCopiedBEP(false), 2000);
+        })
+        .catch(() => fallbackCopyTextToClipboard(address, setCopiedBEP));
+    } else {
+      fallbackCopyTextToClipboard(address, setCopiedBEP);
     }
   };
 
-  const handleCopyBEP = () => {
-    const address = addresses["BEP-20"]?.walletAddress;
-    if (address) {
-      navigator.clipboard.writeText(address).then(() => {
-        setCopiedBEP(true);
-        setTimeout(() => setCopiedBEP(false), 2000); // Show "Copied!" for 2 seconds
-      });
+  const handleCopyTRC = () => {
+    const address = addresses["TRC-20"]?.walletAddress;
+    if (!address) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(address)
+        .then(() => {
+          setCopiedTRC(true);
+          setTimeout(() => setCopiedTRC(false), 2000);
+        })
+        .catch(() => fallbackCopyTextToClipboard(address, setCopiedTRC));
+    } else {
+      fallbackCopyTextToClipboard(address, setCopiedTRC);
     }
+  };
+
+  const fallbackCopyTextToClipboard = (text, setCopied) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.position = "fixed";
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = 0;
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        alert("Failed to copy address");
+      }
+    } catch (err) {
+      alert("Failed to copy address");
+    }
+
+    document.body.removeChild(textArea);
   };
 
   const handleVerify = async () => {

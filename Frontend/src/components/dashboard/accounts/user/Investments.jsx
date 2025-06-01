@@ -91,7 +91,7 @@ function Investments() {
   return (
     <div className="relative bg-primary-dark max-w-6xl mx-auto rounded-md p-6 sm:p-8 max-h-[87vh] flex flex-col">
       {/* Tabs */}
-      <div className="flex space-x-8 mb-6 flex-shrink-0  justify-center rounded-md p-2">
+      <div className="flex space-x-4 md:space-x-8 mb-6 flex-shrink-0  justify-center rounded-md p-2">
         {tabs.map((tab) => (
           <button
             key={tab}

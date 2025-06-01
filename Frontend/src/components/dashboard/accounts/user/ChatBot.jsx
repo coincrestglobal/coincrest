@@ -1,78 +1,86 @@
-import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { FaTelegramPlane } from "react-icons/fa";
 
 function ChatBot() {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "👋 Welcome to CoinCrest Support! I can help with:\n• 💰 Deposit issues\n• 💸 Withdrawal status\n• 📈 Staking & Plans\n• 🧑‍💼 Account or Referral\n\nYou can type your query or tap a topic below:",
+      text: "👋 Welcome to CoinCrest Support.\nTo help us assist you efficiently, please choose the topic that best matches your concern from the options below.",
     },
   ]);
-  const [input, setInput] = useState("");
+  const [step, setStep] = useState("topic"); // 'topic' | 'question' | 'done'
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const chatRef = useRef(null);
 
-  const faqResponses = (userMessage) => {
-    const msg = userMessage.toLowerCase();
-
-    if (["hello", "hi", "hey"].some((greet) => msg.includes(greet))) {
-      return "👋 Hello! I'm here to assist you with CoinCrest. You can ask about deposit, withdrawal, staking, or referrals.";
-    }
-    if (msg.includes("withdraw")) {
-      return "💸 Withdrawals are manually approved by our multi-sig wallet team. They may take up to 24 hours to reflect.";
-    }
-    if (msg.includes("deposit")) {
-      return "💰 Deposits are automated. Send USDT (TRC-20 & BEP-20) to your assigned wallet address. It will reflect once confirmed.";
-    }
-    if (msg.includes("staking")) {
-      return "📈 Our staking system gives weekly returns based on your level — from Star (3%) to Satoshi (7%).";
-    }
-    if (msg.includes("level") || msg.includes("upgrade")) {
-      return "🏅 Your level increases based on your staking amount. Higher levels earn higher weekly rewards.";
-    }
-    if (msg.includes("support") || msg.includes("contact")) {
-      return "📞 You can reach our live support via Telegram: https://t.me/coincrest_support";
-    }
-    if (msg.includes("referral")) {
-      return "👥 Invite friends and earn rewards! Share your referral link from the dashboard.";
-    }
-    if (msg.includes("plan") || msg.includes("returns")) {
-      return "🗓️ Plans return weekly yields based on levels:\n• Star (2%)\n• Bronze (2.5%)\n• Silver (3%)\n• Gold (3.25%)\n• Diamond (3.37%)\n• Platinum (3.5%)\n• Satoshi (3..75%)";
-    }
-    if (msg.includes("faq") || msg.includes("help")) {
-      return "❓ Try asking about: deposit, withdraw, staking, level, referral, or support.";
-    }
-    if (
-      msg.includes("agent") ||
-      msg.includes("human") ||
-      msg.includes("talk")
-    ) {
-      return "👨‍💼 You can talk to our live support on Telegram: https://t.me/coincrest_support";
-    }
-
-    return "🤖 I'm not sure about that. Try asking about: deposit, withdraw, staking, level, support, or referral.";
-  };
-
-  const sendMessage = (text = input.trim()) => {
-    if (text === "") return;
-    setMessages((prev) => [...prev, { sender: "user", text }]);
-    setInput("");
-
-    setTimeout(() => {
-      const response = faqResponses(text);
-      setMessages((prev) => [...prev, { sender: "bot", text: response }]);
-    }, 600);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  const handleQuickReply = (text) => {
-    sendMessage(text);
+  const faqData = {
+    deposit: {
+      title: "💰 Deposit Issues",
+      questions: [
+        {
+          q: "How do I deposit?",
+          a: "Send USDT (TRC-20 or BEP-20) to your assigned wallet address. It will reflect once confirmed on-chain.",
+        },
+        {
+          q: "Which network do I use?",
+          a: "We support TRC-20 and BEP-20. Use the one matching your wallet address.",
+        },
+        {
+          q: "Deposit not showing?",
+          a: "Please wait for 1-2 confirmations. If it's still missing, contact our support via Telegram.",
+        },
+      ],
+    },
+    withdraw: {
+      title: "💸 Withdrawal Issues",
+      questions: [
+        {
+          q: "How long does withdrawal take?",
+          a: "Withdrawals are manually approved by our multi-sig team. They can take up to 24 hours.",
+        },
+        {
+          q: "Can I cancel a withdrawal?",
+          a: "Once initiated, withdrawals can't be canceled as they’re processed via blockchain.",
+        },
+      ],
+    },
+    staking: {
+      title: "📈 Staking & Plans",
+      questions: [
+        {
+          q: "What is staking?",
+          a: "You lock USDT to earn weekly interest. Returns vary by your level.",
+        },
+        {
+          q: "What are the return rates?",
+          a: "From 2% (Star) to 3.75% (Satoshi) weekly. More stake = better level.",
+        },
+      ],
+    },
+    referral: {
+      title: "👥 Referral System",
+      questions: [
+        {
+          q: "How does the referral program work?",
+          a: "You get rewards when your invited users stake on the platform. Share your referral link from the dashboard.",
+        },
+        {
+          q: "Where is my referral link?",
+          a: "You can find your referral link in your account dashboard under 'Referral' tab.",
+        },
+      ],
+    },
+    support: {
+      title: "📞 Contact Support",
+      questions: [
+        {
+          q: "How to contact support?",
+          a: "You can reach our live support via Telegram: https://t.me/coincrest_support",
+        },
+        {
+          q: "Is support available 24/7?",
+          a: "Support is available 9 AM – 9 PM IST. For urgent issues, contact our Telegram support.",
+        },
+      ],
+    },
   };
 
   useEffect(() => {
@@ -86,7 +94,7 @@ function ChatBot() {
 
   return (
     <div className="w-full mx-auto rounded-md bg-primary border border-gray-700 h-full max-h-[90vh] flex flex-col overflow-hidden">
-      {/* Chat messages */}
+      {/* Chat history */}
       <div
         ref={chatRef}
         className="flex-1 bg-primary-dark border-b border-gray-700 p-4 overflow-y-auto scrollbar-hide"
@@ -111,40 +119,64 @@ function ChatBot() {
         ))}
       </div>
 
-      {/* Quick replies */}
-      {messages.length === 1 && (
-        <div className="flex flex-wrap gap-2 p-4 border-t border-gray-700">
-          {["Deposit", "Withdraw", "Staking", "Referral", "Support"].map(
-            (topic) => (
-              <button
-                key={topic}
-                onClick={() => handleQuickReply(topic)}
-                className="bg-gray-700 hover:bg-gray-600 text-text-heading px-3 py-1 rounded-full text-sm"
-              >
-                {topic}
-              </button>
-            )
-          )}
+      {/* Step 1: Choose Topic */}
+      {step === "topic" && (
+        <div className="p-4 flex flex-wrap gap-3 border-t border-gray-700">
+          {Object.keys(faqData).map((key) => (
+            <button
+              key={key}
+              onClick={() => {
+                setSelectedTopic(key);
+                setStep("question");
+                setMessages((prev) => [
+                  ...prev,
+                  { sender: "user", text: faqData[key].title },
+                ]);
+              }}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm"
+            >
+              {faqData[key].title}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Input field */}
-      <div className="flex gap-2 p-4 border-t border-gray-700 ">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask about deposit, withdraw, staking, etc..."
-          className="flex-1 px-4 py-2 rounded bg-gray-800 border border-gray-600 text-text-heading focus:outline-none text-sm sm:text-base"
-        />
-        <button
-          onClick={() => sendMessage()}
-          className="bg-button hover:bg-button-hover px-4 py-2 rounded text-text-heading"
-        >
-          <Send size={16} />
-        </button>
-      </div>
+      {/* Step 2: Choose Question */}
+      {step === "question" && selectedTopic && (
+        <div className="p-4 flex flex-col gap-2 border-t border-gray-700">
+          {faqData[selectedTopic].questions.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setMessages((prev) => [
+                  ...prev,
+                  { sender: "user", text: item.q },
+                  { sender: "bot", text: item.a },
+                ]);
+                setStep("done");
+              }}
+              className="bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm"
+            >
+              {item.q}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Step 3: Option to restart */}
+      {step === "done" && (
+        <div className="p-4 border-t border-gray-700 flex justify-center">
+          <button
+            onClick={() => {
+              setStep("topic");
+              setSelectedTopic(null);
+            }}
+            className="bg-button hover:bg-button-hover px-4 py-2 rounded text-white text-sm"
+          >
+            🔁 Ask Another Question
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,6 +31,8 @@ const {
   DELETE_ANNOUNCEMENT,
   GET_STATS,
   GET_CONTROL_STATS,
+  APPROVE_USER_CLOSED_PLAN,
+  GET_USER_CLOSED_PLANS,
 } = ownerAndAdminDashboardEndPoints;
 
 //stats
@@ -157,11 +159,17 @@ export const getAllUsersDepositHistory = async (token, params) => {
 
 //investments
 
-export const getInvestedPlanClousreHistory = async (token) => {
+export const getInvestedPlanClousreHistory = async (token, params) => {
   try {
-    const response = await apiConnector("GET", GET_USER_CLOSED_PLANS, null, {
-      Authorization: `Bearer ${token}`,
-    });
+    const response = await apiConnector(
+      "GET",
+      GET_USER_CLOSED_PLANS,
+      null,
+      {
+        Authorization: `Bearer ${token}`,
+      },
+      params
+    );
     return response;
   } catch {}
 };
@@ -169,7 +177,7 @@ export const getInvestedPlanClousreHistory = async (token) => {
 export const approvePlanCloseFund = async (token, id) => {
   try {
     const response = await apiConnector(
-      "GET",
+      "PATCH",
       `${APPROVE_USER_CLOSED_PLAN}/${id}`,
       null,
       {

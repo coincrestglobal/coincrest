@@ -19,11 +19,11 @@ const ProfileForm = () => {
   const [wallets, setWallets] = useState(() => {
     if (!user.wallets || user.wallets.length === 0) {
       return [
-        { address: "", chain: "" },
-        { address: "", chain: "" },
+        { address: "", tokenType: "" },
+        { address: "", tokenType: "" },
       ];
     } else if (user.wallets.length === 1) {
-      return [...user.wallets, { address: "", chain: "" }];
+      return [...user.wallets, { address: "", tokenType: "" }];
     } else {
       return user.wallets.slice(0, 2);
     }
@@ -71,7 +71,7 @@ const ProfileForm = () => {
         setWallets(updatedWallets);
         setUser((prev) => ({
           ...prev,
-          wallets: wallets,
+          wallets: updatedWallets,
         }));
       }
       setEditableWalletIndex(null);
@@ -198,7 +198,7 @@ const ProfileForm = () => {
                     Chain
                   </label>
                   <div className="bg-[#1e1c2f] w-[70%] text-text-heading border border-[#3a3752] rounded-lg px-4 py-3">
-                    {index == 0 ? "TRC - 20" : "BEP-20"}
+                    {wallet.tokenType || (index === 0 ? "TRC-20" : "BEP-20")}
                   </div>
                 </div>
 

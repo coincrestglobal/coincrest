@@ -96,6 +96,10 @@ export const ownerAndAdminDashboardEndPoints = {
   //stats
   GET_STATS: BASE_URL + "/stat",
   GET_CONTROL_STATS: BASE_URL + "/stat/statCount",
+
+  //investments
+  APPROVE_USER_CLOSED_PLAN: BASE_URL + "/management/approveInvestment",
+  GET_USER_CLOSED_PLANS: BASE_URL + "/management/getInvestments",
 };
 
 //user dashboard
