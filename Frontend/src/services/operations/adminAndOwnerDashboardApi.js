@@ -31,6 +31,8 @@ const {
   DELETE_ANNOUNCEMENT,
   GET_STATS,
   GET_CONTROL_STATS,
+  APPROVE_USER_CLOSED_PLAN,
+  GET_USER_CLOSED_PLANS,
 } = ownerAndAdminDashboardEndPoints;
 
 //stats
