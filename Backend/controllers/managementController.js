@@ -243,13 +243,15 @@ exports.getDeposits = catchAsync(async (req, res, next) => {
 });
 
 exports.getInvestments = catchAsync(async (req, res, next) => {
-  const { status, startDate, endDate, search, sort } = req.query;
+  let { status, startDate, endDate, search, sort } = req.query;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
   const filterConditions = [];
 
   // Filter: status
+  if (!status) status = "pending";
+
   if (status) {
     filterConditions.push({ status });
   }
