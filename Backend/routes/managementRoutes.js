@@ -41,6 +41,22 @@ router.get(
   managementController.getDeposits
 );
 
+router.get(
+  "/getInvestments",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  queryParamsValidator,
+  paginationValidator,
+  managementController.getInvestments
+);
+
+router.patch(
+  "/approveInvestment/:investmentId",
+  authMiddleware.protect,
+  authMiddleware.authorizeRoles("admin", "owner"),
+  managementController.approveUserInvestmentRedemption
+);
+
 router.post(
   "/createAdmin",
   authMiddleware.protect,

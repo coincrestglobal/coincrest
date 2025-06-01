@@ -9,6 +9,8 @@ const sendEmail = require("../utils/email");
 const { transferTRC20 } = require("../services/trc20TransferService");
 const { transferBEP20 } = require("../services/bep20TransferService");
 const generateReferralCode = require("../utils/referralCodeGenerator");
+const { default: mongoose } = require("mongoose");
+const { default: Decimal } = require("decimal.js");
 
 exports.getUsers = catchAsync(async (req, res, next) => {
   const { search, role, sort, startDate, endDate } = req.query;
@@ -237,6 +239,121 @@ exports.getDeposits = catchAsync(async (req, res, next) => {
     data: {
       deposits,
     },
+  });
+});
+
+exports.getInvestments = catchAsync(async (req, res, next) => {
+  const { status, startDate, endDate, search, sort } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const filterConditions = [];
+
+  // Filter: status
+  if (status) {
+    filterConditions.push({ status });
+  }
+
+  // Filter: date range
+  if (startDate && endDate) {
+    const start = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const end = new Date(endDate).setUTCHours(23, 59, 59, 999);
+
+    if (status === "pending" || status === "redeemed") {
+      filterConditions.push({
+        redeemDate: { $gte: new Date(start), $lte: new Date(end) },
+      });
+    } else {
+      // default: investDate
+      filterConditions.push({
+        investDate: { $gte: new Date(start), $lte: new Date(end) },
+      });
+    }
+  }
+
+  // Filter: by investment ID through search
+  if (search && mongoose.Types.ObjectId.isValid(search)) {
+    filterConditions.push({ _id: new mongoose.Types.ObjectId(search) });
+  }
+
+  // Sort order (asc or desc)
+  const sortOrder = sort === "asc" ? 1 : -1;
+
+  const matchStage = filterConditions.length ? { $and: filterConditions } : {};
+
+  const investments = await mongoose
+    .model("User")
+    .aggregate([
+      { $match: { "investments.0": { $exists: true } } },
+      { $unwind: "$investments" },
+      { $replaceRoot: { newRoot: "$investments" } },
+      { $match: matchStage },
+      { $sort: { investDate: sortOrder } },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ]);
+
+  const totalCountAgg = await mongoose
+    .model("User")
+    .aggregate([
+      { $match: { "investments.0": { $exists: true } } },
+      { $unwind: "$investments" },
+      { $replaceRoot: { newRoot: "$investments" } },
+      { $match: matchStage },
+      { $count: "total" },
+    ]);
+
+  const total = totalCountAgg[0]?.total || 0;
+
+  res.status(200).json({
+    status: "success",
+    results: investments.length,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+    data: {
+      investments,
+    },
+  });
+});
+
+exports.approveUserInvestmentRedemption = catchAsync(async (req, res, next) => {
+  const { investmentId } = req.params;
+
+  // Find the user who owns this investment by searching the investments array for investmentId
+  const user = await User.findOne({
+    "investments._id": investmentId,
+    role: "user",
+    isDeleted: false,
+  });
+
+  if (!user) {
+    return next(new AppError("User with this investment not found", 404));
+  }
+
+  const investment = user.investments.id(investmentId);
+
+  if (!investment) {
+    return next(new AppError("Investment not found", 404));
+  }
+
+  if (investment.status === "redeemed") {
+    return next(new AppError("Investment already redeemed", 400));
+  }
+
+  investment.isManuallyApproved = true;
+  investment.status = "redeemed";
+
+  user.withdrawableBalance = new Decimal(user.withdrawableBalance || 0)
+    .plus(investment.investedAmount)
+    .toDecimalPlaces(6)
+    .toNumber();
+
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Investment redemption manually approved.",
   });
 });
 

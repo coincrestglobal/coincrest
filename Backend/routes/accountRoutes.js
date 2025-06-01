@@ -87,13 +87,6 @@ router.patch(
   accountController.redeemInvestment
 );
 
-router.patch(
-  "/approveInvestment/:investmentId",
-  authMiddleware.protect,
-  authMiddleware.authorizeRoles("admin", "owner"),
-  accountController.approveUserInvestmentRedemption
-);
-
 router.get(
   "/getReferredUsers",
   authMiddleware.protect,

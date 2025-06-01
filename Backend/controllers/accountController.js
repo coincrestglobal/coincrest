@@ -690,46 +690,6 @@ exports.redeemInvestment = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.approveUserInvestmentRedemption = catchAsync(async (req, res, next) => {
-  const { investmentId } = req.params;
-
-  // Find the user who owns this investment by searching the investments array for investmentId
-  const user = await User.findOne({
-    "investments._id": investmentId,
-    role: "user",
-    isDeleted: false,
-  });
-
-  if (!user) {
-    return next(new AppError("User with this investment not found", 404));
-  }
-
-  const investment = user.investments.id(investmentId);
-
-  if (!investment) {
-    return next(new AppError("Investment not found", 404));
-  }
-
-  if (investment.status === "redeemed") {
-    return next(new AppError("Investment already redeemed", 400));
-  }
-
-  investment.isManuallyApproved = true;
-  investment.status = "redeemed";
-
-  user.withdrawableBalance = new Decimal(user.withdrawableBalance || 0)
-    .plus(investment.investedAmount)
-    .toDecimalPlaces(6)
-    .toNumber();
-
-  await user.save();
-
-  res.status(200).json({
-    status: "success",
-    message: "Investment redemption manually approved.",
-  });
-});
-
 exports.getReferredUsers = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
 
