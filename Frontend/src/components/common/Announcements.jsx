@@ -35,48 +35,45 @@ function Announcement() {
     selectedFilters: [],
   });
 
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        setLoading(true);
-        const { searchQuery, selectedFilters, sortOrder } = filterState;
-        const params = new URLSearchParams();
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
+      const { searchQuery, selectedFilters, sortOrder } = filterState;
+      const params = new URLSearchParams();
 
-        if (searchQuery) {
-          params.append("search", searchQuery);
-        }
-
-        if (selectedFilters) {
-          if (selectedFilters["Date Interval"]) {
-            const { startDate, endDate } = selectedFilters["Date Interval"];
-            if (startDate) params.append("startDate", startDate);
-            if (endDate) params.append("endDate", endDate);
-          }
-        }
-
-        if (sortOrder) {
-          params.append("sort", sortOrder);
-        }
-
-        params.append("page", currentPage);
-        params.append("role", "user");
-        params.append("limit", numberOfEntries);
-
-        const response = await getAllAnnouncements(
-          user.token,
-          params.toString()
-        );
-
-        const { data } = response;
-        setAnnouncements(data.announcements);
-        setTotalPages(response.totalPages);
-        setTotalAnnouncements(response.total);
-      } catch (error) {
-      } finally {
-        setLoading(false);
+      if (searchQuery) {
+        params.append("search", searchQuery);
       }
-    };
 
+      if (selectedFilters) {
+        if (selectedFilters["Date Interval"]) {
+          const { startDate, endDate } = selectedFilters["Date Interval"];
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
+        }
+      }
+
+      if (sortOrder) {
+        params.append("sort", sortOrder);
+      }
+
+      params.append("page", currentPage);
+      params.append("role", "user");
+      params.append("limit", numberOfEntries);
+
+      const response = await getAllAnnouncements(user.token, params.toString());
+
+      const { data } = response;
+      setAnnouncements(data.announcements);
+      setTotalPages(response.totalPages);
+      setTotalAnnouncements(response.total);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchAnnouncements();
   }, [currentPage, filterState]);
 
@@ -121,6 +118,7 @@ function Announcement() {
       const response = await deleteAnnouncements(user.token, announcementId);
       if (response.status === "success") {
         setDeleteModal(false);
+        fetchAnnouncements();
       }
     } catch (error) {
       console.error("Delete failed:", error);

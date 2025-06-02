@@ -44,7 +44,9 @@ export const apiConnector = async (
     return result;
   }
 
-  if (!response.ok) throw new Error(result.message || "API request failed");
+  if (!response.ok) {
+    throw new Error(result.message || "API request failed");
+  }
 
   return result;
 };

@@ -99,21 +99,6 @@ const WithdrawPage = () => {
   const handleWithdraw = async () => {
     const { amount, wallet, password } = formData;
 
-    if (!amount || Number(amount) < 50) {
-      toast.error("Minimum withdrawal amount is $50.");
-      return;
-    }
-
-    if (!wallet) {
-      toast.error("Please select a wallet.");
-      return;
-    }
-
-    if (!password) {
-      toast.error("Please enter your password.");
-      return;
-    }
-
     try {
       setLoading(true);
       console.log(wallet);

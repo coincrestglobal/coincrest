@@ -294,15 +294,13 @@ export const respondToFeedback = async (feedbackId, responseMessage, token) => {
 
 //FAQs
 
-export const getAllFaqs = async (token, params) => {
+export const getAllFaqs = async (params) => {
   try {
     const response = await apiConnector(
       "GET",
       GET_ALL_FAQS_API,
       null,
-      {
-        Authorization: `Bearer ${token}`,
-      },
+      {},
       params
     );
     return response;

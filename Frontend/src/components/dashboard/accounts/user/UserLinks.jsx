@@ -35,6 +35,11 @@ const navLinks = [
     icon: <Wallet className="w-5 h-4" />,
   },
   {
+    to: "wallets",
+    label: "Wallets",
+    icon: <Wallet className="w-5 h-4" />,
+  },
+  {
     to: "bonus-history",
     label: "Bonus History",
     icon: <Wallet className="w-5 h-4" />,
@@ -44,11 +49,7 @@ const navLinks = [
     label: "Your Team",
     icon: <Users className="w-5 h-4" />,
   },
-  // {
-  //   to: "announcements",
-  //   label: "Announcements",
-  //   icon: <Users className="w-5 h-4" />,
-  // },
+
   {
     to: "settings",
     label: "Settings",
