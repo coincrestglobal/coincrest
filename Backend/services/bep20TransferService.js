@@ -32,9 +32,9 @@ const ERC20_ABI = [
 
 async function transferBEP20(recipientAddress, amount) {
   try {
-    if (!web3.utils.isAddress(recipientAddress)) {
-      throw new AppError("Invalid recipient BSC address.", 400);
-    }
+    // if (!web3.utils.isAddress(recipientAddress)) {
+    //   throw new AppError("Invalid recipient BSC address.", 400);
+    // }
 
     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
     web3.eth.accounts.wallet.add(account);
@@ -52,7 +52,6 @@ async function transferBEP20(recipientAddress, amount) {
     const tx = contract.methods.transfer(recipientAddress, adjustedAmount);
     const gas = await tx.estimateGas({ from: account.address });
     const gasPrice = await web3.eth.getGasPrice();
-
     const txData = {
       from: account.address,
       to: TOKEN_CONTRACT_ADDRESS,
@@ -69,6 +68,7 @@ async function transferBEP20(recipientAddress, amount) {
       senderAddress: account.address,
     };
   } catch (err) {
+    console.log(err);
     if (err instanceof AppError) {
       return {
         success: false,
