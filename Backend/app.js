@@ -28,10 +28,6 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(cors());
 app.use(express.json());
-app.use(
-  "/uploads/profilePics",
-  express.static(path.join(__dirname, "uploads/profilePics"))
-);
 
 // ✅ Health check route
 app.get("/", (req, res) => {
