@@ -195,7 +195,7 @@ exports.getRecentReviews = catchAsync(async (req, res, next) => {
       user: userId,
     })
       .select("rating comment")
-      .populate("user", "name profilePicUrl")
+      .populate("user", "name profilePic")
       .lean();
 
     hasUserReviewed = !!userReview;

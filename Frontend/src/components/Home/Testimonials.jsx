@@ -84,10 +84,10 @@ export default function Testimonials() {
               transition={{ duration: 0.5 }}
             >
               <div className="flex justify-center mb-3">
-                {reviews[index].user?.profilePicUrl ? (
+                {reviews[index].user?.profilePic?.url ? (
                   <Avatar
                     size={48}
-                    imageURL={reviews[index].user.profilePicUrl}
+                    imageURL={reviews[index].user.profilePic?.url}
                   />
                 ) : (
                   <Avatar
