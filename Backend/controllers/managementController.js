@@ -578,7 +578,14 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
         withdrawal.fromAddress = senderAddress;
         await withdrawal.save();
 
+        await Notification.create({
+          user: withdrawal.initiatedBy,
+          title: "Withdrawal Approved",
+          message: `Your withdrawal of ${withdrawal.amount} ${withdrawal.tokenType} has been processed and credited successfully.`,
+        });
+
         return res.status(200).json({
+          status: "success",
           message: "Withdrawal approved and transferred successfully",
         });
       } else {
@@ -598,7 +605,14 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
         withdrawal.fromAddress = senderAddress;
         await withdrawal.save();
 
+        await Notification.create({
+          user: withdrawal.initiatedBy,
+          title: "Withdrawal Approved",
+          message: `Your withdrawal of ${withdrawal.amount} ${withdrawal.tokenType} has been processed and credited successfully.`,
+        });
+
         return res.status(200).json({
+          status: "success",
           message: "Withdrawal approved and transferred successfully",
         });
       } else {
@@ -613,6 +627,7 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
   await withdrawal.save();
 
   res.status(200).json({
+    status: "success",
     message: "Withdrawal approved by owner. Awaiting more approvals.",
   });
 });

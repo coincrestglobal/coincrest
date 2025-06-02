@@ -68,7 +68,7 @@ const WithdrawPage = () => {
           const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
           if (diffInDays < 7) {
-            setIsCooldown(true);
+            // setIsCooldown(true);
             const timeLeftInMs = 7 * 24 * 60 * 60 * 1000 - diffInMs;
             const days = Math.floor(timeLeftInMs / (1000 * 60 * 60 * 24));
             const hours = Math.floor(

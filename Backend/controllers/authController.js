@@ -7,9 +7,8 @@ const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const path = require("path");
-const fs = require("fs");
 const sharp = require("sharp");
+const cloudinary = require("../config/cloudinary");
 const Decimal = require("decimal.js");
 
 // url variables
@@ -385,43 +384,52 @@ exports.updateName = catchAsync(async (req, res, next) => {
 exports.updateProfilePicture = catchAsync(async (req, res, next) => {
   const { userId } = req.user;
 
-  // File name
-  const filename = `user-${userId}-${Date.now()}.webp`;
-
-  // Folder path
-  const uploadPath = path.join(__dirname, "../uploads/profilePics");
-
-  // Ensure directory exists
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-  }
-
-  // Convert and save file
-  const outputPath = path.join(uploadPath, filename);
-  await sharp(req.file.buffer)
+  const processedBuffer = await sharp(req.file.buffer)
     .resize(150, 150)
-    .webp({ quality: 90 }) // lossy compression with good quality
-    .toFile(outputPath);
+    .webp({ quality: 90 })
+    .toBuffer();
+
+  // Cloudinary upload stream
+  const uploadFromBuffer = () =>
+    new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "coincrest/profilePics" },
+        (error, result) => {
+          if (error) {
+            return reject(
+              new AppError(
+                "Profile upload failed. Please try again later.",
+                502
+              )
+            );
+          }
+          resolve(result);
+        }
+      );
+      require("stream").Readable.from(processedBuffer).pipe(stream);
+    });
+
+  const result = await uploadFromBuffer();
 
   const user = await User.findById(userId);
-  if (user.profilePicUrl) {
-    const oldPath = path.join(uploadPath, user.profilePicUrl);
-    if (fs.existsSync(oldPath)) {
-      fs.unlinkSync(oldPath);
-    }
+
+  // Purana Cloudinary image delete kar do agar hai
+  if (user.profilePic?.publicId) {
+    await cloudinary.uploader.destroy(user.profilePic.publicId);
   }
 
-  // Update user
-  user.profilePicUrl = filename;
+  // Naya url + publicId save karo
+  user.profilePic = {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
 
   await user.save();
 
   res.status(200).json({
     status: "success",
     message: "Profile picture updated successfully",
-    data: {
-      profilePicUrl: user.profilePicUrl,
-    },
+    data: { profilePicUrl: user.profilePic.url },
   });
 });
 

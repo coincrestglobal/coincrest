@@ -34,12 +34,7 @@ function Profile() {
       <div className="relative inline-block cursor-pointer">
         {user ? (
           user.profilePicUrl ? (
-            <Avatar
-              size={80}
-              imageURL={`${
-                import.meta.env.VITE_BACKEND_URL
-              }/uploads/profilePics/${user.profilePicUrl}`}
-            />
+            <Avatar size={80} imageURL={user.profilePicUrl} />
           ) : (
             <Avatar
               size={68}

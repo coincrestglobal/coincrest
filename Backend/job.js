@@ -1,59 +1,111 @@
-// // let trxDateTime = new Date("2025-05-06 06:23:42Z");
-// let trxDateTime = new Date();
+const { ethers } = require("ethers");
+const solc = require("solc");
 
-const { json } = require("express");
+const source = `
+pragma solidity ^0.8.0;
 
-// console.log(trxDateTime.getTimezoneOffset());
+contract MyToken {
+    string public name = "TestToken";
+    string public symbol = "TTK";
+    uint8 public decimals = 18;
+    uint256 public totalSupply;
 
-// // const fromTimestamp = trxDateTime - 1 * 60 * 1000,
-// //   maxTimestamp = trxDateTime + 5 * 60 * 1000;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
 
-// // console.log(
-// //   new Date(fromTimestamp),
-// //   new Date(trxDateTime).toLocaleString(),
-// //   new Date(maxTimestamp).getTime()
-// // );
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 
-// const Decimal = require("decimal.js");
-// const x = 0.1 + 0.2;
-// const y = new Decimal(0.1).plus(0.2).toNumber();
-// console.log(x, y);
+    constructor(uint256 _initialSupply) {
+        totalSupply = _initialSupply * (10 ** uint256(decimals));
+        balanceOf[msg.sender] = totalSupply;
+        emit Transfer(address(0), msg.sender, totalSupply);
+    }
 
-// const { default: mongoose } = require("mongoose");
-// const User = require("./models/userModel");
-// const config = require("./config/config");
-// const connectDB = require("./config/database");
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        require(balanceOf[msg.sender] >= _value, "Not enough balance");
+        balanceOf[msg.sender] -= _value;
+        balanceOf[_to] += _value;
 
-// const owner = new User({
-//   name: "Sudhir Sharma",
-//   email: "sudhirsharma123@gmail.com",
-//   role: "owner",
-//   isVerified: true,
-//   password: "password",
-// });
+        emit Transfer(msg.sender, _to, _value);
+        return true;
+    }
 
-// console.log(owner);
+    function approve(address _spender, uint256 _value) public returns (bool success) {
+        allowance[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
+        return true;
+    }
 
-// (async function fn() {
-//   await connectDB();
-//   await owner.save();
-// })();
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+        require(balanceOf[_from] >= _value, "Not enough balance");
+        require(allowance[_from][msg.sender] >= _value, "Allowance exceeded");
 
-// const { transferTRC20 } = require("./services/trc20TransferService");
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
+        allowance[_from][msg.sender] -= _value;
 
-// async function fn() {
-//   const result = await transferTRC20("TRjwFxxjfSexDtn5KvAktiUP7FnHwBQFUZ", 10);
-//   console.log(result);
-// }
+        emit Transfer(_from, _to, _value);
+        return true;
+    }
+}
+`;
 
-// fn();
+async function main() {
+  const input = {
+    language: "Solidity",
+    sources: { "MyToken.sol": { content: source } },
+    settings: {
+      outputSelection: { "*": { "*": ["abi", "evm.bytecode.object"] } },
+    },
+  };
 
-// console.log(new Date("2025-05-19T18:29:06.865+00:00").toLocaleString());
+  const output = JSON.parse(solc.compile(JSON.stringify(input)));
 
-// tokens
+  if (
+    !output.contracts ||
+    !output.contracts["MyToken.sol"] ||
+    !output.contracts["MyToken.sol"]["MyToken"]
+  ) {
+    throw new Error("Compilation failed");
+  }
 
-// owner : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjYxZDUwNWRjYTYwMTZjNTQwZTY1MCIsImlhdCI6MTc0ODE5MTk2MSwiZXhwIjoxNzU1OTY3OTYxfQ.aNV4JpX69LPwpzInSzxwiJOIvy6oUgSJAbsY-8dtc-U
+  const contract = output.contracts["MyToken.sol"]["MyToken"];
+  const ABI = contract.abi;
+  const BYTECODE = contract.evm.bytecode.object;
 
-// admin : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjZkNWM2NTYzY2JjNWY4NmZmMDQ1ZiIsImlhdCI6MTc0ODE5MTg1MSwiZXhwIjoxNzU1OTY3ODUxfQ.rK2ErXoI0vq55jQUJ6ggm2xA-fLNlGTHTuH0EnFKARU
+  const BSC_TESTNET_RPC = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+  const PRIVATE_KEY =
+    "7df749e69a793cd41c9e9bbd2d1d503234d73f1c3915304e320effc977666734"; // apni private key daalo
 
-// user : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MzBiOWQ1ZjM4NDZkNjUwZjYzOGU3MCIsImlhdCI6MTc0ODAyMzk0MiwiZXhwIjoxNzU1Nzk5OTQyfQ.FP2c7H5rm9rAnmyMeH4oT2wIO7xGtfLGAN_3y2ymFso
+  const provider = new ethers.JsonRpcProvider(BSC_TESTNET_RPC);
+  const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+  const factory = new ethers.ContractFactory(ABI, BYTECODE, wallet);
+  const initialSupply = 1_000_000; // 1 million tokens (without decimals)
+
+  console.log("Deploying contract...");
+  const contractInstance = await factory.deploy(initialSupply);
+  await contractInstance.waitForDeployment();
+
+  console.log("✅ Contract deployed at:", contractInstance.target);
+  console.log("Deployer address:", wallet.address);
+
+  // Transfer example: deployer se kisi dusre address ko tokens bhejna
+  const receiver = "0x7c1a71F38c152c4B9782B3c55C2831e371a936C7"; // yahan receiver ka wallet address daalo
+  const amountToSend = ethers.parseUnits("1000000", 18); // 100 tokens (18 decimals)
+
+  console.log(
+    `Transferring ${ethers.formatUnits(
+      amountToSend,
+      18
+    )} tokens to ${receiver}...`
+  );
+
+  const tx = await contractInstance.transfer(receiver, amountToSend);
+  await tx.wait();
+
+  console.log("✅ Transfer complete!");
+}
+
+main().catch(console.error);

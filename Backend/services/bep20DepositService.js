@@ -17,13 +17,13 @@ async function buildBep20Url(fromTimestamp, maxTimestamp) {
 
   if (!startBlock || !endBlock) return null;
 
-  const url = `https://api.bscscan.com/api?module=account&action=tokentx&address=${myWalletAddress}&startblock=${startBlock}&endblock=${endBlock}&sort=asc&apikey=${bscScanApiKey}`;
+  const url = `${config.bscNodeUrl}/api?module=account&action=tokentx&address=${myWalletAddress}&startblock=${startBlock}&endblock=${endBlock}&sort=asc&apikey=${bscScanApiKey}`;
   return url;
 }
 
 async function getBlockByTimestamp(timestampInSeconds) {
   try {
-    const url = `https://api.bscscan.com/api?module=block&action=getblocknobytime&timestamp=${timestampInSeconds}&closest=before&apikey=${bscScanApiKey}`;
+    const url = `${config.bscNodeUrl}/api?module=block&action=getblocknobytime&timestamp=${timestampInSeconds}&closest=before&apikey=${bscScanApiKey}`;
 
     const { data } = await axios.get(url);
 

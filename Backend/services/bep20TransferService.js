@@ -5,9 +5,18 @@ const AppError = require("../utils/appError");
 const config = require("../config/config");
 
 const web3 = new Web3(config.bscRpcUrl);
-const PRIVATE_KEY = config.bscWalletPrivateKey;
 const TOKEN_CONTRACT_ADDRESS = config.bep20ContractAddress; // e.g., USDT on BSC
 const DECIMALS = 18; // USDT has 18 decimals on BSC usually
+
+let PRIVATE_KEY = config.bscWalletPrivateKey?.trim();
+
+if (!PRIVATE_KEY) {
+  throw new Error("Private key is missing from config.");
+}
+
+if (!PRIVATE_KEY.startsWith("0x")) {
+  PRIVATE_KEY = "0x" + PRIVATE_KEY;
+}
 
 const ERC20_ABI = [
   // Basic ERC20 ABI
@@ -32,11 +41,7 @@ const ERC20_ABI = [
 
 async function transferBEP20(recipientAddress, amount) {
   try {
-    if (!web3.utils.isAddress(recipientAddress)) {
-      throw new AppError("Invalid recipient BSC address.", 400);
-    }
-
-    const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+    const account = web3.eth.accounts.privateKeyToAccount("0x" + PRIVATE_KEY);
     web3.eth.accounts.wallet.add(account);
 
     const contract = new web3.eth.Contract(ERC20_ABI, TOKEN_CONTRACT_ADDRESS);

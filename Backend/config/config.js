@@ -25,9 +25,16 @@ module.exports = {
 
   bscWalletAddress: process.env.BSC_WALLET_ADDRESS,
   bep20ContractAddress: process.env.BEP20_CONTRACT_ADDRESS,
+  bscNodeUrl: process.env.BSC_NODE_URL,
   bscScanApiKey: process.env.BSCSCAN_API_KEY,
   bscWalletPrivateKey: process.env.BSC_WALLET_PRIVATE_KEY,
   bscRpcUrl: process.env.BSC_RPC_URL,
+
+  // cloudinary variables
+
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
 
   // JWT / Auth configuration
   jwtSecret: process.env.JWT_SECRET,

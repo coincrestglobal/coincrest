@@ -35,6 +35,7 @@ exports.createAnnouncement = catchAsync(async (req, res, next) => {
       user: user._id,
       title,
       message,
+      announcementId: announcement._id,
     }));
 
     if (notifications.length > 0) {
@@ -158,6 +159,9 @@ exports.deleteAnnouncement = catchAsync(async (req, res, next) => {
 
   if (isOwner || isCreator) {
     await Announcement.findByIdAndDelete(announcementId);
+    const deleted = await Notification.deleteMany({ announcementId });
+    console.log("Deleted Notifications:", deleted.deletedCount);
+
     return res.status(200).json({
       status: "success",
       message: "Announcement deleted successfully",

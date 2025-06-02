@@ -113,12 +113,13 @@ export const verifyDeposit = async (token, data) => {
     const response = await apiConnector("POST", VERIFY_DEPOSIT, data, {
       Authorization: `Bearer ${token}`,
     });
-    console.log(response);
+
     if (response.status === "success") toast.success(response.message);
   } catch (error) {
     toast.error(error.message);
   }
 };
+
 export const getDepositAddresses = async (token) => {
   try {
     const response = await apiConnector(
@@ -183,7 +184,6 @@ export const getUserWithdrawals = async (token, params) => {
   } catch (error) {}
 };
 
-//personal
 export const updatePersonalDetails = async (token, data) => {
   try {
     const response = await apiConnector(
@@ -213,8 +213,6 @@ export const updateProfilePhoto = async (token, data) => {
     toast.error(error.message || "Failed to update profile photo");
   }
 };
-
-//pass update
 
 export const updatePassword = async (token, data) => {
   try {

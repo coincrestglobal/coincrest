@@ -20,6 +20,10 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    announcementId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Announcement",
+    },
     createdAt: {
       type: Date,
       default: Date.now,
