@@ -87,15 +87,7 @@ export default function Testimonials() {
                 {reviews[index].user?.profilePicUrl ? (
                   <Avatar
                     size={48}
-<<<<<<< HEAD
                     imageURL={reviews[index].user.profilePicUrl}
-=======
-                    imageURL={`${
-                      import.meta.env.VITE_BACKEND_URL
-                    }/uploads/profilePics/${
-                      reviews[index].user?.profilePicUrl
-                    }`}
->>>>>>> d5db5f62baa132f3389c52bdeb7c555ddd92eb30
                   />
                 ) : (
                   <Avatar
