@@ -210,7 +210,7 @@ exports.getRecentReviews = catchAsync(async (req, res, next) => {
     .sort({ createdAt: -1 })
     .limit(remainingLimit)
     .select("rating comment")
-    .populate("user", "name profilePicUrl")
+    .populate("user", "name profilePic")
     .lean();
 
   // Combine reviews

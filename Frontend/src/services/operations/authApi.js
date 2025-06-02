@@ -76,7 +76,7 @@ export const handleVerifyOtp = async (data, navigate, setUser) => {
       lastName,
       email: user.email,
       role: user.role,
-      profilePicUrl: user.profilePicUrl || null,
+      profilePicUrl: user?.profilePic?.url || null,
       wallets: user.withdrawalAddresses || [],
       referralCode: user.referralCode || "",
     };

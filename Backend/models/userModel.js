@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema(
     },
     role: { type: String, enum: ["user", "admin", "owner"], default: "user" },
     profilePic: {
-      url: { type: String, default: null }, // For frontend display
-      publicId: { type: String, default: null }, // For deletion from Cloudinary
+      url: { type: String, default: null },
+      publicId: { type: String, default: null },
     },
     referralCode: {
       type: String,
