@@ -59,6 +59,7 @@ export default function Testimonials() {
   if (loading) {
     return <Loading />;
   }
+
   return (
     <div className="py-8 px-4 sm:px-12 md:px-32 relative">
       <h1 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-text-heading  flex items-center justify-center gap-3 sm:gap-5">
@@ -88,7 +89,9 @@ export default function Testimonials() {
                     size={48}
                     imageURL={`${
                       import.meta.env.VITE_BACKEND_URL
-                    }/uploads/profilePics/${reviews[index].user.profilePicUrl}`}
+                    }/uploads/profilePics/${
+                      reviews[index].user?.profilePicUrl
+                    }`}
                   />
                 ) : (
                   <Avatar

@@ -47,6 +47,7 @@ import ManageAdmins from "../components/dashboard/accounts/owner/ManageAdmins";
 import OwnerDashboard from "../components/dashboard/accounts/owner/DashBoard";
 import AddNewAdmin from "../components/dashboard/accounts/owner/AddNewAdmin";
 import Announcements from "../components/common/Announcements";
+import WalletForm from "../components/dashboard/accounts/user/Wallets";
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
           { path: "deposits", Component: Deposits },
           { path: "withdraws", Component: Withdraws },
           { path: "bonus-history", Component: BonusHistory },
+          { path: "wallets", Component: WalletForm },
           { path: "team", Component: TeamTree },
           { path: "help-and-support", Component: HelpSupport },
         ],

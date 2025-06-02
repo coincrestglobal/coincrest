@@ -4,10 +4,8 @@ import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion"; // ✅ already imported
 import { getAllFaqs } from "../../services/operations/adminAndOwnerDashboardApi";
 import Loading from "../../pages/Loading";
-import { useUser } from "../common/UserContext";
 
 const FAQ = () => {
-  const { user } = useUser();
   const [activeTab, setActiveTab] = useState("General");
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [faqs, setFaqs] = useState([]);
@@ -18,7 +16,7 @@ const FAQ = () => {
     const getFaqs = async () => {
       try {
         setLoading(true);
-        const response = await getAllFaqs(user.token);
+        const response = await getAllFaqs();
         setFaqs(response.data.faqs);
       } catch {
       } finally {

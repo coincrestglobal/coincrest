@@ -14,6 +14,22 @@ import { statsData } from "../../../../services/operations/adminAndOwnerDashboar
 import { useUser } from "../../../common/UserContext";
 import Loading from "../../../../pages/Loading";
 
+function formatAboveTenLakh(num) {
+  if (num < 1000000) return num.toString(); // less than 10 lakh (1,000,000) return as-is
+
+  const absNum = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (absNum >= 1e7) {
+    // Crore
+    return sign + (absNum / 1e7).toFixed(2).replace(/\.?0+$/, "") + " Crore";
+  } else if (absNum >= 1e6) {
+    // 10 lakh to less than 1 crore (1,000,000 to 9,999,999)
+    return sign + (absNum / 1e5).toFixed(2).replace(/\.?0+$/, "") + " Lakh";
+  }
+  return sign + absNum.toString();
+}
+
 function SummaryCard({ title, value, inc = null, filter }) {
   return (
     <div className="bg-primary-dark rounded-md py-2 px-2 flex items-center justify-between transition-all duration-300 w-full">
@@ -22,7 +38,7 @@ function SummaryCard({ title, value, inc = null, filter }) {
           {title}
         </h2>
         <p className="text-base sm:text-xl text-text-heading font-bold">
-          {value}
+          {formatAboveTenLakh(value)}
         </p>
       </div>
       <div className="flex flex-col items-end gap-1 sm:gap-2">
@@ -84,7 +100,7 @@ function DepositWithdrawAreaChart({ data }) {
 }
 
 function Stats() {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const [timeFilter, setTimeFilter] = useState("24h");
   const [stats, setStats] = useState({
     totalUsers: 0,
