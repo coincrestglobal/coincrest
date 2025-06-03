@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
+const helmet = require("helmet");
 const morgan = require("morgan");
 
 const authRoutes = require("./routes/authRoutes");
@@ -27,6 +27,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
 
 // ✅ Health check route
@@ -49,6 +50,12 @@ app.use("/api/v1/faq", faqRoutes);
 app.use("/api/v1/term", termRoutes);
 app.use("/api/v1/policy", policyRoutes);
 app.use("/api/v1/notification", notificationRoutes);
+
+app.use((req, res, next) => {
+  const error = new Error(`API endpoint '${req.originalUrl}' not found.`);
+  error.status = 404;
+  next(error);
+});
 
 app.use(errorHandler);
 
