@@ -213,7 +213,9 @@ const DepositPage = () => {
             {user?.wallets?.length > 0 ? (
               <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
                 {/* TRC-20 Address */}
-                {user.wallets.find((w) => w.tokenType === "TRC-20") ? (
+                {user.wallets.find(
+                  (w) => w.tokenType === "TRC-20" && w.address
+                ) ? (
                   <div className="mb-4">
                     <label className="block text-sm text-gray-400 mb-1">
                       TRC-20 Address
