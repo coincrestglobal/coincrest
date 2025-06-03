@@ -242,7 +242,9 @@ const DepositPage = () => {
                 )}
 
                 {/* BEP-20 Address */}
-                {user.wallets.find((w) => w.tokenType === "BEP-20") ? (
+                {user.wallets.find(
+                  (w) => w.tokenType === "BEP-20" && w.address
+                ) ? (
                   <div className="mb-4">
                     <label className="block text-sm text-gray-400 mb-1">
                       BEP-20 Address
