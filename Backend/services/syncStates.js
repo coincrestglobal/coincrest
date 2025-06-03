@@ -1,3 +1,4 @@
+const logger = require("../logger");
 const SyncState = require("../models/syncStateModel");
 
 // Common function to update sync state by name
@@ -9,7 +10,7 @@ async function updateSyncState(name, timeStamp) {
       { upsert: true }
     );
   } catch (err) {
-    console.error("Error updating SyncState:", err);
+    logger.error("Error updating SyncState:", err);
   }
 }
 
@@ -19,7 +20,7 @@ async function getSyncState(name) {
     const state = await SyncState.findOne({ name });
     return state ? state.lastFetchedAt : null;
   } catch (err) {
-    console.error("Error fetching SyncState:", err);
+    logger.error("Error fetching SyncState:", err);
     return null;
   }
 }

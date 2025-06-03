@@ -4,6 +4,7 @@ const config = require("../config/config");
 const Deposit = require("../models/depositModel");
 const { updateBep20SyncState, getBep20SyncState } = require("./syncStates");
 const Decimal = require("decimal.js");
+const logger = require("../logger");
 
 const myWalletAddress = config.bscWalletAddress;
 const bep20ContractAddress = config.bep20ContractAddress;
@@ -33,7 +34,7 @@ async function getBlockByTimestamp(timestampInSeconds) {
       return null;
     }
   } catch (error) {
-    console.error("[getBlockByTimestamp] Error:", error.message || error);
+    logger.error("[getBlockByTimestamp] Error:", error.message || error);
     throw error;
   }
 }
@@ -59,7 +60,7 @@ async function fetchBep20Transactions(url, txId = null) {
     await delay(300);
     return allTransactions;
   } catch (error) {
-    console.error(
+    logger.error(
       "[fetchBep20Transactions] Error fetching BEP-20 transactions:",
       error.response?.data || error.message
     );
@@ -116,14 +117,9 @@ async function saveDeposits(transactions, currentTimestamp) {
 
     if (currentTimestamp) {
       await updateBep20SyncState(currentTimestamp);
-      console.log(
-        `[saveDeposits] Updated BEP_20(lastFetchedAt) to ${new Date(
-          currentTimestamp
-        ).toLocaleString()}`
-      );
     }
   } catch (error) {
-    console.error("Error in saveDeposits(TRC-20):", error);
+    logger.error("Error in saveDeposits(TRC-20):", error);
   }
 }
 
@@ -149,7 +145,7 @@ async function scanBep20Deposits() {
 
     await saveDeposits(deposits, maxTimestamp);
   } catch (error) {
-    console.log("[scanBep20Deposits] Error:", error);
+    logger.log("[scanBep20Deposits] Error:", error);
   }
 }
 

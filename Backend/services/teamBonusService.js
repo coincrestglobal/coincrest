@@ -2,6 +2,7 @@ const Decimal = require("decimal.js");
 const User = require("../models/userModel");
 const Setting = require("../models/settingModel");
 const { MIN_VALID_REFERRAL_DEPOSIT } = require("../config/constants");
+const logger = require("../logger");
 
 async function runTeamBonusScanner() {
   try {
@@ -68,7 +69,7 @@ async function runTeamBonusScanner() {
       }
     }
   } catch (err) {
-    console.error("❌ Error in scanner:", err);
+    logger.error("Error in team bonus scanner:", err);
   }
 }
 

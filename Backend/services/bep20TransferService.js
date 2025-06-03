@@ -41,10 +41,6 @@ const ERC20_ABI = [
 
 async function transferBEP20(recipientAddress, amount) {
   try {
-    // if (!web3.utils.isAddress(recipientAddress)) {
-    //   throw new AppError("Invalid recipient BSC address.", 400);
-    // }
-
     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
     web3.eth.accounts.wallet.add(account);
 

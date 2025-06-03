@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Notification = require("../models/notificationModel"); // assume ye model hai
 const Decimal = require("decimal.js");
+const logger = require("../logger");
 
 function daysBetween(date1, date2) {
   const diffTime = Math.abs(date2 - date1);
@@ -59,7 +60,7 @@ async function scanAndAutoApproveInvestments() {
       }
     }
   } catch (err) {
-    console.error("Error during investment scan:", err);
+    logger.error("Error during investment scan:", err);
   }
 }
 

@@ -4,6 +4,7 @@ const config = require("../config/config");
 const Deposit = require("../models/depositModel");
 const { getTrc20SyncState, updateTrc20SyncState } = require("./syncStates");
 const Decimal = require("decimal.js");
+const logger = require("../logger");
 
 const myWalletAddress = config.tronWalletAddress;
 const trc20ContractAddress = config.trc20ContractAddress;
@@ -44,7 +45,7 @@ async function fetchTrc20Transactions(url, txId = null) {
 
     return allTransactions;
   } catch (error) {
-    console.error(
+    logger.error(
       "Error fetching transactions:",
       error.response?.data || error.message
     );
@@ -77,7 +78,6 @@ function filterTrc20Deposits(transactions) {
 async function saveDeposits(transactions, currentTimestamp) {
   try {
     if (!transactions || transactions.length === 0) {
-      console.log("No new deposits to save (trc20).");
       if (currentTimestamp) {
         await updateTrc20SyncState(currentTimestamp);
       }
@@ -102,14 +102,9 @@ async function saveDeposits(transactions, currentTimestamp) {
 
     if (currentTimestamp) {
       await updateTrc20SyncState(currentTimestamp);
-      console.log(
-        `[saveDeposits] Updated TRC_20(lastFetchedAt) to ${new Date(
-          currentTimestamp
-        ).toLocaleString()}`
-      );
     }
   } catch (error) {
-    console.error("Error in saveDeposits(TRC-20):", error);
+    logger.error("Error in saveDeposits(TRC-20):", error);
   }
 }
 
@@ -137,7 +132,7 @@ async function scanTrc20Deposits() {
       fromTimestamp = toTs;
     }
   } catch (err) {
-    console.error("[scanTrc20DepositsByBlock] Error:", err.message);
+    logger.error("[scanTrc20DepositsByBlock] Error:", err.message);
   }
 }
 

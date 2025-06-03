@@ -9,8 +9,6 @@ async function calculateAndApplyWeeklyInterest() {
   });
 
   for (const user of users) {
-    let updated = false;
-
     for (const investment of user.investments) {
       if (investment.status !== "active") continue;
 
