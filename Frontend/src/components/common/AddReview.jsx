@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { addReview, editReview } from "../../services/operations/homeApi";
 import { useUser } from "../common/UserContext";
@@ -15,17 +15,7 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!reviewText.trim()) {
-      alert("Please enter a review.");
-      return;
-    }
-    if (rating === 0) {
-      alert("Please select a rating.");
-      return;
-    }
-
     setLoading(true);
-
     try {
       let response;
       if (initialReview) {
@@ -41,19 +31,12 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
       setHasReviewed(true);
       setIsModalOpen(false);
     } catch (error) {
+      // handle error if needed
     } finally {
       setLoading(false);
     }
   };
 
-  const handleMouseMove = (star, event) => {
-    const { left, width } = event.target.getBoundingClientRect();
-    const x = event.clientX - left;
-    const isHalf = x < width / 2;
-    setHoverRating(isHalf ? star - 0.5 : star);
-  };
-
-  // ✅ return inside function
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-primary-light rounded-lg shadow-lg w-[450px] mx-4 relative">
@@ -70,39 +53,23 @@ function AddReview({ initialReview = null, setIsModalOpen }) {
           <div className="flex flex-col gap-4">
             <div className="flex space-x-2 justify-center">
               {[1, 2, 3, 4, 5].map((star) => {
-                const isHalfStar =
-                  rating === star - 0.5 || hoverRating === star - 0.5;
                 return (
                   <div
                     key={star}
-                    className="cursor-pointer relative"
-                    onMouseMove={(e) => handleMouseMove(star, e)}
+                    className="cursor-pointer"
+                    onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    onClick={() => setRating(hoverRating || star)}
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      position: "relative",
-                    }}
+                    onClick={() => setRating(star)}
+                    style={{ width: "30px", height: "30px" }}
                   >
                     <FaStar
                       size={30}
-                      className="absolute top-0 left-0 text-gray-300"
-                      style={{ zIndex: 1 }}
+                      className={
+                        hoverRating >= star || rating >= star
+                          ? "text-yellow-500"
+                          : "text-gray-300"
+                      }
                     />
-                    {isHalfStar ? (
-                      <FaStarHalfAlt
-                        size={30}
-                        className="absolute top-0 left-0 text-yellow-500"
-                        style={{ zIndex: 2 }}
-                      />
-                    ) : rating >= star || hoverRating >= star ? (
-                      <FaStar
-                        size={30}
-                        className="absolute top-0 left-0 text-yellow-500"
-                        style={{ zIndex: 2 }}
-                      />
-                    ) : null}
                   </div>
                 );
               })}
