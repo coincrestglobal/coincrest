@@ -280,7 +280,7 @@ const DepositPage = () => {
               </div>
             )}
           </div>
-          {user?.wallets.length > 0 ? (
+          {user?.wallets?.length > 0 ? (
             <div className="flex flex-col py-2 gap-3">
               <p className="text-sm text-gray-400">
                 After sending the payment, please upload proof of payment using
@@ -334,9 +334,9 @@ const DepositPage = () => {
                     <span>Token Type:</span>
                     <span className="text-text-link">{deposit.tokenType}</span>
                   </div>
-                  <div className="flex break-words justify-between">
-                    <span>Transaction Id:</span>
-                    <span className="text-text-link break-words">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start break-words">
+                    <span className="font-medium">Transaction Id:</span>
+                    <span className="text-text-link break-words max-w-full sm:ml-4">
                       {deposit.txId}
                     </span>
                   </div>

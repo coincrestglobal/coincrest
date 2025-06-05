@@ -268,13 +268,14 @@ const WithdrawPage = () => {
                   {item.status}
                 </span>
               </div>
-              <div className="flex justify-between break-words">
-                <span>Transaction Id:</span>
-                <span className="text-text-link break-words">
-                  {" "}
+
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start break-words">
+                <span className="font-medium">Transaction Id:</span>
+                <span className="text-text-link break-words max-w-full sm:ml-4">
                   {item?.txId ? item.txId : item?._id}
                 </span>
               </div>
+
               <div className="flex justify-between">
                 <span>Date:</span>
                 <span>{new Date(item.createdAt).toLocaleDateString()}</span>
