@@ -334,9 +334,11 @@ const DepositPage = () => {
                     <span>Token Type:</span>
                     <span className="text-text-link">{deposit.tokenType}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex break-words justify-between">
                     <span>Transaction Id:</span>
-                    <span className="text-text-link">{deposit.txId}</span>
+                    <span className="text-text-link break-words">
+                      {deposit.txId}
+                    </span>
                   </div>
 
                   <div className="flex justify-between">

@@ -268,9 +268,9 @@ const WithdrawPage = () => {
                   {item.status}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between break-words">
                 <span>Transaction Id:</span>
-                <span className="text-text-link">
+                <span className="text-text-link break-words">
                   {" "}
                   {item?.txId ? item.txId : item?._id}
                 </span>
