@@ -1,10 +1,12 @@
 import { Link } from "react-router";
 import {
   FaTelegramPlane,
-  FaTwitter,
-  FaLinkedin,
   FaEnvelope,
+  FaInstagram,
+  FaFacebookF,
 } from "react-icons/fa";
+
+import { SiX } from "react-icons/si";
 
 function Footer() {
   return (
@@ -72,17 +74,17 @@ function Footer() {
           <p className="text-sm mb-4 text-text-body">
             Have questions? We’d love to help!
           </p>
-          <div className="flex gap-4 text-md">
+          <div className="flex gap-4 text-md ">
             <a
-              href="mailto:support@coincrest.io"
+              href="https://www.facebook.com/@coincrestglobal"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaEnvelope color="var(--text-highlighted)" />
+              <FaFacebookF color="var(--text-highlighted)" />
             </a>
             <a
-              href="https://t.me/coincrest"
+              href="https://t.me/coincrestglobal"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
@@ -90,20 +92,20 @@ function Footer() {
               <FaTelegramPlane color="var(--text-highlighted)" />
             </a>
             <a
-              href="https://twitter.com/coincrest"
+              href="https://www.instagram.com/coincrestglobal"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaTwitter color="var(--text-highlighted)" />
+              <FaInstagram color="var(--text-highlighted)" />
             </a>
             <a
-              href="https://linkedin.com/company/coincrest"
+              href="https://twitter.com/@coincrestglobal"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
             >
-              <FaLinkedin color="var(--text-highlighted)" />
+              <SiX color="var(--text-highlighted)" />
             </a>
           </div>
         </div>
