@@ -10,11 +10,31 @@ const myWalletAddress = config.bscWalletAddress;
 const bep20ContractAddress = config.bep20ContractAddress;
 const bscScanApiKey = config.bscScanApiKey;
 
+async function getLatestBlockNumber() {
+  try {
+    const url = `${config.bscNodeUrl}/api?module=proxy&action=eth_blockNumber&apikey=${bscScanApiKey}`;
+    const { data } = await axios.get(url);
+
+    if (data.result) {
+      return parseInt(data.result, 16); // hex to decimal
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
 async function buildBep20Url(fromTimestamp, maxTimestamp) {
   const startBlock = await getBlockByTimestamp(
     Math.floor(fromTimestamp / 1000)
   );
-  const endBlock = await getBlockByTimestamp(Math.floor(maxTimestamp / 1000));
+  let endBlock = await getBlockByTimestamp(Math.floor(maxTimestamp / 1000));
+
+  if (!endBlock) {
+    endBlock = await getLatestBlockNumber();
+  }
+  console.log(startBlock, endBlock);
 
   if (!startBlock || !endBlock) return null;
 

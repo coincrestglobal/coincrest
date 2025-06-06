@@ -73,13 +73,15 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
       );
     }
   } else {
-    const fromTimestamp = trxDateTime - 30 * 1000,
-      maxTimestamp = trxDateTime + 5 * 60 * 1000;
+    const now = Date.now;
+    const fromTimestamp = trxDateTime - 60 * 1000,
+      maxTimestamp = Math.min(trxDateTime + 60 * 1000, now);
 
     let transaction = null;
 
     if (tokenType === "BEP-20") {
       const url = await buildBep20Url(fromTimestamp, maxTimestamp);
+
       if (!url) return [];
 
       const transactionData = await fetchBep20Transactions(url, txId);
