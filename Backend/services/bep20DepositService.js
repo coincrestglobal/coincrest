@@ -119,7 +119,7 @@ async function saveDeposits(transactions, currentTimestamp) {
       await updateBep20SyncState(currentTimestamp);
     }
   } catch (error) {
-    logger.error("Error in saveDeposits(TRC-20):", error);
+    logger.error("Error in saveDeposits(BEP-20):", error);
   }
 }
 

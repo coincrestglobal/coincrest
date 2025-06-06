@@ -6,8 +6,8 @@ exports.validateVerifyDeposit = validate([
   body("tokenType")
     .notEmpty()
     .withMessage("Token type is required")
-    .isIn(["TRC-20", "BEP-20"])
-    .withMessage("Token type must be either TRC20 or BEP20"),
+    .isIn(["BEP-20"])
+    .withMessage("Token type must be BEP20"),
 
   body("txId").notEmpty().withMessage("Transaction ID is required"),
 
@@ -35,7 +35,7 @@ exports.validateAddWithdrawalAddress = validate([
     .notEmpty()
     .withMessage("Token type is required")
     .isIn(["BEP-20"])
-    .withMessage("Token type must be either TRC20 or BEP20"),
+    .withMessage("Token type must be BEP20"),
 
   body("address")
     .notEmpty()
