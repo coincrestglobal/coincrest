@@ -34,7 +34,7 @@ exports.validateAddWithdrawalAddress = validate([
   body("tokenType")
     .notEmpty()
     .withMessage("Token type is required")
-    .isIn(["TRC-20", "BEP-20"])
+    .isIn(["BEP-20"])
     .withMessage("Token type must be either TRC20 or BEP20"),
 
   body("address")
@@ -44,11 +44,6 @@ exports.validateAddWithdrawalAddress = validate([
     .withMessage("Address must be a string")
     .custom((value, { req }) => {
       const tokenType = req.body.tokenType;
-      if (tokenType === "TRC-20" && !/^T[a-zA-Z0-9]{33}$/.test(value)) {
-        throw new Error(
-          "Invalid TRC-20 address. It should start with 'T' and be 34 characters long."
-        );
-      }
 
       if (tokenType === "BEP-20" && !/^0x[a-fA-F0-9]{40}$/.test(value)) {
         throw new Error(
@@ -74,8 +69,8 @@ exports.withdrawalValidator = validate([
     }),
 
   check("tokenType")
-    .isIn(["TRC-20", "BEP-20"])
-    .withMessage("Address type must be either TRC-20 or BEP-20"),
+    .isIn(["BEP-20"])
+    .withMessage("Address type must be BEP-20"),
 
   check("address").notEmpty().withMessage("Address is required"),
 

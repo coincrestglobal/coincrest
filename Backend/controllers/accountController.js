@@ -13,11 +13,6 @@ const {
   MIN_REDEMPTION_INTERVAL_DAYS,
 } = require("../config/constants");
 const {
-  buildTrc20Url,
-  fetchTrc20Transactions,
-  filterTrc20Deposits,
-} = require("../services/trc20DepositService");
-const {
   buildBep20Url,
   fetchBep20Transactions,
   filterBep20Deposits,
@@ -83,26 +78,8 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
 
     let transaction = null;
 
-    if (tokenType === "TRC-20") {
-      const url = buildTrc20Url(fromTimestamp, maxTimestamp);
-
-      const transactionData = await fetchTrc20Transactions(url, txId);
-
-      if (transactionData.length === 0) {
-        return next(
-          new AppError(
-            "Transaction not found. Please try again after a few minutes. It can take up to 30 minutes to process your deposit.",
-            404
-          )
-        );
-      }
-
-      const processedTransaction = filterTrc20Deposits(transactionData);
-
-      transaction = processedTransaction[0];
-    } else {
+    if (tokenType === "BEP-20") {
       const url = await buildBep20Url(fromTimestamp, maxTimestamp);
-
       if (!url) return [];
 
       const transactionData = await fetchBep20Transactions(url, txId);
