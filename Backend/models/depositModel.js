@@ -7,7 +7,7 @@ const depositSchema = new mongoose.Schema(
     fromAddress: { type: String, required: true },
     toAddress: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
-    tokenType: { type: String, enum: ["TRC-20", "BEP-20"] },
+    tokenType: { type: String, enum: ["BEP-20"] },
     isConfirmed: { type: Boolean, default: false },
     depositedBy: {
       type: mongoose.Schema.Types.ObjectId,

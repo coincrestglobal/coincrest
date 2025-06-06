@@ -7,7 +7,7 @@ const withdrawalSchema = new mongoose.Schema(
     txId: { type: String },
     fromAddress: { type: String },
     toAddress: { type: String, required: true },
-    tokenType: { type: String, enum: ["TRC-20", "BEP-20"], required: true },
+    tokenType: { type: String, enum: ["BEP-20"], required: true },
     timestamp: { type: Date },
     status: {
       type: String,

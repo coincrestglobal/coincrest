@@ -35,8 +35,8 @@ module.exports = validate([
 
   query("tokenType")
     .optional()
-    .isIn(["TRC-20", "BEP-20"])
-    .withMessage("Please select a valid token type."),
+    .isIn(["BEP-20"])
+    .withMessage("Please select a valid token type(BEP-20)."),
 
   query("startDate")
     .optional()

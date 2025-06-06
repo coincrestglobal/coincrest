@@ -85,9 +85,8 @@ const userSchema = new mongoose.Schema(
     withdrawalAddresses: [
       {
         tokenType: {
-          // Token type (TRC20, BEP20, etc.)
           type: String,
-          enum: ["TRC-20", "BEP-20"], // List of allowed token types
+          enum: ["BEP-20"], // List of allowed token types
         },
         address: {
           // Address field

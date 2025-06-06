@@ -25,15 +25,6 @@ async function getSyncState(name) {
   }
 }
 
-// TRC20-specific functions
-async function updateTrc20SyncState(timeStamp) {
-  return updateSyncState("trc20", timeStamp);
-}
-
-async function getTrc20SyncState() {
-  return getSyncState("trc20");
-}
-
 // BEP20-specific functions
 async function updateBep20SyncState(timeStamp) {
   return updateSyncState("bep20", timeStamp);
@@ -44,8 +35,6 @@ async function getBep20SyncState() {
 }
 
 module.exports = {
-  updateTrc20SyncState,
-  getTrc20SyncState,
   updateBep20SyncState,
   getBep20SyncState,
 };

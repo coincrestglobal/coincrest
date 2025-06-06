@@ -15,14 +15,6 @@ module.exports = {
   dbName: process.env.DB_NAME,
 
   // Wallet / Blockchain configuration
-  tronWalletAddress: process.env.TRON_WALLET_ADDRESS,
-  trc20ContractAddress: process.env.TRC20_CONTRACT_ADDRESS,
-  tronNodeUrl: process.env.TRON_NODE_URL,
-  tronApiKey: process.env.TRON_API_KEY,
-  tronWalletPrivateKey: process.env.TRON_WALLET_PRIVATE_KEY,
-
-  trc20FeeLimit: process.env.TRC20_FEE_LIMIT,
-
   bscWalletAddress: process.env.BSC_WALLET_ADDRESS,
   bep20ContractAddress: process.env.BEP20_CONTRACT_ADDRESS,
   bscNodeUrl: process.env.BSC_NODE_URL,
