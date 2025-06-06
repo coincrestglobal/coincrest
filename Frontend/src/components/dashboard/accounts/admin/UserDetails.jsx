@@ -117,8 +117,8 @@ const UserDetails = () => {
               key={`${deposit.id}-${deposit.date}-${index}`}
               className="text-[#d1d5db]"
             >
-              Amount: {deposit.amount} USDT, Date: {deposit.date}, Status:{" "}
-              {deposit.status}
+              Amount: {deposit.amount} USDT, Date:{" "}
+              {new Date(showableUser.updatedAt).toLocaleString()}
             </li>
           ))}
         </ul>

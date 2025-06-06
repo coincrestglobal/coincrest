@@ -117,7 +117,7 @@ function Withdrawals() {
           >
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-text-heading mb-2">
-                {withdrawal.initiatedBy.name}
+                {withdrawal?.initiatedBy?.name}
               </h2>
               <button
                 onClick={() => {
