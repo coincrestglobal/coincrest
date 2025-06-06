@@ -17,11 +17,11 @@ function ChatBot() {
       questions: [
         {
           q: "How do I deposit?",
-          a: "Send USDT (TRC-20 or BEP-20) to your assigned wallet address. It will reflect once confirmed on-chain.",
+          a: "Send USDT (BEP-20) to your assigned wallet address. It will reflect once confirmed on-chain.",
         },
         {
           q: "Which network do I use?",
-          a: "We support TRC-20 and BEP-20. Use the one matching your wallet address.",
+          a: "We support only BEP-20. Please ensure you use the BEP-20 network when sending USDT.",
         },
         {
           q: "Deposit not showing?",
@@ -29,6 +29,7 @@ function ChatBot() {
         },
       ],
     },
+
     withdraw: {
       title: "💸 Withdrawal Issues",
       questions: [

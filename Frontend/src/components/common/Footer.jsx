@@ -76,7 +76,7 @@ function Footer() {
           </p>
           <div className="flex gap-4 text-md ">
             <a
-              href="https://www.facebook.com/@coincrestglobal"
+              href="https://www.facebook.com/profile.php?id=61576370476009"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"

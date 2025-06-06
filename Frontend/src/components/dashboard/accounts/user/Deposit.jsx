@@ -20,7 +20,7 @@ const DepositPage = () => {
   const [activeTab, setActiveTab] = useState("New Deposit");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [chainType, setChainType] = useState("");
+  const [chainType, setChainType] = useState("BEP-20");
   const [transactionId, setTransactionId] = useState("");
   const [password, setPassword] = useState("");
   const [dateAndTime, setDateAndTime] = useState("");
@@ -31,7 +31,6 @@ const DepositPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const numberOfEntries = 5;
   const [copiedBEP, setCopiedBEP] = useState(false);
-  const [copiedTRC, setCopiedTRC] = useState(false);
 
   useEffect(() => {
     const getHistory = async () => {
@@ -106,23 +105,6 @@ const DepositPage = () => {
     }
   };
 
-  const handleCopyTRC = () => {
-    const address = addresses["TRC-20"]?.walletAddress;
-    if (!address) return;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(address)
-        .then(() => {
-          setCopiedTRC(true);
-          setTimeout(() => setCopiedTRC(false), 2000);
-        })
-        .catch(() => fallbackCopyTextToClipboard(address, setCopiedTRC));
-    } else {
-      fallbackCopyTextToClipboard(address, setCopiedTRC);
-    }
-  };
-
   const fallbackCopyTextToClipboard = (text, setCopied) => {
     const textArea = document.createElement("textarea");
     textArea.value = text;
@@ -167,7 +149,6 @@ const DepositPage = () => {
         trxDateTime: new Date(dateAndTime).getTime(),
         password: password,
       };
-
       await verifyDeposit(user.token, data);
       setShowModal(false);
     } catch {
@@ -210,75 +191,26 @@ const DepositPage = () => {
               Please transfer USDT to one of the following wallet addresses:
             </p>
 
-            {user?.wallets?.length > 0 ? (
-              <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
-                {/* TRC-20 Address */}
-                {user.wallets.find(
-                  (w) => w.tokenType === "TRC-20" && w.address
-                ) ? (
-                  <div className="mb-4">
-                    <label className="block text-sm text-gray-400 mb-1">
-                      TRC-20 Address
-                    </label>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                      <span className="text-text-heading break-words sm:break-all">
-                        {addresses["TRC-20"]?.walletAddress}
-                      </span>
-                      <button
-                        onClick={handleCopyTRC}
-                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
-                      >
-                        {copiedTRC ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                    <p className="font-medium">No TRC-20 Wallet Found</p>
-                    <p className="text-sm mt-1">
-                      Please add your TRC-20 wallet address to continue.
-                    </p>
-                  </div>
-                )}
+            <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
+              {/* BEP-20 Address */}
 
-                {/* BEP-20 Address */}
-                {user.wallets.find(
-                  (w) => w.tokenType === "BEP-20" && w.address
-                ) ? (
-                  <div className="mb-4">
-                    <label className="block text-sm text-gray-400 mb-1">
-                      BEP-20 Address
-                    </label>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                      <span className="text-text-heading break-words sm:break-all">
-                        {addresses["BEP-20"]?.walletAddress}
-                      </span>
-                      <button
-                        onClick={handleCopyBEP}
-                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
-                      >
-                        {copiedBEP ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                    <p className="font-medium">No BEP-20 Wallet Found</p>
-                    <p className="text-sm mt-1">
-                      Please add your BEP-20 wallet address to continue.
-                    </p>
-                  </div>
-                )}
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-1">
+                  BEP-20 Address
+                </label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                  <span className="text-text-heading break-words sm:break-all">
+                    {addresses["BEP-20"]?.walletAddress}
+                  </span>
+                  <button
+                    onClick={handleCopyBEP}
+                    className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
+                  >
+                    {copiedBEP ? "Copied!" : "Copy"}
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                <p className="font-medium">No Wallets Found</p>
-                <p className="text-sm mt-1">
-                  Please add your TRC-20 and BEP-20 wallet addresses to
-                  continue.
-                </p>
-              </div>
-            )}
+            </div>
           </div>
           {user?.wallets?.length > 0 ? (
             <div className="flex flex-col py-2 gap-3">
@@ -387,30 +319,9 @@ const DepositPage = () => {
                 <label className="block text-sm text-text-heading mb-1">
                   Chain Type
                 </label>
-                <select
-                  value={chainType}
-                  onChange={(e) => setChainType(e.target.value)}
-                  className="w-full bg-gray-800  border border-button rounded-md px-4 py-2 text-text-heading focus:outline-none"
-                >
-                  <option
-                    className="bg-primary-dark border-b-2  border-white"
-                    value=""
-                  >
-                    Select Chain Type
-                  </option>
-                  <option
-                    className="bg-primary-dark border-b-2 border-white"
-                    value="BEP-20"
-                  >
-                    BEP-20
-                  </option>
-                  <option
-                    className="bg-primary-dark border-b-2 border-white"
-                    value="TRC-20"
-                  >
-                    TRC-20
-                  </option>
-                </select>
+                <p className="w-full bg-gray-800 border border-button rounded-md px-4 py-2 text-text-heading">
+                  BEP-20
+                </p>
               </div>
 
               {/* Transaction ID */}
@@ -481,11 +392,9 @@ const DepositPage = () => {
 
           <ul className="list-disc list-inside space-y-2 text-sm px-2">
             <li>
-              <strong>Double-Check Your Wallet Address: </strong>Before making a
-              deposit, kindly add the wallet address from which you will be
-              depositing to your CoinCrest wallet. As blockchain transactions
-              are irreversible, please ensure the accuracy of the address before
-              proceeding.
+              <strong>Double-Check Your Wallet Address: </strong>Blockchain
+              transactions are irreversible. Always confirm that your wallet
+              address is 100% accurate before making a deposit.
             </li>
             <li>
               <strong>Minimum Deposit Requirement:</strong> The network doesn’t

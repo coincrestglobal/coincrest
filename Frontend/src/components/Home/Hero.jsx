@@ -63,15 +63,13 @@ const HeroSection = () => {
             left="3%"
           />
           <GradientBackground size="35%" top="11%" left="99%" />
-
           <p className="text-sm sm:text-base md:text-lg text-center text-text-subheading mt-2 max-w-2xl">
             Join{" "}
             <span className="text-text-highlighted font-semibold">
               CoinCrest
             </span>{" "}
             today and start earning rewards through USDT staking. <br />
-            Our platform supports TRC20 and BEP20 networks, making it easy{" "}
-            <br />
+            Our platform supports the BEP20 network, making it easy <br />
             and secure to grow your investments.
           </p>
 

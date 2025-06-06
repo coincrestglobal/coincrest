@@ -81,7 +81,7 @@ function Deposits() {
             label: "Token Type",
             children: [
               { label: "BEP-20", value: "BEP-20" },
-              { label: "TRC-20", value: "TRC-20" },
+              // { label: "TRC-20", value: "TRC-20" },
             ],
           },
           {

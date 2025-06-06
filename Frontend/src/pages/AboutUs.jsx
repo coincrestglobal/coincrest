@@ -16,7 +16,7 @@ const benefitsData = [
   {
     title: "Sustainable Profits",
     description:
-      "Earn 3% weekly ROI with reliable, long-term staking rewards. Your investment grows steadily over time.",
+      "Earn up to 15% monthly ROI with reliable, long-term staking rewards. Your investment grows steadily over time.",
   },
   {
     title: "Referral System",
