@@ -22,7 +22,7 @@ function HelpSupport() {
             Didn't find what you were looking for?
           </p>
           <a
-            href="https://t.me/YourSupportBot" // Replace with your actual Telegram bot/group link
+            href="https://t.me/Coincresthelp" // Replace with your actual Telegram bot/group link
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-button text-text-heading rounded hover:bg-button-hover transition-colors"
