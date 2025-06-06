@@ -133,21 +133,6 @@ exports.verifyDeposit = catchAsync(async (req, res, next) => {
     );
   }
 
-  const isFromAddressBound = user.withdrawalAddresses.some(
-    (entry) =>
-      entry.tokenType === deposit.tokenType &&
-      entry.address.toLowerCase() === deposit.fromAddress.toLowerCase()
-  );
-
-  if (!isFromAddressBound) {
-    return next(
-      new AppError(
-        "This deposit doesn't match your bound withdrawal address. Please make sure the wallet used for deposit is the one bound for withdrawals.",
-        403
-      )
-    );
-  }
-
   deposit.isConfirmed = true;
   deposit.depositedBy = userId;
   deposit.verifiedAt = new Date();
