@@ -234,7 +234,7 @@ exports.getTotalCounts = catchAsync(async (req, res, next) => {
   ] = await Promise.all([
     Deposit.countDocuments(),
     Withdrawal.countDocuments(),
-    User.countDocuments(),
+    User.countDocuments({ role: "user", isDeleted: false }),
     Review.countDocuments(),
     Feedback.countDocuments(),
     User.aggregate([
