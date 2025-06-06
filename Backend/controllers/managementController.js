@@ -7,7 +7,6 @@ const Notification = require("../models/notificationModel");
 const generateToken = require("../utils/generateToken");
 const config = require("../config/config");
 const sendEmail = require("../utils/email");
-const { transferTRC20 } = require("../services/trc20TransferService");
 const { transferBEP20 } = require("../services/bep20TransferService");
 const generateReferralCode = require("../utils/referralCodeGenerator");
 const { default: mongoose } = require("mongoose");
@@ -566,34 +565,7 @@ exports.approveWithdrawal = catchAsync(async (req, res, next) => {
   if (ownerApprovers.length >= 2) {
     withdrawal.isApproved = true;
 
-    if (withdrawal.tokenType === "TRC-20") {
-      const { success, txId, senderAddress, error } = await transferTRC20(
-        withdrawal.toAddress,
-        withdrawal.amount
-      );
-
-      if (success) {
-        withdrawal.status = "completed";
-        withdrawal.txId = txId;
-        withdrawal.fromAddress = senderAddress;
-        await withdrawal.save();
-
-        await Notification.create({
-          user: withdrawal.initiatedBy,
-          title: "Withdrawal Approved",
-          message: `Your withdrawal of ${withdrawal.amount} ${withdrawal.tokenType} has been processed and credited successfully.`,
-        });
-
-        return res.status(200).json({
-          status: "success",
-          message: "Withdrawal approved and transferred successfully",
-        });
-      } else {
-        return res.status(error.statusCode || 500).json({
-          message: error.message || "TRC20 transfer failed",
-        });
-      }
-    } else {
+    if (withdrawal.tokenType === "BEP-20") {
       const { success, txId, senderAddress, error } = await transferBEP20(
         withdrawal.toAddress,
         withdrawal.amount
