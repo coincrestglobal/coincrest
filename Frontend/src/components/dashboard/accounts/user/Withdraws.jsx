@@ -101,7 +101,6 @@ const WithdrawPage = () => {
 
     try {
       setLoading(true);
-      console.log(wallet);
       const [tokenType, address] = wallet.split(" - ");
       const payload = {
         amount,
@@ -113,7 +112,6 @@ const WithdrawPage = () => {
       setFormData({ amount: "", wallet: "", password: "" });
       setCurrentPage(1);
     } catch (err) {
-      console.error(err);
     } finally {
       setLoading(false);
     }

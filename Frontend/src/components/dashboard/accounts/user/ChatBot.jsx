@@ -74,7 +74,7 @@ function ChatBot() {
       questions: [
         {
           q: "How to contact support?",
-          a: "You can reach our live support via Telegram: https://t.me/coincrest_support",
+          a: "You can reach our live support via Telegram using below button",
         },
         {
           q: "Is support available 24/7?",

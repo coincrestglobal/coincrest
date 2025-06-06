@@ -84,7 +84,7 @@ function Footer() {
               <FaFacebookF color="var(--text-highlighted)" />
             </a>
             <a
-              href="https://t.me/coincrestglobal"
+              href="https://t.me/+SYzaxxq6_3pkZTRl"
               target="_blank"
               rel="noopener noreferrer"
               className="border border-text-highlighted p-2 rounded-full"
