@@ -209,95 +209,57 @@ const DepositPage = () => {
             <p className="text-sm text-gray-300 mb-2">
               Please transfer USDT to one of the following wallet addresses:
             </p>
-
-            {user?.wallets?.length > 0 ? (
-              <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
-                {/* TRC-20 Address */}
-                {user.wallets.find(
-                  (w) => w.tokenType === "TRC-20" && w.address
-                ) ? (
-                  <div className="mb-4">
-                    <label className="block text-sm text-gray-400 mb-1">
-                      TRC-20 Address
-                    </label>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                      <span className="text-text-heading break-words sm:break-all">
-                        {addresses["TRC-20"]?.walletAddress}
-                      </span>
-                      <button
-                        onClick={handleCopyTRC}
-                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
-                      >
-                        {copiedTRC ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                    <p className="font-medium">No TRC-20 Wallet Found</p>
-                    <p className="text-sm mt-1">
-                      Please add your TRC-20 wallet address to continue.
-                    </p>
-                  </div>
-                )}
-
-                {/* BEP-20 Address */}
-                {user.wallets.find(
-                  (w) => w.tokenType === "BEP-20" && w.address
-                ) ? (
-                  <div className="mb-4">
-                    <label className="block text-sm text-gray-400 mb-1">
-                      BEP-20 Address
-                    </label>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
-                      <span className="text-text-heading break-words sm:break-all">
-                        {addresses["BEP-20"]?.walletAddress}
-                      </span>
-                      <button
-                        onClick={handleCopyBEP}
-                        className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
-                      >
-                        {copiedBEP ? "Copied!" : "Copy"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                    <p className="font-medium">No BEP-20 Wallet Found</p>
-                    <p className="text-sm mt-1">
-                      Please add your BEP-20 wallet address to continue.
-                    </p>
-                  </div>
-                )}
+            <div className="bg-primary-light rounded-md p-4 space-y-6 sm:space-y-4">
+              {/* TRC-20 Address */}
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-1">
+                  TRC-20 Address
+                </label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                  <span className="text-text-heading break-words sm:break-all">
+                    {addresses["TRC-20"]?.walletAddress}
+                  </span>
+                  <button
+                    onClick={handleCopyTRC}
+                    className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
+                  >
+                    {copiedTRC ? "Copied!" : "Copy"}
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="bg-primary-light border-l-4 border-button text-text-highlighted p-4 rounded-md shadow-sm">
-                <p className="font-medium">No Wallets Found</p>
-                <p className="text-sm mt-1">
-                  Please add your TRC-20 and BEP-20 wallet addresses to
-                  continue.
-                </p>
+
+              {/* BEP-20 Address */}
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-1">
+                  BEP-20 Address
+                </label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-primary-dark px-4 py-3 rounded-md">
+                  <span className="text-text-heading break-words sm:break-all">
+                    {addresses["BEP-20"]?.walletAddress}
+                  </span>
+                  <button
+                    onClick={handleCopyBEP}
+                    className="mt-2 sm:mt-0 sm:ml-4 text-sm text-text-linkHover hover:underline"
+                  >
+                    {copiedBEP ? "Copied!" : "Copy"}
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
-          {user?.wallets?.length > 0 ? (
-            <div className="flex flex-col py-2 gap-3">
-              <p className="text-sm text-gray-400">
-                After sending the payment, please upload proof of payment using
-                below verify button.
-              </p>
-              <button
-                className="w-fit bg-button py-2 text-lg px-4 rounded-md"
-                onClick={() => setShowModal(true)}
-              >
-                Verify Payment
-              </button>
             </div>
-          ) : (
-            <p className="text-white">
-              Kindly add your wallet address before proceeding.
+          </div>
+
+          <div className="flex flex-col py-2 gap-3">
+            <p className="text-sm text-gray-400">
+              After sending the payment, please upload proof of payment using
+              below verify button.
             </p>
-          )}
+            <button
+              className="w-fit bg-button py-2 text-lg px-4 rounded-md"
+              onClick={() => setShowModal(true)}
+            >
+              Verify Payment
+            </button>
+          </div>
         </div>
       )}
 
