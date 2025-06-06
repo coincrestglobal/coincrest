@@ -34,7 +34,6 @@ async function buildBep20Url(fromTimestamp, maxTimestamp) {
   if (!endBlock) {
     endBlock = await getLatestBlockNumber();
   }
-  console.log(startBlock, endBlock);
 
   if (!startBlock || !endBlock) return null;
 
