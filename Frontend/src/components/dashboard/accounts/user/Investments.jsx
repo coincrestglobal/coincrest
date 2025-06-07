@@ -276,10 +276,13 @@ function Investments() {
                 <strong>
                   3. 10–15 Days Processing Time for Full Withdrawal:
                 </strong>{" "}
-                Once staking is closed, your full balance (principal + any
-                remaining interest) will be processed. Allow 10 to 15 business
-                days for the funds to be released and received in your linked
-                wallet.
+                Once your staking is closed, your entire balance (including
+                principal and any remaining interest) will be processed. Please
+                allow 10 to 15 business days for the funds to be released and
+                credited to your linked wallet.
+                <br></br>
+                ⚠️ If your withdrawal is not approved after this period, please
+                contact Customer Support for assistance.
               </li>
             </ul>
 

@@ -103,6 +103,16 @@ const UserDetails = () => {
             {findAccountStatus(showableUser)}
           </span>
         </p>
+        <p>
+          <span className="font-semibold text-button">
+            Staking Plans status:
+          </span>
+          <span className="px-3 py-1 bg-button rounded-md">
+            {showableUser?.investments?.some((inv) => inv.status === "active")
+              ? "active"
+              : "No active Plans"}
+          </span>
+        </p>
       </div>
 
       <div className="p-4 bg-primary-dark border border-button rounded-md shadow">
@@ -127,7 +137,7 @@ const UserDetails = () => {
         <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
           {showableUser.withdrawals.map((withdrawal, index) => (
             <li key={index} className="text-[#d1d5db]">
-              Amount: {withdrawal.amount} USDT, Date:{" "}
+              Amount: {withdrawal.amount} USDT, Invest Date:{" "}
               {new Date(withdrawal.createdAt).toLocaleString()} , Status:{" "}
               {withdrawal.status}
             </li>
@@ -136,13 +146,14 @@ const UserDetails = () => {
       </div>
 
       <div className="p-4 bg-primary-dark border border-button rounded-md shadow">
-        <h3 className="text-button font-semibold">Investments History</h3>
+        <h3 className="text-button font-semibold">Staking Plans</h3>
+
         <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
-          {showableUser.withdrawals.map((withdrawal, index) => (
+          {showableUser.investments.map((investment, index) => (
             <li key={index} className="text-[#d1d5db]">
-              Amount: {withdrawal.amount} USDT, Date:{" "}
-              {new Date(withdrawal.createdAt).toLocaleString()} , Status:{" "}
-              {withdrawal.status}
+              Plan:{investment.name}, Amount: {investment.investedAmount} USDT,
+              Date: {new Date(investment.investDate).toLocaleString()} , Status:{" "}
+              {investment.status}
             </li>
           ))}
         </ul>
