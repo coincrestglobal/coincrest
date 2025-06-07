@@ -157,12 +157,8 @@ function Withdrawals() {
                   <strong>Wallet Address:</strong> {withdrawal.toAddress}
                 </p>
                 <p>
-                  <strong>Requested On:</strong>{" "}
-                  {new Date(withdrawal.createdAt).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  <strong>Requested On:</strong>
+                  {new Date(withdrawal.createdAt).toLocaleString()}
                 </p>
                 <p>
                   <strong>Chain:</strong> {withdrawal.tokenType}

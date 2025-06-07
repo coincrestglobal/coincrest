@@ -150,7 +150,7 @@ function Investments() {
                       </p>
                       <p>
                         <span className="text-text-heading">Opened at:</span>{" "}
-                        {new Date(data.investDate).toLocaleDateString()}
+                        {new Date(data.investDate).toLocaleString()}
                       </p>
                       <p>
                         <span className="text-text-heading">Deposit:</span> $

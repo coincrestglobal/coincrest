@@ -15,7 +15,7 @@ function BonusHistory() {
   });
 
   const [bonusHistory, setBonusHistory] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const numberOfEntries = 5;
@@ -70,7 +70,7 @@ function BonusHistory() {
             <div>
               <span>
                 Date:{" "}
-                {new Date(bonus.createdAt).toLocaleDateString("en-GB", {
+                {new Date(bonus.createdAt).toLocaleString("en-GB", {
                   day: "2-digit",
                   month: "short",
                   year: "numeric",

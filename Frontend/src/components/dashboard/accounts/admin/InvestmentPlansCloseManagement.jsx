@@ -164,11 +164,7 @@ function Investments() {
 
                 <p>
                   <strong>Invested On:</strong>{" "}
-                  {new Date(investment.investDate).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  {new Date(investment.investDate).toLocaleString()}
                 </p>
               </div>
             )}

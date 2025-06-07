@@ -1,5 +1,3 @@
-import React from "react";
-
 function Pagination({ currentPage, totalPages, onPageChange }) {
   const handlePageChange = (page) => {
     if (page > 0 && page <= totalPages) {
@@ -12,7 +10,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         className={`px-2 py-1 rounded-md ${
-          currentPage === 1
+          currentPage <= 1
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-button text-text-heading hover:bg-button-hover cursor-pointer"
         }`}
@@ -25,7 +23,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         className={`px-2 py-1 rounded-md ${
-          currentPage === totalPages
+          currentPage >= totalPages
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-button text-text-heading hover:bg-button-hover cursor-pointer"
         }`}

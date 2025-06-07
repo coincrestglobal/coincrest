@@ -57,12 +57,8 @@ const UserDetails = () => {
   //   setIsMailing(false);
   // };
 
-  function findAccountStatus(updatedAt) {
-    const lastUpdatedDate = new Date(updatedAt);
-    const currentDate = new Date();
-    const diffInMs = currentDate - lastUpdatedDate;
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays > 15 ? "inactive" : "active";
+  function findAccountStatus(user) {
+    return user?.deposits?.length > 0 ? "active" : "inactive";
   }
 
   return (
@@ -99,12 +95,12 @@ const UserDetails = () => {
         </p>
         <p>
           <span className="font-semibold text-button">Last Login:</span>{" "}
-          {new Date(showableUser.updatedAt).toLocaleDateString()}
+          {new Date(showableUser.updatedAt).toLocaleString()}
         </p>
         <p>
           <span className="font-semibold text-button">Account Status: </span>
           <span className="px-3 py-1 bg-button rounded-md">
-            {findAccountStatus(showableUser.updatedAt)}
+            {findAccountStatus(showableUser)}
           </span>
         </p>
       </div>
@@ -118,7 +114,9 @@ const UserDetails = () => {
               className="text-[#d1d5db]"
             >
               Amount: {deposit.amount} USDT, Date:{" "}
-              {new Date(showableUser.updatedAt).toLocaleString()}
+              {new Date(
+                showableUser.deposits[index].verifiedAt
+              ).toLocaleString()}
             </li>
           ))}
         </ul>
@@ -127,9 +125,23 @@ const UserDetails = () => {
       <div className="p-4 bg-primary-dark border border-button rounded-md shadow">
         <h3 className="text-button font-semibold">Withdrawal History</h3>
         <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
-          {showableUser.withdrawals.map((withdrawal) => (
-            <li key={withdrawal.id} className="text-[#d1d5db]">
-              Amount: {withdrawal.amount} USDT, Date: {withdrawal.date}, Status:{" "}
+          {showableUser.withdrawals.map((withdrawal, index) => (
+            <li key={index} className="text-[#d1d5db]">
+              Amount: {withdrawal.amount} USDT, Date:{" "}
+              {new Date(withdrawal.createdAt).toLocaleString()} , Status:{" "}
+              {withdrawal.status}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="p-4 bg-primary-dark border border-button rounded-md shadow">
+        <h3 className="text-button font-semibold">Investments History</h3>
+        <ul className="list-disc pl-6 max-h-28 overflow-y-scroll scrollbar-hide">
+          {showableUser.withdrawals.map((withdrawal, index) => (
+            <li key={index} className="text-[#d1d5db]">
+              Amount: {withdrawal.amount} USDT, Date:{" "}
+              {new Date(withdrawal.createdAt).toLocaleString()} , Status:{" "}
               {withdrawal.status}
             </li>
           ))}

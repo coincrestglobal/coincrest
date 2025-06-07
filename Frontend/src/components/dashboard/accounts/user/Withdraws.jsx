@@ -276,7 +276,7 @@ const WithdrawPage = () => {
 
               <div className="flex justify-between">
                 <span>Date:</span>
-                <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                <span>{new Date(item.createdAt).toLocaleString()}</span>
               </div>
             </div>
           ))}

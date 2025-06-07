@@ -125,11 +125,7 @@ function Deposits() {
               </p>
               <p>
                 <strong>Deposited On:</strong>{" "}
-                {new Date(deposit.createdAt).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
+                {new Date(deposit.createdAt).toLocaleString()}
               </p>
             </div>
 
