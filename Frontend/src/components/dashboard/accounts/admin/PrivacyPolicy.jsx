@@ -76,7 +76,7 @@ export default function PrivacyPolicy() {
         </h3>
         <button
           onClick={() => navigate(-1)}
-          className="bg-button px-3 text-lg rounded-md py-2"
+          className="bg-button px-3 text-lg rounded-md py-2 text-white"
         >
           Go Back
         </button>

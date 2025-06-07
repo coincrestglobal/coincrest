@@ -84,7 +84,7 @@ export default function FAQs() {
         </h3>
         <button
           onClick={() => navigate(-1)}
-          className="bg-button px-3 py-2 text-lg rounded-md w-fit md:w-auto text-center"
+          className="bg-button px-3 py-2 text-white text-lg rounded-md w-fit md:w-auto text-center"
         >
           Go Back
         </button>
