@@ -322,7 +322,12 @@ exports.withdraw = catchAsync(async (req, res, next) => {
   const withdrawalAmount = new Decimal(amount);
 
   if (balance.lessThan(withdrawalAmount)) {
-    return next(new AppError("Insufficient balance", 400));
+    return next(
+      new AppError(
+        "Your withdrawable balance is insufficient. If you have deposited funds, please invest them first. Only invested funds can be withdrawn.",
+        400
+      )
+    );
   }
 
   const withdrawalAddress = user.withdrawalAddresses.some(
@@ -359,13 +364,15 @@ exports.withdraw = catchAsync(async (req, res, next) => {
 
   const withdrawal = new Withdrawal({
     initiatedBy: userId,
-    amount: withdrawalAmount.toNumber(),
+    amount: withdrawalAmount.toNumber() * 0.98, // deducting 2%
     toAddress: address,
     tokenType,
     status: "pending",
   });
 
   await withdrawal.save();
+
+  user.withdrawals.push(withdrawal._id);
 
   user.withdrawableBalance = balance
     .minus(withdrawalAmount)

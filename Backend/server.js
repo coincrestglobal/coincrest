@@ -7,7 +7,6 @@ const logger = require("./logger");
 const depositScanner = require("./jobs/depositScanner");
 const investmentInterestProcessor = require("./jobs/processInvestmentInterest");
 const teamBonusScanner = require("./jobs/teamBonusScanner");
-const redeemInvestmentScanner = require("./jobs/redeemInvestmentScanner");
 
 let server;
 
@@ -30,7 +29,6 @@ const shutdown = async () => {
         depositScanner.stop(),
         investmentInterestProcessor.stop(),
         teamBonusScanner.stop(),
-        redeemInvestmentScanner.stop(),
       ]);
       logger.info("All background services stopped.");
 
@@ -66,7 +64,6 @@ const startServer = async () => {
     depositScanner.start();
     investmentInterestProcessor.start();
     teamBonusScanner.start();
-    redeemInvestmentScanner.start();
 
     // Handle unhandled promise rejections (async errors)
     process.on("unhandledRejection", async (reason, promise) => {
@@ -79,7 +76,7 @@ const startServer = async () => {
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
   } catch (error) {
-    logger.error("Failed to connect to server", error);
+    logger.error("Failed to connect to server ", error);
     // Give logger time to flush before exit
     await new Promise((resolve) => setTimeout(resolve, 1000));
     process.exit(1);

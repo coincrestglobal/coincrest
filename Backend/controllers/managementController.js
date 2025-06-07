@@ -75,7 +75,7 @@ exports.getUserById = catchAsync(async (req, res, next) => {
   const { id } = req.query;
 
   const user = await User.findById(id)
-    .select("name email updatedAt role")
+    .select("name email updatedAt role investments")
     .populate("deposits", "amount tokenType verifiedAt -_id")
     .populate("withdrawals", "amount tokenType status createdAt -_id");
 
@@ -366,7 +366,7 @@ exports.approveUserInvestmentRedemption = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    message: "Investment redemption manually approved.",
+    message: "Investment redemption approved.",
   });
 });
 
