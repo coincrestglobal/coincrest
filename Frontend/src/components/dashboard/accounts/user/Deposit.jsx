@@ -195,6 +195,13 @@ const DepositPage = () => {
               {/* BEP-20 Address */}
 
               <div className="mb-4">
+                <div className="mt-4 flex justify-center">
+                  <img
+                    src="/images/qr.png"
+                    alt="Safepal Payment QR"
+                    className="w-48 h-48 object-contain rounded-md shadow-md"
+                  />
+                </div>
                 <label className="block text-sm text-gray-400 mb-1">
                   BEP-20 Address
                 </label>

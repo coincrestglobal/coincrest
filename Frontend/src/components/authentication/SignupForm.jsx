@@ -46,7 +46,7 @@ function SignupForm() {
         params.append("ref", referralCodeState);
       }
 
-      await signUp(data1, navigate, params);
+      await signUp(data1, params);
       reset();
     } catch (error) {
     } finally {
