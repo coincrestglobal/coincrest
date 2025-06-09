@@ -29,49 +29,28 @@ export const apiConnector = async (
     }
   }
 
-  // Utility to fetch with timeout (default 15s)
-  const fetchWithTimeout = (resource, options = {}, timeout = 15000) => {
-    return Promise.race([
-      fetch(resource, options),
-      new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error("Request timed out after 15s")),
-          timeout
-        )
-      ),
-    ]);
-  };
+  try {
+    const response = await fetch(url + queryString, options);
+    const result = await response.json();
 
-  // Internal request attempt with retry fallback
-  const makeRequest = async (attempt = 1) => {
-    try {
-      const response = await fetchWithTimeout(url + queryString, options);
-      const result = await response.json();
-
-      if (result.isOldDevice) {
-        localStorage.removeItem("user");
-        if (!hasToastShowed) {
-          toast.error(result.message);
-          hasToastShowed = true;
-        }
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 5000);
-        return result;
+    if (result.isOldDevice) {
+      localStorage.removeItem("user");
+      if (!hasToastShowed) {
+        toast.error(result.message);
+        hasToastShowed = true;
       }
-
-      if (!response.ok) {
-        throw new Error(result.message || "API request failed");
-      }
-
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 5000);
       return result;
-    } catch (error) {
-      if (attempt === 1) {
-        return makeRequest(2); // Retry once only
-      }
-      throw error;
     }
-  };
 
-  return makeRequest(); // Auto-retry logic triggered internally
+    if (!response.ok) {
+      throw new Error(result.message || "API request failed");
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
