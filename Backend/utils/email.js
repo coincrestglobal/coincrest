@@ -140,7 +140,7 @@ const sendEmail = async (options) => {
   });
 
   const mailOptions = {
-    from: `"${config.companyName} Support" <noreply@${config.companyName}>`,
+   from: `"${config.companyName} support@thecoincrest.com>`,
     to: options.email,
     subject: options.subject,
     text: options.message,
