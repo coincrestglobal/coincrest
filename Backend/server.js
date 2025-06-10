@@ -12,7 +12,10 @@ let server;
 
 // Handle uncaught exceptions (sync errors)
 process.on("uncaughtException", (err) => {
-  logger.error({ err }, "Uncaught Exception! Shutting down...");
+  logger.error(
+    { message: err.message, stack: err.stack },
+    "Uncaught Exception! Shutting down..."
+  );
   // Give time to flush logs before exit
   setTimeout(() => process.exit(1), 1000);
 });
@@ -33,7 +36,7 @@ const shutdown = async () => {
       logger.info("All background services stopped.");
 
       if (mongoose.connection.readyState === 1) {
-        mongoose.connection.close(false, () => {
+        await mongoose.connection.close(false, () => {
           logger.info("MongoDB connection closed");
           process.exit(0);
         });
@@ -56,7 +59,7 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    server = app.listen(config.port, () => {
+    server = app.listen(config.port, "0.0.0.0", () => {
       logger.info(`Server running on ${config.serverUrl}`);
     });
 
@@ -67,7 +70,13 @@ const startServer = async () => {
 
     // Handle unhandled promise rejections (async errors)
     process.on("unhandledRejection", async (reason, promise) => {
-      logger.error({ reason, promise }, "Unhandled Rejection at");
+      logger.error(
+        {
+          message: reason instanceof Error ? reason.message : reason,
+          stack: reason instanceof Error ? reason.stack : undefined,
+        },
+        "Unhandled Rejection at"
+      );
       logger.info("Shutting down server due to unhandled promise rejection");
       await shutdown();
     });
@@ -76,7 +85,10 @@ const startServer = async () => {
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
   } catch (error) {
-    logger.error("Failed to connect to server ", error);
+    logger.error(
+      { message: error.message, stack: error.stack },
+      "Failed to connect to server"
+    );
     // Give logger time to flush before exit
     await new Promise((resolve) => setTimeout(resolve, 1000));
     process.exit(1);
